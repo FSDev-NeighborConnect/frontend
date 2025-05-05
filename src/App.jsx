@@ -9,6 +9,7 @@ import events from './assets/events.png';
 // import Signup from './pages/Signup.jsx';
 // import Login from './pages/Login.jsx';
 import NewUser from './pages/newuser.jsx';
+import UserProfile from './pages/userprofile.jsx';
 
 
 
@@ -18,6 +19,7 @@ function App() {
   const renderPage = () => {
     if (view === 'login') return <Login />;
     if (view === 'newuser') return <NewUser />;
+    if (view === 'profile') return <UserProfile />;
 
     return (
       <div className="container">
@@ -31,6 +33,7 @@ function App() {
             <div className="button-group">
               <button className="btn" onClick={() => setView('newuser')}>New User</button>
               <button className="btn" onClick={() => setView('login')}>Log In</button>
+              <button className="btn" onClick={() => setView('profile')}>Profile</button>
             </div>
           </div>
 

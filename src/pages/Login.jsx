@@ -10,7 +10,6 @@ const Login = () => {
   const { email, password } = formData
 
   const [error, setError] = useState("")
-
   const navigate = useNavigate()
 
   const handleChange = (e) => {
@@ -57,12 +56,11 @@ const Login = () => {
     setError("")
 
     try {
-      await axios.post("/api/login", {
-        email: email.trim(),
-        password
-      }, {
-        withCredentials: true
-      })
+      await axios.post(
+        "/api/login",
+        { email: email.trim(), password },
+        { withCredentials: true }
+      )
       navigate("/")
     } catch (err) {
       setError(err.response?.data?.message || "Login failed")
@@ -83,7 +81,7 @@ const Login = () => {
             <div className="mb-4 bg-red-50 border-l-4 border-red-500 p-4">
               <div className="flex">
                 <div className="flex-shrink-0">
-                  <svg 
+                  <svg
                     className="h-5 w-5 text-red-500 stroke-red-500 font-roboto"
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
@@ -94,9 +92,9 @@ const Login = () => {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   >
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="15" y1="9" x2="9" y2="15"></line>
-                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="15" y1="9" x2="9" y2="15" />
+                    <line x1="9" y1="9" x2="15" y2="15" />
                   </svg>
                 </div>
                 <div className="ml-3">
@@ -106,13 +104,12 @@ const Login = () => {
             </div>
           )}
 
-          <form 
-            className="space-y-6" 
-            onSubmit={handleSubmit}
-            noValidate
-          >
+          <form className="space-y-6" onSubmit={handleSubmit} noValidate>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 font-roboto">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 font-roboto"
+              >
                 Email address
               </label>
               <div className="mt-1">
@@ -124,13 +121,22 @@ const Login = () => {
                   autoComplete="email"
                   value={email}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 bg-blue-50 border border-gray-300 text-gray-800 rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  className="
+                    appearance-none block w-full px-3 py-2
+                    bg-blue-50 border border-gray-300 text-gray-800
+                    rounded-md shadow-sm placeholder-gray-500
+                    focus:outline-none focus:ring-blue-500 focus:border-blue-500
+                    sm:text-sm
+                  "
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 font-roboto">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 font-roboto"
+              >
                 Password
               </label>
               <div className="mt-1">
@@ -142,7 +148,13 @@ const Login = () => {
                   autoComplete="current-password"
                   value={password}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 bg-blue-50 border border-gray-300 text-gray-800 rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  className="
+                    appearance-none block w-full px-3 py-2
+                    bg-blue-50 border border-gray-300 text-gray-800
+                    rounded-md shadow-sm placeholder-gray-500
+                    focus:outline-none focus:ring-blue-500 focus:border-blue-500
+                    sm:text-sm
+                  "
                 />
               </div>
             </div>
@@ -150,7 +162,14 @@ const Login = () => {
             <div>
               <button
                 type="submit"
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-800 hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700 font-roboto"
+                className="
+                  w-full flex justify-center py-2 px-4
+                  border border-transparent rounded-md shadow-sm
+                  text-sm font-medium text-white
+                  bg-blue-800 hover:bg-blue-900
+                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700
+                  font-roboto
+                "
               >
                 Sign in
               </button>
@@ -160,7 +179,7 @@ const Login = () => {
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300"></div>
+                <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="px-2 bg-white text-gray-500 font-roboto">
@@ -171,7 +190,16 @@ const Login = () => {
 
             <div className="mt-6 grid grid-cols-1 gap-3">
               <div>
-                <Link to="/register" className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 font-roboto">
+                <Link
+                  to="/register"
+                  className="
+                    w-full flex justify-center py-2 px-4
+                    border border-gray-300 rounded-md shadow-sm
+                    text-sm font-medium text-gray-700
+                    bg-white hover:bg-gray-50
+                    font-roboto
+                  "
+                >
                   Create a new account
                 </Link>
               </div>

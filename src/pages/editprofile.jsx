@@ -252,7 +252,7 @@ function EditProfile() {
                     onChange={handleInputChange}
                     className={`block w-full pl-10 pr-3 py-2 border ${
                       errors.name ? "border-red-500" : "border-gray-300"
-                    } rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500`}
+                    } rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 bg-purple-50`}
                   />
                 </div>
                 {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
@@ -271,7 +271,7 @@ function EditProfile() {
                     onChange={handleInputChange}
                     className={`block w-full pl-10 pr-3 py-2 border ${
                       errors.email ? "border-red-500" : "border-gray-300"
-                    } rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500`}
+                    } rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 bg-purple-50`}
                   />
                 </div>
                 {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
@@ -290,7 +290,7 @@ function EditProfile() {
                     onChange={handleInputChange}
                     className={`block w-full pl-10 pr-3 py-2 border ${
                       errors.phone ? "border-red-500" : "border-gray-300"
-                    } rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500`}
+                    } rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 bg-purple-50`}
                   />
                 </div>
                 {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone}</p>}
@@ -307,7 +307,7 @@ function EditProfile() {
                     name="streetAddress"
                     value={formData.streetAddress}
                     onChange={handleInputChange}
-                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500"
+                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 bg-purple-50"
                   />
                 </div>
               </div>
@@ -323,7 +323,7 @@ function EditProfile() {
                     name="postalCode"
                     value={formData.postalCode}
                     onChange={handleInputChange}
-                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500"
+                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 bg-purple-50"
                   />
                 </div>
               </div>
@@ -341,7 +341,7 @@ function EditProfile() {
                 value={formData.bio}
                 onChange={handleInputChange}
                 rows={4}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 bg-purple-50"
                 placeholder="Tell your neighbors about yourself..."
               />
               <p className="mt-1 text-sm text-gray-500">{formData.bio.length}/500 characters</p>
@@ -371,7 +371,7 @@ function EditProfile() {
                   type="text"
                   value={newHobby}
                   onChange={(e) => setNewHobby(e.target.value)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-l-md shadow-sm focus:ring-purple-500 focus:border-purple-500"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-l-md shadow-sm focus:ring-purple-500 focus:border-purple-500 bg-purple-50 bg-purple-50"
                   placeholder="Add a hobby or interest"
                   onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addHobby())}
                 />
@@ -407,7 +407,7 @@ function EditProfile() {
                     onChange={handleInputChange}
                     className={`block w-full pl-10 pr-10 py-2 border ${
                       errors.currentPassword ? "border-red-500" : "border-gray-300"
-                    } rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500`}
+                    } rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 bg-purple-50`}
                     placeholder="Enter to change password"
                   />
                   <button
@@ -438,7 +438,7 @@ function EditProfile() {
                     onChange={handleInputChange}
                     className={`block w-full pl-10 pr-10 py-2 border ${
                       errors.newPassword ? "border-red-500" : "border-gray-300"
-                    } rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500`}
+                    } rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 bg-purple-50`}
                     placeholder="Leave blank to keep current"
                   />
                   <button
@@ -469,7 +469,7 @@ function EditProfile() {
                     onChange={handleInputChange}
                     className={`block w-full pl-10 pr-3 py-2 border ${
                       errors.confirmPassword ? "border-red-500" : "border-gray-300"
-                    } rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500`}
+                    } rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 bg-purple-50`}
                     placeholder="Confirm new password"
                   />
                 </div>

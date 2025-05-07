@@ -31,6 +31,11 @@ function NewUser() {
     'Beekeeping', 'Bonsai', 'Wine Tasting', 'Coffee Roasting'
   ]
 
+  const showError = (message) => {
+    setError(message);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData({ ...formData, [name]: value })
@@ -62,47 +67,47 @@ function NewUser() {
     const trimmedPhone = formData.phone.trim()
 
     if (!trimmedName) {
-      setError("Full name is required")
+      showError("Full name is required")
       return false
     }
 
     if (!trimmedEmail) {
-      setError("Email is required")
+      showError("Email is required")
       return false
     }
 
     if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(trimmedEmail)) {
-      setError("Please enter a valid email address")
+      showError("Please enter a valid email address")
       return false
     }
 
     if (!trimmedPassword) {
-      setError("Password is required")
+      showError("Password is required")
       return false
     }
 
     if (trimmedPassword.length < 6) {
-      setError("Password must be at least 6 characters")
+      showError("Password must be at least 6 characters")
       return false
     }
 
     if (trimmedPassword !== trimmedConfirmPassword) {
-      setError("Passwords do not match")
+      showError("Passwords do not match")
       return false
     }
 
     if (!trimmedAddress) {
-      setError("Street address is required")
+      showError("Street address is required")
       return false
     }
 
     if (!trimmedPostalCode) {
-      setError("Postal code is required")
+      showError("Postal code is required")
       return false
     }
 
     if (!trimmedPhone) {
-      setError("Phone number is required")
+      showError("Phone number is required")
       return false
     }
 
@@ -123,7 +128,7 @@ function NewUser() {
       await axios.post("/api/register", userData, { withCredentials: true })
       navigate("/")
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed")
+      showError(err.response?.data?.message || "Registration failed")
     }
   }
 

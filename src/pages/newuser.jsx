@@ -480,6 +480,76 @@ function NewUser() {
           </div>
         </div>
       </div>
+
+      {/* Hobbies Modal */}
+      {showHobbiesModal && (
+        <div className="fixed z-10 inset-0 overflow-y-auto">
+          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+              <div 
+                className="absolute inset-0 bg-gray-500 opacity-75"
+                onClick={() => setShowHobbiesModal(false)}
+              ></div>
+            </div>
+
+            <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <div className="
+              inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 
+              text-left overflow-hidden shadow-xl transform transition-all 
+              sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6
+            ">
+              <div>
+                <div className="mt-3 text-center sm:mt-5">
+                  <h3 className="text-lg leading-6 font-medium text-gray-900 font-roboto">
+                    Select Your Hobbies
+                  </h3>
+                  <div className="mt-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      {hobbiesList.map(hobby => (
+                        <div key={hobby} className="flex items-start">
+                          <div className="flex items-center h-5">
+                            <input
+                              id={`hobby-${hobby}`}
+                              name="hobbies"
+                              type="checkbox"
+                              checked={formData.hobbies.includes(hobby)}
+                              onChange={() => toggleHobby(hobby)}
+                              className="
+                                focus:ring-blue-500 h-4 w-4 text-blue-600
+                                border-gray-300 rounded bg-blue-500
+                              "
+                            />
+                          </div>
+                          <div className="ml-3 text-sm">
+                            <label htmlFor={`hobby-${hobby}`} className="font-medium text-gray-700 font-roboto">
+                              {hobby}
+                            </label>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-5 sm:mt-6">
+                <button
+                  type="button"
+                  onClick={() => setShowHobbiesModal(false)}
+                  className="
+                    inline-flex justify-center w-full rounded-md border border-transparent
+                    shadow-sm px-4 py-2 bg-blue-800 text-base font-medium text-white
+                    hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2
+                    focus:ring-blue-700 sm:text-sm font-roboto
+                  "
+                >
+                  Done
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -121,10 +121,12 @@ function EditProfile() {
 
   const validateForm = () => {
     const newErrors = {}
+    
 
     if (!formData.name.trim()) newErrors.name = "Name is required"
     if (!formData.email.trim()) newErrors.email = "Email is required"
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Email is invalid"
+    else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.email))
+     newErrors.email = "Email is invalid"
 
     if (formData.phone && !/^[0-9-+() ]+$/.test(formData.phone)) {
       newErrors.phone = "Phone number is invalid"

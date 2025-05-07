@@ -128,15 +128,15 @@ function NewUser() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+      <div className="sm:mx-auto sm:w-full sm:max-w-3xl">
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 font-roboto">
           Create a new account
         </h2>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          {error && (
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-3xl">
+        <div className="bg-white py-8 px-6 shadow sm:rounded-lg">
+        {error && (
             <div className="mb-4 bg-red-50 border-l-4 border-red-500 p-4">
               <div className="flex">
                 <div className="flex-shrink-0">
@@ -163,286 +163,196 @@ function NewUser() {
             </div>
           )}
 
-          <form className="space-y-6" onSubmit={handleSubmit} noValidate>
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700 font-roboto"
-              >
-                Full Name
-              </label>
-              <div className="mt-1">
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  placeholder="John Doe"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="
-                    appearance-none block w-full px-3 py-2
-                    bg-blue-50 border border-gray-300 text-gray-800
-                    rounded-md shadow-sm placeholder-gray-500
-                    focus:outline-none focus:ring-blue-500 focus:border-blue-500
-                    sm:text-sm
-                  "
-                />
+          <form onSubmit={handleSubmit} noValidate>
+            {/* Section 1: Basic Information */}
+            <div className="mb-8">
+              <h3 className="text-lg font-medium text-gray-900 font-roboto mb-4 pb-2 border-b border-gray-200">
+                Basic Information
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 font-roboto">
+                    Full Name
+                  </label>
+                  <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    placeholder="John Doe"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className={`mt-1 ${inputStyle}`}
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 font-roboto">
+                    Email address
+                  </label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="example@email.com"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className={`mt-1 ${inputStyle}`}
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 font-roboto">
+                    Password
+                  </label>
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder="Enter your password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className={`mt-1 ${inputStyle}`}
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 font-roboto">
+                    Confirm Password
+                  </label>
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    placeholder="Confirm your password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    className={`mt-1 ${inputStyle}`}
+                  />
+                </div>
               </div>
             </div>
 
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 font-roboto"
-              >
-                Email address
-              </label>
-              <div className="mt-1">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="example@email.com"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="
-                    appearance-none block w-full px-3 py-2
-                    bg-blue-50 border border-gray-300 text-gray-800
-                    rounded-md shadow-sm placeholder-gray-500
-                    focus:outline-none focus:ring-blue-500 focus:border-blue-500
-                    sm:text-sm
-                  "
-                />
+            {/* Section 2: Contact Information */}
+            <div className="mb-8">
+              <h3 className="text-lg font-medium text-gray-900 font-roboto mb-4 pb-2 border-b border-gray-200">
+                Contact Information
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label htmlFor="streetAddress" className="block text-sm font-medium text-gray-700 font-roboto">
+                    Street Address
+                  </label>
+                  <input
+                    id="streetAddress"
+                    name="streetAddress"
+                    type="text"
+                    placeholder="123 Main St"
+                    value={formData.streetAddress}
+                    onChange={handleChange}
+                    className={`mt-1 ${inputStyle}`}
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 font-roboto">
+                    Postal Code
+                  </label>
+                  <input
+                    id="postalCode"
+                    name="postalCode"
+                    type="text"
+                    placeholder="A1B 2C3"
+                    value={formData.postalCode}
+                    onChange={handleChange}
+                    className={`mt-1 ${inputStyle}`}
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 font-roboto">
+                    Phone Number
+                  </label>
+                  <input
+                    id="phone"
+                    name="phone"
+                    type="text"
+                    placeholder="(123) 456-7890"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className={`mt-1 ${inputStyle}`}
+                  />
+                </div>
               </div>
             </div>
+            
+            {/* Section 3: Profile Details */}
+            <div className="mb-8">
+              <h3 className="text-lg font-medium text-gray-900 font-roboto mb-4 pb-2 border-b border-gray-200">
+                Profile Details
+              </h3>
+              <div className="grid grid-cols-1 gap-6">
+                <div>
+                  <label htmlFor="avatarUrl" className="block text-sm font-medium text-gray-700 font-roboto">
+                    Avatar URL (optional)
+                  </label>
+                  <input
+                    id="avatarUrl"
+                    name="avatarUrl"
+                    type="text"
+                    placeholder="https://example.com/avatar.jpg"
+                    value={formData.avatarUrl}
+                    onChange={handleChange}
+                    className={`mt-1 ${inputStyle}`}
+                  />
+                </div>
 
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 font-roboto"
-              >
-                Password
-              </label>
-              <div className="mt-1">
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="
-                    appearance-none block w-full px-3 py-2
-                    bg-blue-50 border border-gray-300 text-gray-800
-                    rounded-md shadow-sm placeholder-gray-500
-                    focus:outline-none focus:ring-blue-500 focus:border-blue-500
-                    sm:text-sm
-                  "
-                />
-              </div>
-            </div>
+                <div>
+                  <label htmlFor="bio" className="block text-sm font-medium text-gray-700 font-roboto">
+                    Short Bio (max 500 characters)
+                  </label>
+                  <textarea
+                    id="bio"
+                    name="bio"
+                    rows="3"
+                    placeholder="Tell us about yourself..."
+                    value={formData.bio}
+                    onChange={handleChange}
+                    maxLength="500"
+                    className={`mt-1 ${inputStyle}`}
+                  />
+                </div>
 
-            <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700 font-roboto"
-              >
-                Confirm Password
-              </label>
-              <div className="mt-1">
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  placeholder="Confirm your password"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  className="
-                    appearance-none block w-full px-3 py-2
-                    bg-blue-50 border border-gray-300 text-gray-800
-                    rounded-md shadow-sm placeholder-gray-500
-                    focus:outline-none focus:ring-blue-500 focus:border-blue-500
-                    sm:text-sm
-                  "
-                />
-              </div>
-            </div>
-
-            <div>
-              <label
-                htmlFor="streetAddress"
-                className="block text-sm font-medium text-gray-700 font-roboto"
-              >
-                Street Address
-              </label>
-              <div className="mt-1">
-                <input
-                  id="streetAddress"
-                  name="streetAddress"
-                  type="text"
-                  placeholder="123 Main St"
-                  value={formData.streetAddress}
-                  onChange={handleChange}
-                  className="
-                    appearance-none block w-full px-3 py-2
-                    bg-blue-50 border border-gray-300 text-gray-800
-                    rounded-md shadow-sm placeholder-gray-500
-                    focus:outline-none focus:ring-blue-500 focus:border-blue-500
-                    sm:text-sm
-                  "
-                />
-              </div>
-            </div>
-
-            <div>
-              <label
-                htmlFor="postalCode"
-                className="block text-sm font-medium text-gray-700 font-roboto"
-              >
-                Postal Code
-              </label>
-              <div className="mt-1">
-                <input
-                  id="postalCode"
-                  name="postalCode"
-                  type="text"
-                  placeholder="A1B 2C3"
-                  value={formData.postalCode}
-                  onChange={handleChange}
-                  className="
-                    appearance-none block w-full px-3 py-2
-                    bg-blue-50 border border-gray-300 text-gray-800
-                    rounded-md shadow-sm placeholder-gray-500
-                    focus:outline-none focus:ring-blue-500 focus:border-blue-500
-                    sm:text-sm
-                  "
-                />
-              </div>
-            </div>
-
-            <div>
-              <label
-                htmlFor="phone"
-                className="block text-sm font-medium text-gray-700 font-roboto"
-              >
-                Phone Number
-              </label>
-              <div className="mt-1">
-                <input
-                  id="phone"
-                  name="phone"
-                  type="text"
-                  placeholder="(123) 456-7890"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="
-                    appearance-none block w-full px-3 py-2
-                    bg-blue-50 border border-gray-300 text-gray-800
-                    rounded-md shadow-sm placeholder-gray-500
-                    focus:outline-none focus:ring-blue-500 focus:border-blue-500
-                    sm:text-sm
-                  "
-                />
-              </div>
-            </div>
-
-            <div>
-              <label
-                htmlFor="avatarUrl"
-                className="block text-sm font-medium text-gray-700 font-roboto"
-              >
-                Avatar URL (optional)
-              </label>
-              <div className="mt-1">
-                <input
-                  id="avatarUrl"
-                  name="avatarUrl"
-                  type="text"
-                  placeholder="https://example.com/avatar.jpg"
-                  value={formData.avatarUrl}
-                  onChange={handleChange}
-                  className="
-                    appearance-none block w-full px-3 py-2
-                    bg-blue-50 border border-gray-300 text-gray-800
-                    rounded-md shadow-sm placeholder-gray-500
-                    focus:outline-none focus:ring-blue-500 focus:border-blue-500
-                    sm:text-sm
-                  "
-                />
-              </div>
-            </div>
-
-            <div>
-              <label
-                htmlFor="bio"
-                className="block text-sm font-medium text-gray-700 font-roboto"
-              >
-                Short Bio (max 500 characters)
-              </label>
-              <div className="mt-1">
-                <textarea
-                  id="bio"
-                  name="bio"
-                  rows="3"
-                  placeholder="Tell us about yourself..."
-                  value={formData.bio}
-                  onChange={handleChange}
-                  maxLength="500"
-                  className="
-                    appearance-none block w-full px-3 py-2
-                    bg-blue-50 border border-gray-300 text-gray-800
-                    rounded-md shadow-sm placeholder-gray-500
-                    focus:outline-none focus:ring-blue-500 focus:border-blue-500
-                    sm:text-sm
-                  "
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 font-roboto">
-                Hobbies
-              </label>
-              <div className="mt-1">
-                <button
-                  type="button"
-                  onClick={() => setShowHobbiesModal(true)}
-                  className="
-                    w-full flex justify-between items-center px-3 py-2
-                    bg-blue-50 border border-gray-300 text-gray-800
-                    rounded-md shadow-sm
-                    focus:outline-none focus:ring-blue-500 focus:border-blue-500
-                    sm:text-sm
-                  "
-                >
-                  <span>
-                    {formData.hobbies.length > 0 
-                      ? formData.hobbies.join(', ') 
-                      : "Select your hobbies"}
-                  </span>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 font-roboto">
+                    Hobbies
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setShowHobbiesModal(true)}
+                    className="mt-1 w-full flex justify-between items-center px-3 py-2 bg-blue-50 border border-gray-300 text-gray-800 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  >
+                    <span>
+                      {formData.hobbies.length > 0 
+                        ? formData.hobbies.join(', ') 
+                        : "Select your hobbies"}
+                    </span>
                   <svg 
                     xmlns="http://www.w3.org/2000/svg" 
                     width="18" height="18" viewBox="0 0 24 24" 
                     fill="none" stroke="#1f2937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10">
-                    </circle><line x1="12" y1="8" x2="12" y2="16"></line>
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="16"></line>
                     <line x1="8" y1="12" x2="16" y2="12"></line>
                   </svg>
-                </button>
+                  </button>
+                </div>
               </div>
             </div>
 
-            <div>
+            <div className="mt-8">
               <button
                 type="submit"
-                className="
-                  w-full flex justify-center py-2 px-4
-                  border border-transparent rounded-md shadow-sm
-                  text-sm font-medium text-white
-                  bg-blue-800 hover:bg-blue-900
-                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700
-                  font-roboto
-                "
+                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-800 hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700 font-roboto"
               >
                 Register
               </button>
@@ -465,13 +375,7 @@ function NewUser() {
               <div>
                 <Link
                   to="/login"
-                  className="
-                    w-full flex justify-center py-2 px-4
-                    border border-gray-300 rounded-md shadow-sm
-                    text-sm font-medium text-gray-700
-                    bg-white hover:bg-gray-50
-                    font-roboto
-                  "
+                  className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 font-roboto"
                 >
                   Sign in
                 </Link>
@@ -517,7 +421,7 @@ function NewUser() {
                               onChange={() => toggleHobby(hobby)}
                               className="
                                 focus:ring-blue-500 h-4 w-4 text-blue-600
-                                border-gray-300 rounded bg-blue-500
+                                border-gray-300 rounded
                               "
                             />
                           </div>
@@ -553,5 +457,14 @@ function NewUser() {
     </div>
   )
 }
+
+// Styling for all of the input fields.
+const inputStyle = `
+  appearance-none block w-full px-3 py-2
+  bg-blue-50 border border-gray-300 text-gray-800
+  rounded-md shadow-sm placeholder-gray-500
+  focus:outline-none focus:ring-blue-500 focus:border-blue-500
+  sm:text-sm
+`
 
 export default NewUser

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import HobbiesModal from './HobbiesModal'
+import validateForm from './ValidateRegisterInputs.jsx'
 
 function NewUser() {
   const [formData, setFormData] = useState({
@@ -25,7 +26,7 @@ function NewUser() {
   const showError = (message) => {
     setError(message);
     window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -48,67 +49,14 @@ function NewUser() {
     })
   }
 
-  const validateForm = () => {
-    const trimmedName = formData.name.trim()
-    const trimmedEmail = formData.email.trim()
-    const trimmedPassword = formData.password.trim()
-    const trimmedConfirmPassword = formData.confirmPassword.trim()
-    const trimmedAddress = formData.streetAddress.trim()
-    const trimmedPostalCode = formData.postalCode.trim()
-    const trimmedPhone = formData.phone.trim()
-
-    if (!trimmedName) {
-      showError("Full name is required")
-      return false
-    }
-
-    if (!trimmedEmail) {
-      showError("Email is required")
-      return false
-    }
-
-    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(trimmedEmail)) {
-      showError("Please enter a valid email address")
-      return false
-    }
-
-    if (!trimmedPassword) {
-      showError("Password is required")
-      return false
-    }
-
-    if (trimmedPassword.length < 6) {
-      showError("Password must be at least 6 characters")
-      return false
-    }
-
-    if (trimmedPassword !== trimmedConfirmPassword) {
-      showError("Passwords do not match")
-      return false
-    }
-
-    if (!trimmedAddress) {
-      showError("Street address is required")
-      return false
-    }
-
-    if (!trimmedPostalCode) {
-      showError("Postal code is required")
-      return false
-    }
-
-    if (!trimmedPhone) {
-      showError("Phone number is required")
-      return false
-    }
-
-    return true
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (!validateForm()) {
+    // Validate form
+    const errorMessage = validateForm(formData)
+
+    if (errorMessage) {
+      showError(errorMessage)
       return
     }
 

@@ -88,14 +88,8 @@ function NewUser() {
                   <svg
                     className="h-5 w-5 text-red-500 stroke-red-500 font-roboto"
                     xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
+                    width="24" height="24" viewBox="0 0 24 24"
+                    fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="12" cy="12" r="10" />
                     <line x1="15" y1="9" x2="9" y2="15" />
                     <line x1="9" y1="9" x2="15" y2="15" />
@@ -119,60 +113,32 @@ function NewUser() {
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 font-roboto">
                     Full Name
                   </label>
-                  <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    placeholder="John Doe"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className={`mt-1 ${inputStyle}`}
-                  />
+                  <input id="name" name="name" type="text" placeholder="John Doe"
+                    value={formData.name} onChange={handleChange} className={`mt-1 ${inputStyle}`} />
                 </div>
 
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 font-roboto">
                     Email Address
                   </label>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="example@email.com"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className={`mt-1 ${inputStyle}`}
-                  />
+                  <input id="email" name="email" type="email" placeholder="example@email.com"
+                    value={formData.email} onChange={handleChange} className={`mt-1 ${inputStyle}`} />
                 </div>
 
                 <div>
                   <label htmlFor="password" className="block text-sm font-medium text-gray-700 font-roboto">
                     Password
                   </label>
-                  <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    placeholder="Enter your password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    className={`mt-1 ${inputStyle}`}
-                  />
+                  <input id="password" name="password" type="password" placeholder="Enter your password"
+                  value={formData.password} onChange={handleChange} className={`mt-1 ${inputStyle}`} />
                 </div>
 
                 <div>
                   <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 font-roboto">
                     Confirm Password
                   </label>
-                  <input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type="password"
-                    placeholder="Confirm your password"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    className={`mt-1 ${inputStyle}`}
-                  />
+                  <input id="confirmPassword" name="confirmPassword" type="password" placeholder="Confirm your password"
+                  value={formData.confirmPassword} onChange={handleChange} className={`mt-1 ${inputStyle}`} />
                 </div>
               </div>
             </div>
@@ -187,45 +153,24 @@ function NewUser() {
                   <label htmlFor="streetAddress" className="block text-sm font-medium text-gray-700 font-roboto">
                     Street Address
                   </label>
-                  <input
-                    id="streetAddress"
-                    name="streetAddress"
-                    type="text"
-                    placeholder="123 Main St"
-                    value={formData.streetAddress}
-                    onChange={handleChange}
-                    className={`mt-1 ${inputStyle}`}
-                  />
+                  <input id="streetAddress" name="streetAddress" type="text" placeholder="123 Main St"
+                  value={formData.streetAddress} onChange={handleChange} className={`mt-1 ${inputStyle}`} />
                 </div>
 
                 <div>
                   <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 font-roboto">
                     Postal Code
                   </label>
-                  <input
-                    id="postalCode"
-                    name="postalCode"
-                    type="text"
-                    placeholder="A1B 2C3"
-                    value={formData.postalCode}
-                    onChange={handleChange}
-                    className={`mt-1 ${inputStyle}`}
-                  />
+                  <input id="postalCode" name="postalCode" type="text" placeholder="A1B 2C3"
+                    value={formData.postalCode} onChange={handleChange} className={`mt-1 ${inputStyle}`} />
                 </div>
 
                 <div className="md:col-span-2">
                   <label htmlFor="phone" className="block text-sm font-medium text-gray-700 font-roboto">
                     Phone Number
                   </label>
-                  <input
-                    id="phone"
-                    name="phone"
-                    type="text"
-                    placeholder="(123) 456-7890"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className={`mt-1 ${inputStyle}`}
-                  />
+                  <input id="phone" name="phone" type="text" placeholder="(123) 456-7890"
+                  value={formData.phone} onChange={handleChange} className={`mt-1 ${inputStyle}`} />
                 </div>
               </div>
             </div>
@@ -240,31 +185,16 @@ function NewUser() {
                   <label htmlFor="avatarUrl" className="block text-sm font-medium text-gray-700 font-roboto">
                     Avatar URL (optional)
                   </label>
-                  <input
-                    id="avatarUrl"
-                    name="avatarUrl"
-                    type="text"
-                    placeholder="https://example.com/avatar.jpg"
-                    value={formData.avatarUrl}
-                    onChange={handleChange}
-                    className={`mt-1 ${inputStyle}`}
-                  />
+                  <input id="avatarUrl" name="avatarUrl" type="text" placeholder="https://example.com/avatar.jpg"
+                  value={formData.avatarUrl} onChange={handleChange} className={`mt-1 ${inputStyle}`} />
                 </div>
 
                 <div>
                   <label htmlFor="bio" className="block text-sm font-medium text-gray-700 font-roboto">
                     Short Bio (max 500 characters)(optional)
                   </label>
-                  <textarea
-                    id="bio"
-                    name="bio"
-                    rows="3"
-                    placeholder="Tell us about yourself..."
-                    value={formData.bio}
-                    onChange={handleChange}
-                    maxLength="500"
-                    className={`mt-1 ${inputStyle}`}
-                  />
+                  <textarea id="bio" name="bio" rows="3" placeholder="Tell us about yourself..."
+                  value={formData.bio} onChange={handleChange} maxLength="500" className={`mt-1 ${inputStyle}`} />
                 </div>
 
                 <div>
@@ -284,10 +214,10 @@ function NewUser() {
                   <svg 
                     xmlns="http://www.w3.org/2000/svg" 
                     width="18" height="18" viewBox="0 0 24 24" 
-                    fill="none" stroke="#1f2937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="8" x2="12" y2="16"></line>
-                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                    fill="none" stroke="#1f2937" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="16"/>
+                    <line x1="8" y1="12" x2="16" y2="12"/>
                   </svg>
                   </button>
                 </div>

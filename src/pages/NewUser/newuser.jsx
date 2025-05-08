@@ -24,8 +24,8 @@ function NewUser() {
   const navigate = useNavigate()
 
   const showError = (message) => {
-    setError(message);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    setError(message)
+    window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
   const handleChange = (e) => {
@@ -183,7 +183,7 @@ function NewUser() {
               <div className="grid grid-cols-1 gap-6">
                 <div>
                   <label htmlFor="avatarUrl" className="block text-sm font-medium text-gray-700 font-roboto">
-                    Avatar URL (optional)
+                    Avatar URL (optional) {/* Might change to enable upload of image in the future. Need backend support for this first */}
                   </label>
                   <input id="avatarUrl" name="avatarUrl" type="text" placeholder="https://example.com/avatar.jpg"
                   value={formData.avatarUrl} onChange={handleChange} className={`mt-1 ${inputStyle}`} />

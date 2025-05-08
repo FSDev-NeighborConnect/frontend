@@ -2,7 +2,7 @@ import React from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import Home from './pages/Home'
 import Login from './pages/Login'
-import NewUser from './pages/newuser'
+import NewUser from './pages/NewUser/newuser.jsx'
 import UserProfile from './pages/userprofile'
 import EditProfile from './pages/editprofile.jsx';
 

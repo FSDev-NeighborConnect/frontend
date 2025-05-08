@@ -193,7 +193,7 @@ function NewUser() {
 
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 font-roboto">
-                    Email address
+                    Email Address
                   </label>
                   <input
                     id="email"
@@ -314,7 +314,7 @@ function NewUser() {
 
                 <div>
                   <label htmlFor="bio" className="block text-sm font-medium text-gray-700 font-roboto">
-                    Short Bio (max 500 characters)
+                    Short Bio (max 500 characters)(optional)
                   </label>
                   <textarea
                     id="bio"
@@ -330,12 +330,12 @@ function NewUser() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 font-roboto">
-                    Hobbies
+                    Hobbies (optional)
                   </label>
                   <button
                     type="button"
                     onClick={() => setShowHobbiesModal(true)}
-                    className="mt-1 w-full flex justify-between items-center px-3 py-2 bg-blue-50 border border-gray-300 text-gray-800 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    className="mt-1 w-full flex justify-between items-center px-3 py-2 bg-purple-50 border border-gray-300 text-gray-800 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
                   >
                     <span>
                       {formData.hobbies.length > 0 
@@ -358,7 +358,7 @@ function NewUser() {
             <div className="mt-8">
               <button
                 type="submit"
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-800 hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700 font-roboto"
+                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-600 font-roboto"
               >
                 Register
               </button>
@@ -464,9 +464,9 @@ function NewUser() {
                   onClick={() => setShowHobbiesModal(false)}
                   className="
                     w-full inline-flex justify-center rounded-md border border-transparent
-                    shadow-sm px-4 py-2 bg-blue-800 text-base font-medium text-white
-                    hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2
-                    focus:ring-blue-700 sm:ml-3 sm:w-auto sm:text-sm font-roboto
+                    shadow-sm px-4 py-2 bg-purple-700 text-base font-medium text-white
+                    hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-offset-2
+                    focus:ring-purple-600 sm:ml-3 sm:w-auto sm:text-sm font-roboto
                   "
                 >
                   Done
@@ -483,9 +483,9 @@ function NewUser() {
 // Styling for all of the input fields.
 const inputStyle = `
   appearance-none block w-full px-3 py-2
-  bg-blue-50 border border-gray-300 text-gray-800
+  bg-purple-50 border border-gray-300 text-gray-800
   rounded-md shadow-sm placeholder-gray-500
-  focus:outline-none focus:ring-blue-500 focus:border-blue-500
+  focus:outline-none focus:ring-purple-500 focus:border-purple-500
   sm:text-sm
 `
 

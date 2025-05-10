@@ -64,7 +64,7 @@ function NewUser() {
 
     try {
       const { confirmPassword, ...userData } = formData
-      await axios.post("/api/register", userData, { withCredentials: true })
+      await axios.post("/api/signup", userData, { withCredentials: true })
       navigate("/")
     } catch (err) {
       showError(err.response?.data?.message || "Registration failed")

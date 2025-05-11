@@ -9,7 +9,7 @@ const AdminDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(true) // Track authentication status
   const { csrfToken } = useCsrf()
   const [userRole, setUserRole] = useState(null) // Track user role (admin or not)
-  const [isLoading, setIsLoading] = useState(true) // Needed to let the temporary solution for setting the user role happen before 
+  const [isLoading, setIsLoading] = useState(true) // Needed to let the temporary solution for setting the user role happen before checking if user is admin or not
   const navigate = useNavigate()
 
   // Function to fetch all users
@@ -38,8 +38,7 @@ const AdminDashboard = () => {
   // Handle user update
   const handleUpdate = (user) => {
     // Navigate to the UpdateUser page, passing user data as state
-    // navigate("/admin/update-user", { state: { user } })
-    console.log(`Update page for user id: ${user._id}`) // Temp until update page is fully implemented and working.
+    navigate("/admin/update-user", { state: { user } })
   }
 
   // Handle user delete

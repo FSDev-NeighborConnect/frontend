@@ -117,6 +117,12 @@ const AdminDashboard = () => {
           >
             Admin Users
           </button>
+          <button
+            onClick={() => navigate("/admin/create-user")}
+            className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
+          >
+            + New User
+          </button>
         </div>
 
         <div className="overflow-hidden bg-gray-50 shadow sm:rounded-lg">

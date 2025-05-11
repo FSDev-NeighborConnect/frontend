@@ -9,6 +9,7 @@ import EditProfile from './pages/editprofile.jsx'
 import AdminLogin from './pages/Admin/AdminLogin.jsx'
 import AdminDashboard from './pages/Admin/AdminDashboard.jsx'
 import UpdateUser from './pages/Admin/UpdateUser.jsx'
+import CreateUser from './pages/Admin/AdminCreateUser.jsx'
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/update-user" element={<UpdateUser />} />
+          <Route path="/admin/create-user" element={<CreateUser />} />
           {/* Catch-all route that redirects to home */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

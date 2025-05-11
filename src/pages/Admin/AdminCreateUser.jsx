@@ -1,30 +1,25 @@
-import React, { useState, useEffect } from "react"
-import { useNavigate, useLocation } from "react-router-dom"
-import axios from "axios"
-import HobbiesModal from "../NewUser/HobbiesModal.jsx"
-import validateUpdateForm from "./validateUpdateUserInputs.jsx"
-import { useCsrf } from "../../context/CsrfContext.jsx"
+import React, { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import HobbiesModal from '../NewUser/HobbiesModal.jsx'
+import validateForm from '../NewUser/ValidateRegisterInputs.jsx'
 
-export default function UpdateUser() {
-  const { state } = useLocation()
-  const { user } = state || {}  // User data fetched from the dashboard
+function CreateUser() {
   const [formData, setFormData] = useState({
-    name: user?.name || "",
-    email: user?.email || "",
-    password: "",
-    confirmPassword: "",
-    streetAddress: user?.streetAddress || "",
-    postalCode: user?.postalCode || "",
-    phone: user?.phone || "",
-    avatarUrl: user?.avatarUrl || "",
-    bio: user?.bio || "",
-    role: user?.role || "member",
-    hobbies: user?.hobbies || []
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    streetAddress: '',
+    postalCode: '',
+    phone: '',
+    avatarUrl: '',
+    bio: '',
+    role: 'member',
+    hobbies: []
   })
 
-  const { csrfToken } = useCsrf()
-
-  const [error, setError] = useState("")
+  const [error, setError] = useState('')
   const [showHobbiesModal, setShowHobbiesModal] = useState(false)
   const navigate = useNavigate()
 
@@ -39,16 +34,16 @@ export default function UpdateUser() {
   }
 
   const toggleHobby = (hobby) => {
-    setFormData((prev) => {
+    setFormData(prev => {
       if (prev.hobbies.includes(hobby)) {
         return {
           ...prev,
-          hobbies: prev.hobbies.filter((h) => h !== hobby),
+          hobbies: prev.hobbies.filter(h => h !== hobby)
         }
       } else {
         return {
           ...prev,
-          hobbies: [...prev.hobbies, hobby],
+          hobbies: [...prev.hobbies, hobby]
         }
       }
     })
@@ -58,7 +53,7 @@ export default function UpdateUser() {
     e.preventDefault()
 
     // Validate form
-    const errorMessage = validateUpdateForm(formData)
+    const errorMessage = validateForm(formData)
 
     if (errorMessage) {
       showError(errorMessage)
@@ -68,17 +63,11 @@ export default function UpdateUser() {
     setError("")
 
     try {
-      const { confirmPassword, password, ...userData } = formData  // Remove password and confirmPassword from the user data
-      const response = await axios.put(`/api/admin/users/${user._id}`, userData, { withCredentials: true, headers: {"X-CSRF-Token": csrfToken}})
-
-      // If the update is successful, redirect to the dashboard
-      if (response.status === 200) {
-      navigate("/admin/dashboard")
-    } else {
-      showError("Failed to update user.")
-    }
+      const { confirmPassword, ...userData } = formData
+      await axios.post("/api/signup", userData, { withCredentials: true }) // Temporary route until the admin signup route is implemented
+      navigate("/")
     } catch (err) {
-      showError(err.response?.data?.message || "Update failed")
+      showError(err.response?.data?.message || "Registration failed")
     }
   }
 
@@ -86,13 +75,13 @@ export default function UpdateUser() {
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-3xl">
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 font-roboto">
-          Update the user account
+          Admin create a new account
         </h2>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-3xl">
         <div className="bg-white py-8 px-6 shadow sm:rounded-lg">
-          {error && (
+        {error && (
             <div className="mb-4 bg-red-50 border-l-4 border-red-500 p-4">
               <div className="flex">
                 <div className="flex-shrink-0">
@@ -132,8 +121,24 @@ export default function UpdateUser() {
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 font-roboto">
                     Email Address
                   </label>
-                  <input  id="email"  name="email"  type="email"  placeholder="example@email.com"
-                    value={formData.email}  onChange={handleChange}  className={`mt-1 ${inputStyle}`} />
+                  <input id="email" name="email" type="email" placeholder="example@email.com"
+                    value={formData.email} onChange={handleChange} className={`mt-1 ${inputStyle}`} />
+                </div>
+
+                <div>
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 font-roboto">
+                    Password
+                  </label>
+                  <input id="password" name="password" type="password" placeholder="Enter your password"
+                  value={formData.password} onChange={handleChange} className={`mt-1 ${inputStyle}`} />
+                </div>
+
+                <div>
+                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 font-roboto">
+                    Confirm Password
+                  </label>
+                  <input id="confirmPassword" name="confirmPassword" type="password" placeholder="Confirm your password"
+                  value={formData.confirmPassword} onChange={handleChange} className={`mt-1 ${inputStyle}`} />
                 </div>
               </div>
             </div>
@@ -148,24 +153,24 @@ export default function UpdateUser() {
                   <label htmlFor="streetAddress" className="block text-sm font-medium text-gray-700 font-roboto">
                     Street Address
                   </label>
-                  <input  id="streetAddress"  name="streetAddress"  type="text"  placeholder="123 Main St"
-                    value={formData.streetAddress}  onChange={handleChange}  className={`mt-1 ${inputStyle}`} />
+                  <input id="streetAddress" name="streetAddress" type="text" placeholder="123 Main St"
+                  value={formData.streetAddress} onChange={handleChange} className={`mt-1 ${inputStyle}`} />
                 </div>
 
                 <div>
                   <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 font-roboto">
                     Postal Code
                   </label>
-                  <input  id="postalCode"  name="postalCode"  type="text"  placeholder="A1B 2C3"
-                    value={formData.postalCode}  onChange={handleChange}  className={`mt-1 ${inputStyle}`} />
+                  <input id="postalCode" name="postalCode" type="text" placeholder="A1B 2C3"
+                    value={formData.postalCode} onChange={handleChange} className={`mt-1 ${inputStyle}`} />
                 </div>
 
                 <div className="md:col-span-2">
                   <label htmlFor="phone" className="block text-sm font-medium text-gray-700 font-roboto">
                     Phone Number
                   </label>
-                  <input  id="phone"  name="phone"  type="text"  placeholder="(123) 456-7890"
-                    value={formData.phone}  onChange={handleChange}  className={`mt-1 ${inputStyle}`} />
+                  <input id="phone" name="phone" type="text" placeholder="(123) 456-7890"
+                  value={formData.phone} onChange={handleChange} className={`mt-1 ${inputStyle}`} />
                 </div>
               </div>
             </div>
@@ -185,25 +190,25 @@ export default function UpdateUser() {
                   <span className="ml-2 text-gray-700 font-roboto">Admin</span>
                   </label>
               </div>
-              
+
               <h3 className="text-lg font-medium text-gray-900 font-roboto mb-4 pb-2 border-b border-gray-200">
                 Profile Details
               </h3>
               <div className="grid grid-cols-1 gap-6">
                 <div>
                   <label htmlFor="avatarUrl" className="block text-sm font-medium text-gray-700 font-roboto">
-                    Avatar URL (optional)
+                    Avatar URL (optional) {/* Might change to enable upload of image in the future. Need backend support for this first */}
                   </label>
-                  <input  id="avatarUrl"  name="avatarUrl"  type="text"  placeholder="https://example.com/avatar.jpg"
-                    value={formData.avatarUrl}  onChange={handleChange}  className={`mt-1 ${inputStyle}`} />
+                  <input id="avatarUrl" name="avatarUrl" type="text" placeholder="https://example.com/avatar.jpg"
+                  value={formData.avatarUrl} onChange={handleChange} className={`mt-1 ${inputStyle}`} />
                 </div>
 
                 <div>
                   <label htmlFor="bio" className="block text-sm font-medium text-gray-700 font-roboto">
-                    Short Bio (max 500 characters) (optional)
+                    Short Bio (max 500 characters)(optional)
                   </label>
-                  <textarea  id="bio"  name="bio"  rows="3"  placeholder="Tell us about yourself..."
-                    value={formData.bio}  onChange={handleChange}  maxLength="500"  className={`mt-1 ${inputStyle}`} />
+                  <textarea id="bio" name="bio" rows="3" placeholder="Tell us about yourself..."
+                  value={formData.bio} onChange={handleChange} maxLength="500" className={`mt-1 ${inputStyle}`} />
                 </div>
 
                 <div>
@@ -217,18 +222,18 @@ export default function UpdateUser() {
                     text-gray-800 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
                   >
                     <span>
-                      {formData.hobbies.length > 0
-                        ? formData.hobbies.join(", ")
+                      {formData.hobbies.length > 0 
+                        ? formData.hobbies.join(', ') 
                         : "Select your hobbies"}
                     </span>
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      width="18" height="18" viewBox="0 0 24 24" 
-                      fill="none" stroke="#1f2937" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="10"/>
-                      <line x1="12" y1="8" x2="12" y2="16"/>
-                      <line x1="8" y1="12" x2="16" y2="12"/>
-                    </svg>
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    width="18" height="18" viewBox="0 0 24 24" 
+                    fill="none" stroke="#1f2937" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="16"/>
+                    <line x1="8" y1="12" x2="16" y2="12"/>
+                  </svg>
                   </button>
                 </div>
               </div>
@@ -241,13 +246,14 @@ export default function UpdateUser() {
                 font-medium text-white bg-purple-700 hover:bg-purple-800 focus:outline-none 
                 focus:ring-2 focus:ring-offset-2 focus:ring-purple-600 font-roboto"
               >
-                Update Account
+                Create user
               </button>
             </div>
           </form>
         </div>
       </div>
 
+      {/* Hobbies Modal */}
       {showHobbiesModal && (
         <HobbiesModal
           selectedHobbies={formData.hobbies}
@@ -259,6 +265,7 @@ export default function UpdateUser() {
   )
 }
 
+// Styling for all of the input fields.
 const inputStyle = `
   appearance-none block w-full px-3 py-2
   bg-purple-50 border border-gray-300 text-gray-800
@@ -266,3 +273,5 @@ const inputStyle = `
   focus:outline-none focus:ring-purple-500 focus:border-purple-500
   sm:text-sm
 `
+
+export default CreateUser

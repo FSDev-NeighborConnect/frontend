@@ -30,26 +30,26 @@ const AdminDashboard = () => {
 
   // Function to fetch all users
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        // Fetch users from the backend
-        const response = await axios.get("/api/admin/all/users", { withCredentials: true })
-        setUsers(response.data)
-        setUserRole("admin") // Assumes admin role since that is what is allowed when fetching users. Temporary fix for now since load times will make this solution bad.
-      } catch (err) {
-        if (err.response?.status === 403) {
-          setError("Admin access required!")
-          setIsAuthenticated(false)
-        } else {
-          setError("Error fetching users.!")
-        }
-      } finally {
-        setIsLoading(false) // Done loading
-      }
-    }
-
     fetchUsers()
   }, [])
+
+  const fetchUsers = async () => {
+  try {
+    // Fetch users from the backend
+    const response = await axios.get("/api/admin/all/users", { withCredentials: true })
+    setUsers(response.data)
+    setUserRole("admin") // Assumes admin role since that is what is allowed when fetching users. Temporary fix for now since load times will make this solution bad.
+  } catch (err) {
+    if (err.response?.status === 403) {
+      setError("Admin access required!")
+      setIsAuthenticated(false)
+    } else {
+      setError("Error fetching users!")
+    }
+  } finally {
+    setIsLoading(false) // Done loading
+  }
+}
 
   // Handle user update
   const handleUpdate = (user) => {
@@ -115,6 +115,19 @@ const AdminDashboard = () => {
         )}
 
         <div className="flex justify-center space-x-4 mb-6">
+          <button
+            onClick={fetchUsers}
+            className="px-4 py-2 rounded bg-gray-200 text-white hover:bg-gray-"
+          >
+            <svg
+            className="text-color-gray-800" 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="24" height="24" viewBox="0 0 24 24" 
+            fill="none" stroke="#000000" stroke-width="2" 
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+          </button>
+          
           <button
             onClick={() => setActiveTab("members")}
             className={`px-4 py-2 rounded ${activeTab === "members" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-200 text-gray-800 hover:bg-gray-300"}`}

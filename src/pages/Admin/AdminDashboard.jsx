@@ -18,6 +18,16 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("members") // "members" or "admins"
   const [selectedUser, setSelectedUser] = useState(null)
 
+  const [groupByPostalCode, setGroupByPostalCode] = useState(false)
+
+  // Group users by postal code
+  const groupedByPostalCode = memberUsers.reduce((acc, user) => {
+    const postal = user.postalCode || "Unknown"
+    if (!acc[postal]) acc[postal] = []
+    acc[postal].push(user)
+    return acc
+  }, {})
+
   // Function to fetch all users
   useEffect(() => {
     const fetchUsers = async () => {
@@ -104,7 +114,7 @@ const AdminDashboard = () => {
           </div>
         )}
 
-        <div className="flex space-x-4 mb-6">
+        <div className="flex justify-center space-x-4 mb-6">
           <button
             onClick={() => setActiveTab("members")}
             className={`px-4 py-2 rounded ${activeTab === "members" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-200 text-gray-800 hover:bg-gray-300"}`}
@@ -118,6 +128,12 @@ const AdminDashboard = () => {
             Admin Users
           </button>
           <button
+            onClick={() => setGroupByPostalCode(prev => !prev)}
+            className={`px-4 py-2 rounded ${groupByPostalCode ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-200 text-gray-800 hover:bg-gray-300"}`}
+          >
+            {groupByPostalCode ? "Unsort by Postal Code" : "Sort by Postal Code"}
+          </button>
+          <button
             onClick={() => navigate("/admin/create-user")}
             className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
           >
@@ -128,7 +144,7 @@ const AdminDashboard = () => {
         <div className="overflow-hidden bg-gray-50 shadow sm:rounded-lg">
           {activeTab === "admins" ? (
             <div>
-              <h2 className="text-2xl text-center font-semibold mb-2 mt-2 text-gray-700">Admin Users</h2>
+              <h2 className="pt-4 pb-2 text-2xl text-center font-semibold mb-2 mt-2 text-gray-700">Admin Users</h2>
               {adminUsers.length === 0 ? (
                 <p className="text-gray-500">No admin users found.</p>
               ) : (
@@ -160,9 +176,39 @@ const AdminDashboard = () => {
             </div>
           ) : (
             <div>
-              <h2 className="text-2xl text-center font-semibold mb-2 mt-2 text-gray-700">Member Users</h2>
+              <h2 className="pt-4 pb-2 text-2xl text-center font-semibold mb-2 mt-2 text-gray-700">Member Users</h2>
               {memberUsers.length === 0 ? (
                 <p className="text-gray-500">No member users found.</p>
+              ) : groupByPostalCode ? (
+                Object.entries(groupedByPostalCode).map(([postalCode, users]) => (
+                  <div key={postalCode} className="mb-6">
+                    <h3 className="ml-6 text-lg font-semibold text-gray-700">Postal Code: {postalCode}</h3>
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User ID</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider flex justify-center">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {users.map((user) => (
+                          <tr key={user._id}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.name}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{user.email}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                              <div className="flex justify-center">
+                                <button onClick={() => handleUpdate(user)} className="mr-4 text-blue-600 hover:text-blue-900">Update</button>
+                                <button onClick={() => handleDelete(user._id)} className="mr-4 text-red-600 hover:text-red-900">Delete</button>
+                                <button onClick={() => setSelectedUser(user)} className="mr-4 text-green-600 hover:text-green-900">View</button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ))
               ) : (
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
@@ -178,10 +224,10 @@ const AdminDashboard = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.name}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{user.email}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <div className= "flex justify-center">
+                          <div className="flex justify-center">
                             <button onClick={() => handleUpdate(user)} className="mr-4 text-blue-600 hover:text-blue-900">Update</button>
                             <button onClick={() => handleDelete(user._id)} className="mr-4 text-red-600 hover:text-red-900">Delete</button>
-                            <button onClick={() => setSelectedUser(user)}className="mr-4 text-green-600 hover:text-green-900">View</button>
+                            <button onClick={() => setSelectedUser(user)} className="mr-4 text-green-600 hover:text-green-900">View</button>
                           </div>
                         </td>
                       </tr>

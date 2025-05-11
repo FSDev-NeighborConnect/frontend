@@ -1,9 +1,9 @@
 import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import axios from "axios"
-import { useCsrf } from "../context/CsrfContext"
+import { useCsrf } from "../../context/CsrfContext"
 
-const Login = () => {
+const AdminLogin = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: ""
@@ -24,22 +24,22 @@ const Login = () => {
   const validateForm = () => {
     const trimmedEmail = email.trim()
     const trimmedPassword = password.trim()
-  
+
     if (!trimmedEmail) {
       setError("Email is required")
       return false
     }
-  
+
     if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(trimmedEmail)) {
       setError("Please enter a valid email address")
       return false
     }
-  
+
     if (!trimmedPassword) {
       setError("Password is required")
       return false
     }
-  
+
     if (trimmedPassword.length < 8) {
       setError("Password must be at least 8 characters")
       return false
@@ -49,7 +49,7 @@ const Login = () => {
       setError("Password must contain at least one letter")
       return false
     }
-    
+
     if (!/\d/.test(trimmedPassword)) {
       setError("Password must contain at least one number")
       return false
@@ -59,7 +59,7 @@ const Login = () => {
       setError("Password must contain at least one special character")
       return false
     }
-  
+
     return true
   }
 
@@ -74,13 +74,13 @@ const Login = () => {
 
     try {
       const res = await axios.post(
-        "/api/login",
+        "/api/admin/login",
         { email: email.trim(), password },
         { withCredentials: true }
       )
       setCsrfToken(res.data.csrfToken) // Storing token in React state
 
-      navigate("/") // Add correct navigation when the page is added to the router.
+      navigate("/admin/dashboard")
     } catch (err) {
       setError(err.response?.data?.message || "Login failed")
     }
@@ -90,7 +90,7 @@ const Login = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 font-roboto">
-          Sign in to your account
+          Admin Sign In
         </h2>
       </div>
 
@@ -194,40 +194,10 @@ const Login = () => {
               </button>
             </div>
           </form>
-
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500 font-roboto">
-                  Or
-                </span>
-              </div>
-            </div>
-
-            <div className="mt-6 grid grid-cols-1 gap-3">
-              <div>
-                <Link
-                  to="/register"
-                  className="
-                    w-full flex justify-center py-2 px-4
-                    border border-gray-300 rounded-md shadow-sm
-                    text-sm font-medium text-gray-700
-                    bg-white hover:bg-gray-50
-                    font-roboto
-                  "
-                >
-                  Create a new account
-                </Link>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
   )
 }
 
-export default Login
+export default AdminLogin

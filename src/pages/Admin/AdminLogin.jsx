@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
+import { useCsrf } from '../../context/CsrfContext';
 
 const AdminLogin = () => {
   const [formData, setFormData] = useState({
@@ -8,6 +9,7 @@ const AdminLogin = () => {
     password: ""
   })
   const { email, password } = formData
+  const { setCsrfToken } = useCsrf()
 
   const [error, setError] = useState("")
   const navigate = useNavigate()
@@ -71,11 +73,13 @@ const AdminLogin = () => {
     setError("")
 
     try {
-      await axios.post(
+      const res = await axios.post(
         "/api/admin/login",
         { email: email.trim(), password },
         { withCredentials: true }
       )
+      setCsrfToken(res.data.csrfToken); // Storing token in React state
+
       navigate("/admin/dashboard")
     } catch (err) {
       setError(err.response?.data?.message || "Login failed")

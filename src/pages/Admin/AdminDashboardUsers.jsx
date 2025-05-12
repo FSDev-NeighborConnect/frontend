@@ -120,10 +120,10 @@ const AdminDashboardUsers = () => {
             <div className="flex">
               <div className="flex-shrink-0">
                 <svg
-                  className="h-5 w-5 text-red-500"
+                  className="h-5 w-5 text-red-500 stroke-red-500 font-roboto"
                   xmlns="http://www.w3.org/2000/svg"
                   width="24" height="24" viewBox="0 0 24 24"
-                  fill="none" strokeWidth="2"strokeLinecap="round"
+                  fill="none" strokeWidth="2" strokeLinecap="round"
                   strokeLinejoin="round">
                   <circle cx="12" cy="12" r="10" />
                   <line x1="15" y1="9" x2="9" y2="15" />

@@ -4,8 +4,8 @@ const UserDetailModal = ({ user, onClose }) => {
   if (!user) return null
 
   return (
-    <div className="fixed z-10 inset-0">
-      <div className="flex items-center justify-center min-h-screen px-4 text-center sm:block sm:p-0">
+    <div className="fixed z-10 inset-0 overflow-y-auto">
+      <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         
         {/* Background overlay */}
         <div 
@@ -25,14 +25,18 @@ const UserDetailModal = ({ user, onClose }) => {
         <div className="
           inline-block align-middle bg-white rounded-lg 
           text-left overflow-hidden shadow-xl transform transition-all 
-          sm:my-8 sm:max-w-lg sm:w-full
+          sm:my-8 sm:max-w-lg sm:w-full max-h-[80vh] flex flex-col
         ">
           {/* Modal Header */}
           <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <h3 className="text-lg leading-6 font-medium text-gray-900 font-roboto">
               User Information
             </h3>
-            <div className="mt-4 space-y-2 text-sm text-gray-700">
+          </div>
+
+          {/* Scrollable content */}
+          <div className="px-4 overflow-y-auto flex-grow">
+            <div className="mt-2 space-y-2 text-sm text-gray-700">
               <p><strong>Name:</strong> {user.name}</p>
               <p><strong>Email:</strong> {user.email}</p>
               <p><strong>Street Address:</strong> {user.streetAddress}</p>

@@ -9,6 +9,7 @@ import UserProfile from './pages/userprofile.jsx'
 import EditProfile from './pages/editprofile.jsx'
 import AdminLogin from './pages/Admin/AdminLogin.jsx'
 import AdminDashboard from './pages/Admin/AdminDashboard.jsx'
+import AdminDashboardUsers from './pages/Admin/AdminDashboardUsers.jsx'
 import UpdateUser from './pages/Admin/UpdateUser.jsx'
 import CreateUser from './pages/Admin/AdminCreateUser.jsx'
 
@@ -25,6 +26,7 @@ function App() {
             <Route path="/edit-profile" element={<EditProfile />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/dashboard-users" element={<AdminDashboardUsers />} />
             <Route path="/admin/update-user" element={<UpdateUser />} />
             <Route path="/admin/create-user" element={<CreateUser />} />
             {/* Catch-all route that redirects to home */}

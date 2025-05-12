@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import axios from "axios"
 import { useCsrf } from "../context/CsrfContext"
+import { useUser } from "../context/UserContext"
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -10,6 +11,7 @@ const Login = () => {
   })
   const { email, password } = formData
   const { setCsrfToken } = useCsrf()
+  const { setUserId } = useUser()
 
   const [error, setError] = useState("")
   const navigate = useNavigate()
@@ -78,7 +80,9 @@ const Login = () => {
         { email: email.trim(), password },
         { withCredentials: true }
       )
-      setCsrfToken(res.data.csrfToken) // Storing token in React state
+      // Storing csrf token and user id in React context
+      setCsrfToken(res.data.csrfToken)
+      setUserId(res.data.user.id)
 
       navigate("/") // Add correct navigation when the page is added to the router.
     } catch (err) {

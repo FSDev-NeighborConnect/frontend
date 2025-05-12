@@ -7,20 +7,77 @@ import UserDetailModal from "./UserDetailModal.jsx"
 const AdminDashboardUsers = () => {
   const [users, setUsers] = useState([])
   const [error, setError] = useState(null)
-  const [isAuthenticated, setIsAuthenticated] = useState(true) // Track authentication status
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState("members")
+  const [selectedUser, setSelectedUser] = useState(null)
+  const [groupByPostalCode, setGroupByPostalCode] = useState(false)
   const { csrfToken } = useCsrf()
-  const [userRole, setUserRole] = useState(null) // Track user role (admin or not)
-  const [isLoading, setIsLoading] = useState(true) // Needed to let the temporary solution for setting the user role happen before checking if user is admin or not
   const navigate = useNavigate()
 
-  const adminUsers = users.filter(user => user.role === "admin")
-  const memberUsers = users.filter(user => user.role === "member")
-  const [activeTab, setActiveTab] = useState("members") // "members" or "admins"
-  const [selectedUser, setSelectedUser] = useState(null)
+  // Verify admin status
+  useEffect(() => {
+    const verifyAdmin = async () => {
+      try {
+        const response = await axios.get("/api/users/currentUser", {
+          withCredentials: true,
+          headers: { "X-CSRF-Token": csrfToken }
+        })
+        
+        if (response.data.role === "admin") {
+          setIsAdmin(true)
+          fetchUsers() // Only fetch users if admin
+        } else {
+          navigate("/admin/login")
+        }
+      } catch (error) {
+        console.error("Admin verification failed:", error)
+        navigate("/admin/login")
+      }
+    }
 
-  const [groupByPostalCode, setGroupByPostalCode] = useState(false)
+    verifyAdmin()
+  }, [navigate, csrfToken])
+
+  // Fetch users from the backend
+  const fetchUsers = async () => {
+    try {
+      const response = await axios.get("/api/admin/all/users", { 
+        withCredentials: true,
+        headers: { "X-CSRF-Token": csrfToken }
+      })
+      setUsers(response.data)
+    } catch (err) {
+      setError(err.response?.status === 403 
+        ? "Admin access required!" 
+        : "Error fetching users!")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Handle user update
+  const handleUpdate = (user) => {
+    navigate("/admin/update-user", { state: { user } })
+  }
+
+  // Handle user delete
+  const handleDelete = async (userId) => {
+    try {
+      await axios.delete(`/api/admin/users/${userId}`, { 
+        withCredentials: true, 
+        headers: { "X-CSRF-Token": csrfToken } 
+      })
+      setUsers(users.filter((user) => user._id !== userId))
+    } catch (err) {
+      alert("Failed to delete user!")
+    }
+  }
 
   // Group users by postal code
+  const memberUsers = users.filter(user => user.role === "member")
+  const adminUsers = users.filter(user => user.role === "admin")
+  
   const groupedByPostalCode = memberUsers.reduce((acc, user) => {
     const postal = user.postalCode || "Unknown"
     if (!acc[postal]) acc[postal] = []
@@ -28,55 +85,13 @@ const AdminDashboardUsers = () => {
     return acc
   }, {})
 
-  // Function to fetch all users
-  useEffect(() => {
-    fetchUsers()
-  }, [])
-
-  const fetchUsers = async () => {
-  try {
-    // Fetch users from the backend
-    const response = await axios.get("/api/admin/all/users", { withCredentials: true })
-    setUsers(response.data)
-    setUserRole("admin") // Assumes admin role since that is what is allowed when fetching users. Temporary fix for now since load times will make this solution bad.
-  } catch (err) {
-    if (err.response?.status === 403) {
-      setError("Admin access required!")
-      setIsAuthenticated(false)
-    } else {
-      setError("Error fetching users!")
-    }
-  } finally {
-    setIsLoading(false) // Done loading
-  }
-}
-
-  // Handle user update
-  const handleUpdate = (user) => {
-    // Navigate to the UpdateUser page, passing user data as state
-    navigate("/admin/update-user", { state: { user } })
-  }
-
-  // Handle user delete
-  const handleDelete = async (userId) => {
-    try {
-      await axios.delete(`/api/admin/users/${userId}`, { withCredentials: true, headers: {"X-CSRF-Token": csrfToken} })
-      // Refresh the list of users
-      setUsers(users.filter((user) => user._id !== userId))
-    } catch (err) {
-      alert("Failed to delete user!")
-    }
-  }
-
-  // Delay rendering until we know the user role
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
-
-  // Validate if the user is authenticated and an admin
-  if (!isAuthenticated || userRole !== "admin") {
-    navigate("/login")
-    return 
+  // Loading state
+  if (!isAdmin || isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-700"></div>
+      </div>
+    )
   }
 
   return (
@@ -93,8 +108,8 @@ const AdminDashboardUsers = () => {
               className="h-5 w-5 mr-4 text-color-gray-800"
               xmlns="http://www.w3.org/2000/svg"
               width="24" height="24" viewBox="0 0 24 24"
-              fill="none" stroke="#000000" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
+              fill="none" stroke="#000000" strokeWidth="2"
+              strokeLinecap="round" strokeLinejoin="round">
               <path d="M10 16l-6-6 6-6"/><path d="M20 21v-7a4 4 0 0 0-4-4H5"/></svg>
             Back to Dashboard
           </button>
@@ -125,15 +140,16 @@ const AdminDashboardUsers = () => {
         <div className="flex justify-center space-x-4 mb-6">
           <button
             onClick={fetchUsers}
-            className="px-4 py-2 rounded bg-gray-200 text-white hover:bg-gray-"
+            className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
           >
             <svg
               className="text-color-gray-800" 
               xmlns="http://www.w3.org/2000/svg" 
               width="24" height="24" viewBox="0 0 24 24" 
-              fill="none" stroke="#000000" stroke-width="2" 
-              stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+              fill="none" stroke="#000000" strokeWidth="2" 
+              strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+            </svg>
           </button>
           
           <button

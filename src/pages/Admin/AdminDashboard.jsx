@@ -1,9 +1,41 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
+import axios from "axios"
+import { useCsrf } from "../../context/CsrfContext"
 
 const AdminMainDashboard = () => {
   const navigate = useNavigate()
+  const { csrfToken } = useCsrf()
+  const [isAdmin, setIsAdmin] = useState(false)
 
+  // Verify admin status
+  useEffect(() => {
+    const verifyAdmin = async () => {
+      try {
+        const response = await axios.get("/api/users/currentUser", {
+          withCredentials: true,
+          headers: { "X-CSRF-Token": csrfToken }
+        });
+        
+        if (response.data.role === "admin") {
+          setIsAdmin(true)
+        } else {
+          navigate("/admin/login")
+        }
+      } catch (error) {
+        console.error("Admin verification failed:", error)
+        navigate("/admin/login")
+      }
+    }
+
+    verifyAdmin()
+  }, [navigate, csrfToken])
+
+  // If not admin (will redirect automatically)
+  if (!isAdmin) {
+    return null
+  }
+  
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
       <div className="text-center mb-12">

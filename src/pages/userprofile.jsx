@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
+import api from "../axios"
 import {
   CalendarDays,
   MapPin,
@@ -17,8 +18,9 @@ import {
   Users,
   Calendar,
   Grid3X3,
+  AlertCircle,
 } from "lucide-react"
-import "./userprofile.css"
+import "./userProfile.css"
 
 const buttonBase = "flex items-center gap-1 font-medium text-sm"
 const primaryBtn = `${buttonBase} bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-md`
@@ -26,79 +28,43 @@ const secondaryBtn = `${buttonBase} bg-white border border-gray-300 text-gray-70
 
 function UserProfile() {
   const navigate = useNavigate()
+  const { userId } = useParams()
   const [user, setUser] = useState(null)
+  const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [activeTab, setActiveTab] = useState("posts")
 
-  // Mock user data for demo purposes
-const mockUser = {
-  name: "Jane Doe",
-  email: "jane@example.com",
-  streetAddress: "123 Maple Street",
-  postalCode: "90210",
-  phone: "123-456-7890",
-  avatarUrl: "https://i.pravatar.cc/150?img=3",
-  coverUrl: "https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=1200&h=300&auto=format&fit=crop",
-  bio: "Friendly neighbor who loves gardening and community events. Always looking to connect with people who share similar interests in our neighborhood.",
-  hobbies: ["Gardening", "Cooking", "Reading", "Photography", "Hiking"],
-  role: "Member",
-  joinDate: "January 2023",
-  posts: [
-    {
-      id: 1,
-      title: "Need help setting up garden bed",
-      category: "Gardening",
-      content:
-        "I'm planning to build a raised garden bed this weekend. Anyone with experience who could lend a hand for an hour or two?",
-      likes: 12,
-      comments: 5,
-      date: "2 days ago",
-    },
-      {
-        id: 2,
-        title: "Offering grocery pickup on Saturday",
-        category: "Errands",
-        content:
-          "I'm heading to Trader Joe's on Saturday morning. Happy to pick up items for elderly or busy neighbors. Just let me know!",
-        likes: 24,
-        comments: 8,
-        date: "1 week ago",
-      },
-      {
-        id: 3,
-        title: "Book club meeting this Thursday",
-        category: "Reading",
-        content:
-          'Our neighborhood book club is meeting this Thursday at 7pm in the community center. We\'re discussing "The Dutch House" by Ann Patchett. All welcome!',
-        likes: 18,
-        comments: 12,
-        date: "2 weeks ago",
-      },
-    ],
-    friends: [
-      { id: 1, name: "John Smith", avatarUrl: "https://i.pravatar.cc/150?img=12" },
-      { id: 2, name: "Sarah Johnson", avatarUrl: "https://i.pravatar.cc/150?img=23" },
-      { id: 3, name: "Michael Brown", avatarUrl: "https://i.pravatar.cc/150?img=45" },
-      { id: 4, name: "Emily Davis", avatarUrl: "https://i.pravatar.cc/150?img=32" },
-      { id: 5, name: "Robert Wilson", avatarUrl: "https://i.pravatar.cc/150?img=54" },
-      { id: 6, name: "Lisa Thompson", avatarUrl: "https://i.pravatar.cc/150?img=25" },
-    ],
-    events: [
-      { id: 1, title: "Community Garden Day", date: "May 15, 2023" },
-      { id: 2, title: "Neighborhood Cleanup", date: "June 3, 2023" },
-      { id: 3, title: "Summer Block Party", date: "July 8, 2023" },
-    ],
-  }
+  // Get the current user ID 
+  const currentUserId = userId 
 
   useEffect(() => {
-    // Simulate loading user data
-    // In a real app, you would fetch data from your backend here
-    setTimeout(() => {
-      setUser(mockUser)
-      setLoading(false)
-    }, 500)
-  }, [])
+    // Function to fetch user data and posts
+    const fetchUserData = async () => {
+      setLoading(true)
+      setError(null)
 
+      try {
+        // Fetch user data 
+        const userResponse = await api.get(`/user/${currentUserId}`)
+        const userData = userResponse.data
+        setUser(userData)
+
+        // Fetch user's posts
+        const postsResponse = await api.get(`/posts/user/${currentUserId}`)
+        setPosts(postsResponse.data)
+      } catch (err) {
+        console.error("Error fetching user data:", err)
+        setError(err.response?.data?.message || "Failed to load data")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchUserData()
+  }, [currentUserId])
+
+  // Check for loading state
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -107,63 +73,79 @@ const mockUser = {
     )
   }
 
-  const {
-    avatarUrl,
-    coverUrl,
-    name,
-    role,
-    streetAddress,
-    postalCode,
-    email,
-    phone,
-    joinDate,
-    bio,
-    hobbies,
-    posts,
-    friends,
-    events,
-  } = user
-  const avatar = avatarUrl || "/placeholder.svg"
-  const cover = coverUrl || "/placeholder.svg"
+  // Check for errors
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-4">
+        <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Something went wrong</h2>
+        <p className="text-gray-600 mb-4">{error}</p>
+        <button className={primaryBtn} onClick={() => window.location.reload()}>
+          Try Again
+        </button>
+      </div>
+    )
+  }
+
+  if (!user) return null
+
+  // Extract user data
+  const { name, email, streetAddress, postalCode, phone, bio, hobbies, role, createdAt, avatar, cover } = user
+
+  // Format avatar and cover URLs 
+  const avatarUrl = avatar?.url 
+  const coverUrl = cover?.url
+
+  // Format join date
+  const joinDate = new Date(createdAt).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+  })
 
   const renderPosts = () => (
     <div className="space-y-4">
-      {posts.map((post) => (
-        <div key={post.id} className="bg-white rounded-lg shadow-sm">
-          <div className="px-6 pt-4 pb-2 flex justify-between">
-            <div>
-              <h3 className="text-lg font-bold text-gray-900">{post.title}</h3>
-              <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
-                <span className="bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full font-medium">
-                  {post.category}
-                </span>
-                <span>{post.date}</span>
+      {posts && posts.length > 0 ? (
+        posts.map((post) => (
+          <div key={post._id} className="bg-white rounded-lg shadow-sm">
+            <div className="px-6 pt-4 pb-2 flex justify-between">
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">{post.title}</h3>
+                <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
+                  <span className="bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full font-medium">
+                    {post.category || "General"}
+                  </span>
+                  <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+                </div>
               </div>
-            </div>
-            <button className="text-gray-400 hover:text-gray-700">
-              <MoreHorizontal className="h-5 w-5" />
-            </button>
-          </div>
-          <div className="px-6 py-4 text-gray-700">{post.content}</div>
-          <div className="px-6 py-3 border-t flex justify-between text-sm text-gray-600">
-            <div className="flex gap-4">
-              <button className="flex items-center gap-1">
-                <ThumbsUp className="h-4 w-4" />
-                {post.likes}
-              </button>
-              <button className="flex items-center gap-1">
-                <MessageSquare className="h-4 w-4" />
-                {post.comments}
+              <button className="text-gray-400 hover:text-gray-700">
+                <MoreHorizontal className="h-5 w-5" />
               </button>
             </div>
-            <button className="flex items-center gap-1">
-              <Bookmark className="h-4 w-4" />
-              Save
-            </button>
+            <div className="px-6 py-4 text-gray-700">{post.content}</div>
+            <div className="px-6 py-3 border-t flex justify-between text-sm text-gray-600">
+              <div className="flex gap-4">
+                <button className="flex items-center gap-1">
+                  <ThumbsUp className="h-4 w-4" />
+                  {post.likes?.length || 0}
+                </button>
+                <button className="flex items-center gap-1">
+                  <MessageSquare className="h-4 w-4" />
+                  {post.comments?.length || 0}
+                </button>
+              </div>
+              <button className="flex items-center gap-1">
+                <Bookmark className="h-4 w-4" />
+                Save
+              </button>
+            </div>
           </div>
+        ))
+      ) : (
+        <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+          <p className="text-gray-500 mb-4">No posts yet. Create your first post!</p>
         </div>
-      ))}
-      <button className={secondaryBtn + " w-full justify-center"}>
+      )}
+      <button className={secondaryBtn + " w-full justify-center"} onClick={() => navigate("/create-post")}>
         <Plus className="h-4 w-4 mr-2" /> Create New Post
       </button>
     </div>
@@ -197,7 +179,7 @@ const mockUser = {
         </button>
         <p className="mt-2 text-gray-500 font-medium">Find Neighbors</p>
       </div>
-    </div>
+          </div>
   )
 
   const renderEvents = () => (
@@ -216,16 +198,16 @@ const mockUser = {
         </div>
       ))}
       <button className={secondaryBtn + " w-full justify-center"}>
-        <Plus className="h-4 w-4 mr-2" /> Create New Event
-      </button>
+        <Plus className="h-4 w-4 mr-2" /> Create New Event </button>
     </div>
+    
   )
 
   return (
     <div className="bg-gray-50 min-h-screen pb-10">
       {/* Cover Image */}
       <div className="relative h-[300px] bg-gradient-to-r from-purple-700 to-purple-900 overflow-hidden">
-        <img src={cover || "/placeholder.svg"} className="w-full h-full object-cover opacity-30" alt="Cover" />
+        <img src={coverUrl || "/placeholder.svg"} className="w-full h-full object-cover opacity-30" alt="Cover" />
         <div className="absolute top-4 right-4 flex gap-2">
           <button className={secondaryBtn} onClick={() => navigate("/edit-profile")}>
             <Edit className="h-4 w-4" />
@@ -246,11 +228,14 @@ const mockUser = {
         <div className="flex flex-col md:flex-row items-start gap-6">
           <div className="relative">
             <img
-              src={avatar || "/placeholder.svg"}
+              src={avatarUrl || "/placeholder.svg"}
               className="w-[180px] h-[180px] border-4 border-white shadow-lg rounded-full object-cover"
               alt={name}
             />
-            <button className="absolute bottom-2 right-2 p-2 rounded-full bg-purple-700 text-white hover:bg-purple-800">
+            <button
+              className="absolute bottom-2 right-2 p-2 rounded-full bg-purple-700 text-white hover:bg-purple-800"
+              onClick={() => navigate("/edit-profile")}
+            >
               <Edit className="h-4 w-4" />
             </button>
           </div>
@@ -277,13 +262,20 @@ const mockUser = {
 
         {/* Bio and Details */}
         <div className="mt-6 bg-white p-6 rounded-lg shadow-sm">
-          <p className="text-gray-700">{bio}</p>
+          <p className="text-gray-700">{bio || "No bio provided yet."}</p>
           <div className="mt-4 flex flex-wrap gap-2">
-            {hobbies.map((hobby, i) => (
-              <span key={i} className="px-2.5 py-0.5 bg-gray-100 rounded-full text-sm text-gray-800 hover:bg-gray-200">
-                {hobby}
-              </span>
-            ))}
+            {hobbies && hobbies.length > 0 ? (
+              hobbies.map((hobby, i) => (
+                <span
+                  key={i}
+                  className="px-2.5 py-0.5 bg-gray-100 rounded-full text-sm text-gray-800 hover:bg-gray-200"
+                >
+                  {hobby}
+                </span>
+              ))
+            ) : (
+              <span className="text-gray-500 text-sm">No hobbies added yet.</span>
+            )}
           </div>
           <div className="mt-6 flex flex-wrap gap-6 text-sm text-gray-500">
             <div className="flex items-center gap-1">

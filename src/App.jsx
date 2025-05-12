@@ -39,7 +39,6 @@ function Home() {
           <div className="button-group">
             <button className="btn" onClick={() => navigate('/newuser')}>New User</button>
             <button className="btn" onClick={() => navigate('/login')}>Log In</button>
-            <button className="btn" onClick={() => navigate('/profile')}>Profile</button>
           </div>
         </div>
 

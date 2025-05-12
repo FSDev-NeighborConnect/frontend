@@ -34,12 +34,7 @@ export default function Home() {
               >
                 Log In
               </button>
-              <button 
-                className="px-5 py-3 bg-[#7e57c2] hover:bg-[#6d4baf] text-white rounded-md transition-colors"
-                onClick={() => navigate('/profile')}
-              >
-                Profile
-              </button>
+              
             </div>
           </div>
 

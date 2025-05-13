@@ -1,22 +1,28 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useNavigate, useParams } from "react-router-dom"
-import api from "../axios"
+import { useNavigate } from "react-router-dom"
+import axios from "axios"
+import { useUser } from "../context/UserContext"
+import { useCsrf } from "../context/CsrfContext"
 import { User, Mail, Phone, MapPin, Home, ImageIcon, X, Save, ArrowLeft, Plus, AlertCircle } from "lucide-react"
 import "./userProfile.css"
+import HobbiesModal from './NewUser/HobbiesModal'
+
 
 function EditProfile() {
   const navigate = useNavigate()
-  const { userId } = useParams()
+  const { userId: contextUserId } = useUser()
+  const { csrfToken } = useCsrf()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [errors, setErrors] = useState({})
   const [apiError, setApiError] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
+  const [showHobbiesModal, setShowHobbiesModal] = useState(false)
 
-  // Get the current user ID 
-  const currentUserId = userId 
+  // Get userId from context or localStorage
+  const userId = contextUserId || localStorage.getItem("userId")
 
   // Form state
   const [formData, setFormData] = useState({
@@ -45,8 +51,16 @@ function EditProfile() {
       setApiError(null)
 
       try {
-        // Fetch user data from API
-        const response = await api.get(`/user/${currentUserId}`)
+        if (!userId) {
+          throw new Error("User ID not found. Please log in again.")
+        }
+
+        // Fetch user data from API with CSRF token
+        const response = await axios.get(`/api/users/user/${userId}`, {
+          withCredentials: true,
+          headers: { "X-CSRF-Token": csrfToken },
+        })
+
         const userData = response.data
 
         // Update form data with user data
@@ -71,8 +85,13 @@ function EditProfile() {
       }
     }
 
-    fetchUserData()
-  }, [currentUserId])
+    if (userId) {
+      fetchUserData()
+    } else {
+      setLoading(false)
+      setApiError("User ID not found. Please log in again.")
+    }
+  }, [userId, csrfToken])
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -114,14 +133,20 @@ function EditProfile() {
     }
   }
 
-  const addHobby = () => {
-    if (newHobby.trim() && !formData.hobbies.includes(newHobby.trim())) {
-      setFormData({
-        ...formData,
-        hobbies: [...formData.hobbies, newHobby.trim()],
-      })
-      setNewHobby("")
-    }
+  const toggleHobby = (hobby) => {
+    setFormData(prev => {
+      if (prev.hobbies.includes(hobby)) {
+        return {
+          ...prev,
+          hobbies: prev.hobbies.filter(h => h !== hobby)
+        }
+      } else {
+        return {
+          ...prev,
+          hobbies: [...prev.hobbies, hobby]
+        }
+      }
+    })
   }
 
   const removeHobby = (hobbyToRemove) => {
@@ -156,42 +181,91 @@ function EditProfile() {
     setSuccessMessage(null)
 
     try {
-      // Prepare data for API
-      const userData = {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        streetAddress: formData.streetAddress,
-        postalCode: formData.postalCode,
-        bio: formData.bio,
-        hobbies: formData.hobbies,
+      if (!userId) {
+        throw new Error("User ID not found. Please log in again.")
       }
 
-      // Update user profile via API
-      await api.put(`/${currentUserId}`, userData)
+      // Log the data being sent for debugging
+      console.log("Sending user data:", formData)
+
+      // Try multiple endpoints for updating user profile
+      let profileUpdated = false
+
+      try {
+        // First try /api/users/update/:id
+        await axios.put(`/api/users/${userId}`, formData, {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-Token": csrfToken,
+          },
+        })
+        console.log("User profile updated successfully with /api/users/:id endpoint")
+        profileUpdated = true
+      } catch (updateError) {
+        console.error("Error with first update endpoint:", updateError)
+
+        try {
+          // Try alternative endpoint
+          await axios.put(`/api/users/update/${userId}`, formData, {
+            withCredentials: true,
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-Token": csrfToken,
+            },
+          })
+          console.log("User profile updated successfully with /api/users/update endpoint")
+          profileUpdated = true
+        } catch (altUpdateError) {
+          console.error("Error with second update endpoint:", altUpdateError)
+          throw new Error("Failed to update profile information")
+        }
+      }
 
       // Handle avatar upload if changed
       if (avatarFile) {
+        console.log("Uploading avatar file:", avatarFile.name)
+
         const avatarFormData = new FormData()
         avatarFormData.append("avatar", avatarFile)
 
-        await api.post("/upload-avatar", avatarFormData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        })
+        // Based on the backend code, the correct endpoint is /api/users/upload-avatar
+        try {
+          const avatarResponse = await axios.post(`/api/users/upload-avatar`, avatarFormData, {
+            withCredentials: true,
+            headers: {
+              "Content-Type": "multipart/form-data",
+              "X-CSRF-Token": csrfToken,
+            },
+          })
+          console.log("Avatar upload response:", avatarResponse.data)
+        } catch (avatarError) {
+          console.error("Error uploading avatar:", avatarError)
+          throw new Error("Failed to upload avatar image")
+        }
       }
 
       // Handle cover upload if changed
       if (coverFile) {
+        console.log("Uploading cover file:", coverFile.name)
+
         const coverFormData = new FormData()
         coverFormData.append("cover", coverFile)
 
-        await api.post("/upload-cover", coverFormData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        })
+        // Based on the backend code, the correct endpoint is /api/users/upload-cover
+        try {
+          const coverResponse = await axios.post(`/api/users/upload-cover`, coverFormData, {
+            withCredentials: true,
+            headers: {
+              "Content-Type": "multipart/form-data",
+              "X-CSRF-Token": csrfToken,
+            },
+          })
+          console.log("Cover upload response:", coverResponse.data)
+        } catch (coverError) {
+          console.error("Error uploading cover:", coverError)
+          throw new Error("Failed to upload cover image")
+        }
       }
 
       // Show success message
@@ -205,7 +279,7 @@ function EditProfile() {
       setTimeout(() => navigate("/profile"), 2000)
     } catch (err) {
       console.error("Error updating profile:", err)
-      setApiError(err.response?.data?.message || "Failed to update profile. Please try again.")
+      setApiError(err.message || "Failed to update profile. Please try again.")
     } finally {
       setSaving(false)
     }
@@ -411,7 +485,7 @@ function EditProfile() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Hobbies & Interests</label>
+               <label className="block text-sm font-medium text-gray-700 mb-1">Hobbies & Interests</label>
               <div className="flex flex-wrap gap-2 mb-3">
                 {formData.hobbies.map((hobby) => (
                   <span
@@ -421,7 +495,7 @@ function EditProfile() {
                     {hobby}
                     <button
                       type="button"
-                      onClick={() => removeHobby(hobby)}
+                      onClick={() => toggleHobby(hobby)}
                       className="ml-1.5 text-purple-600 hover:text-purple-900"
                     >
                       <X className="h-3.5 w-3.5" />
@@ -429,23 +503,14 @@ function EditProfile() {
                   </span>
                 ))}
               </div>
-              <div className="flex">
-                <input
-                  type="text"
-                  value={newHobby}
-                  onChange={(e) => setNewHobby(e.target.value)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-l-md shadow-sm focus:ring-purple-500 focus:border-purple-500"
-                  placeholder="Add a hobby or interest"
-                  onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addHobby())}
-                />
-                <button
-                  type="button"
-                  onClick={addHobby}
-                  className="px-4 py-2 bg-purple-700 text-white rounded-r-md hover:bg-purple-800 flex items-center"
-                >
-                  <Plus className="h-4 w-4" />
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => setShowHobbiesModal(true)}
+                className="px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 flex items-center"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Select Hobbies
+              </button>
               <p className="mt-1 text-sm text-gray-500">
                 Add hobbies and interests to connect with neighbors who share similar passions.
               </p>
@@ -480,6 +545,15 @@ function EditProfile() {
             </button>
           </div>
         </form>
+
+        {/* Hobbies Modal */}
+        {showHobbiesModal && (
+          <HobbiesModal
+            selectedHobbies={formData.hobbies}
+            toggleHobby={toggleHobby}
+            onClose={() => setShowHobbiesModal(false)}
+          />
+        )}
       </div>
     </div>
   )

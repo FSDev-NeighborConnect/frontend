@@ -14,6 +14,7 @@ const AdminDashboardUsers = () => {
   const [groupByPostalCode, setGroupByPostalCode] = useState(false)
   const { csrfToken } = useCsrf()
   const navigate = useNavigate()
+  const [currentAdminId, setCurrentAdminId] = useState(null)
 
   // Verify admin status
   useEffect(() => {
@@ -26,6 +27,7 @@ const AdminDashboardUsers = () => {
         
         if (response.data.role === "admin") {
           setIsAdmin(true)
+          setCurrentAdminId(response.data.id)
           fetchUsers() // Only fetch users if admin
         } else {
           navigate("/admin/login")
@@ -64,6 +66,12 @@ const AdminDashboardUsers = () => {
   // Handle user delete
   const handleDelete = async (userId) => {
     try {
+      // Prevent admin from deleting their own account
+      if (userId === currentAdminId) {
+        alert("You cannot delete your own admin account!")
+        return
+      }
+
       await axios.delete(`/api/admin/users/${userId}`, { 
         withCredentials: true, 
         headers: { "X-CSRF-Token": csrfToken } 
@@ -201,7 +209,14 @@ const AdminDashboardUsers = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className= "flex justify-center">
                             <button onClick={() => handleUpdate(user)} className="mr-4 text-blue-600 hover:text-blue-900">Update</button>
-                            <button onClick={() => handleDelete(user._id)} className="mr-4 text-red-600 hover:text-red-900">Delete</button>
+                            {/* Disable the delete button for the currently logged in admin user to prevent own account delete. */}
+                            <button 
+                              onClick={() => handleDelete(user._id)} 
+                              className={`mr-4 ${user._id === currentAdminId ? 'text-gray-400 cursor-not-allowed' : 'text-red-600 hover:text-red-900'}`}
+                              disabled={user._id === currentAdminId}
+                            >
+                              Delete
+                            </button>
                             <button onClick={() => setSelectedUser(user)}className="mr-4 text-green-600 hover:text-green-900">View</button>
                           </div>
                         </td>

@@ -73,7 +73,7 @@ export default function UpdateUser() {
 
       // If the update is successful, redirect to the dashboard
       if (response.status === 200) {
-      navigate("/admin/dashboard")
+      navigate("/admin/dashboard-users")
     } else {
       showError("Failed to update user.")
     }

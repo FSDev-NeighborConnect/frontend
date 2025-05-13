@@ -168,8 +168,8 @@ const AdminDashboardPosts = () => {
             <p className="text-gray-500 p-4">No posts found.</p>
           ) : groupByPostalCode ? (
             Object.entries(groupedByPostalCode).map(([postalCode, posts]) => (
-              <div key={postalCode} className="mb-6">
-                <h3 className="ml-6 text-lg font-semibold text-gray-700">Postal Code: {postalCode}</h3>
+              <div key={postalCode}>
+                <h3 className="mt-6 ml-6 text-lg font-semibold text-gray-700">Postal Code: {postalCode}</h3>
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>

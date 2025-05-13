@@ -10,6 +10,7 @@ import AdminDashboardPosts from './pages/Admin/AdminDashboardPosts.jsx'
 import AdminDashboardUsers from './pages/Admin/AdminDashboardUsers.jsx'
 import AdminLogin from './pages/Admin/AdminLogin.jsx'
 import CreateUser from './pages/Admin/AdminCreateUser.jsx'
+import DashboardStatistics from './pages/Admin/AdminStatistics.jsx'
 import UpdatePost from './pages/Admin/UpdatePost.jsx'
 import UpdateUser from './pages/Admin/UpdateUser.jsx'
 
@@ -34,6 +35,7 @@ function App() {
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/dashboard-users" element={<AdminDashboardUsers />} />
             <Route path="/admin/dashboard-posts" element={<AdminDashboardPosts />} />
+            <Route path="/admin/dashboard-statistics" element={<DashboardStatistics />} />
             <Route path="/admin/update-user" element={<UpdateUser />} />
             <Route path="/admin/update-post" element={<UpdatePost />} />
             <Route path="/admin/create-user" element={<CreateUser />} />

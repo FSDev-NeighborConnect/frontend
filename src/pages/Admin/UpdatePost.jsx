@@ -47,7 +47,7 @@ export default function UpdatePost() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError("")
-    console.log(post._id)
+    
     try {
       const response = await axios.put(`/api/admin/posts/${post._id}`, formData, { 
         withCredentials: true, 

@@ -57,7 +57,7 @@ const AdminDashboardPosts = () => {
 
   // Handle post update
   const handleUpdate = (post) => {
-    // navigate("/admin/update-post", { state: { post } })
+    navigate("/admin/update-post", { state: { post } })
   }
 
   // Handle post delete

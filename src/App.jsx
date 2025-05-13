@@ -13,7 +13,7 @@ import AdminDashboardUsers from './pages/Admin/AdminDashboardUsers.jsx'
 import UpdateUser from './pages/Admin/UpdateUser.jsx'
 import CreateUser from './pages/Admin/AdminCreateUser.jsx'
 import AdminDashboardPosts from './pages/Admin/AdminDashboardPosts.jsx'
-//import AdminCreatePost from './pages/Admin/AdminCreatePost.jsx'
+import AdminCreatePost from './pages/Admin/AdminCreatePost.jsx'
 
 function App() {
   return (
@@ -32,7 +32,7 @@ function App() {
             <Route path="/admin/dashboard-posts" element={<AdminDashboardPosts />} />
             <Route path="/admin/update-user" element={<UpdateUser />} />
             <Route path="/admin/create-user" element={<CreateUser />} />
-            {/* <Route path="/admin/create-post" element={<AdminCreatePost />} /> */}
+            <Route path="/admin/create-post" element={<AdminCreatePost />} />
             {/* Catch-all route that redirects to home */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import { useCsrf } from "../../context/CsrfContext.jsx"
-// import PostDetailModal from "./PostDetailModal.jsx"
+import PostDetailModal from "./PostDetailModal.jsx"
 
 const AdminDashboardPosts = () => {
   const [posts, setPosts] = useState([])
@@ -233,8 +233,7 @@ const AdminDashboardPosts = () => {
         </div>
       </div>
       {selectedPost && (
-        //<PostDetailModal post={selectedPost} onClose={() => setSelectedPost(null)} />
-        console.log("User info") // Temp until modal has been created
+        <PostDetailModal post={selectedPost} onClose={() => setSelectedPost(null)} />
       )}
     </div>
   )

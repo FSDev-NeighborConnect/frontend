@@ -101,7 +101,11 @@ export default function UpdateUser() {
 
     try {
       const { confirmPassword, password, ...userData } = formData  // Remove password and confirmPassword from the user data
-      const response = await axios.put(`/api/admin/users/${user._id}`, userData, { withCredentials: true, headers: {"X-CSRF-Token": csrfToken}})
+      const response = await axios.put(
+        apiUrl(`api/admin/users/${user._id}`),
+        userData,
+        apiConfigCsrf(csrfToken)
+      )
 
       // If the update is successful, redirect to the dashboard
       if (response.status === 200) {

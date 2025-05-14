@@ -28,7 +28,7 @@ import {
   Camera,
   ArrowLeft, 
 } from "lucide-react"
-import "./userprofile.css"
+import "./userProfile.css"
 
 const buttonBase = "flex items-center gap-1 font-medium text-sm"
 const primaryBtn = `${buttonBase} bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-md`

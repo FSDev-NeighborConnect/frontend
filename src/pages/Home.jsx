@@ -9,7 +9,7 @@ export default function Home() {
   const navigate = useNavigate()
 
   return (
-    <div className="min-h-screen w-full bg-[rgb(251,241,241)]">
+    <div className="min-h-screen w-full bg-gray-50">
       {/* Main Container */}
       <div className="mx-auto w-full max-w-[1600px] px-5 py-16">
         {/* Hero Section - left text, right image */}
@@ -35,10 +35,26 @@ export default function Home() {
                 Log In
               </button>
               <button 
-                className="px-5 py-3 bg-[#7e57c2] hover:bg-[#6d4baf] text-white rounded-md transition-colors"
-                onClick={() => navigate('/profile')}
+                className="flex items-center gap-2 pl-3 pr-5 py-3 bg-[#7e57c2] hover:bg-[#6d4baf] text-white rounded-md transition-colors"
+                onClick={() => navigate('/about')}
               >
-                Profile
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="20" 
+                  height="20" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                  className="flex-shrink-0" // Prevents icon from shrinking if space is tight
+                >
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                <span>About us</span>
               </button>
             </div>
           </div>

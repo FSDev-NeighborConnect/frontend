@@ -1,7 +1,7 @@
 import React from "react"
 
-const UserDetailModal = ({ user, onClose }) => {
-  if (!user) return null
+const PostDetailModal = ({ post, onClose }) => {
+  if (!post) return null
 
   return (
     <div className="fixed z-10 inset-0 overflow-y-auto">
@@ -30,24 +30,30 @@ const UserDetailModal = ({ user, onClose }) => {
           {/* Modal Header */}
           <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <h3 className="text-lg leading-6 font-medium text-gray-900 font-roboto">
-              User Information
+              Post Details
             </h3>
+            <h4 className="text-md font-semibold mt-1">{post.title}</h4>
           </div>
 
           {/* Scrollable content */}
           <div className="px-4 overflow-y-auto flex-grow">
             <div className="mt-2 space-y-2 text-sm text-gray-700">
-              <p><strong>Name:</strong> {user.name}</p>
-              <p><strong>Email:</strong> {user.email}</p>
-              <p><strong>Street Address:</strong> {user.streetAddress}</p>
-              <p><strong>Postal Code:</strong> {user.postalCode}</p>
-              <p><strong>Phone:</strong> {user.phone}</p>
-              <p><strong>Avatar Url:</strong> {user.avatarUrl|| "N/A"}</p>
-              <p><strong>Bio:</strong> {user.bio || "N/A"}</p>
-              <p><strong>Role:</strong> {user.role}</p>
-              <p><strong>Hobbies:</strong> {user.hobbies?.join(", ") || "N/A"}</p>
-              <p><strong>Created At:</strong> {new Date(user.createdAt).toLocaleString()}</p>
-              <p><strong>Updated At:</strong> {new Date(user.updatedAt).toLocaleString()}</p>
+              <p><strong>Description:</strong> {post.description}</p>
+              <p><strong>Status:</strong> 
+                <span className={`ml-1 px-2 py-1 rounded-full text-xs ${
+                  post.status === 'open' ? 'bg-green-100 text-green-800' :
+                  post.status === 'in progress' ? 'bg-yellow-100 text-yellow-800' :
+                  'bg-gray-100 text-gray-800'
+                }`}>
+                  {post.status}
+                </span>
+              </p>
+              <p><strong>Categories:</strong> {post.category?.join(", ") || "None"}</p>
+              <p><strong>Street Address:</strong> {post.street}</p>
+              <p><strong>Postal Code:</strong> {post.postalCode}</p>
+              <p><strong>Created By:</strong> {post.createdBy.name || "Unknown"}</p>
+              <p><strong>Created At:</strong> {new Date(post.createdAt).toLocaleString()}</p>
+              <p><strong>Updated At:</strong> {new Date(post.updatedAt).toLocaleString()}</p>
             </div>
           </div>
 
@@ -72,4 +78,4 @@ const UserDetailModal = ({ user, onClose }) => {
   )
 }
 
-export default UserDetailModal
+export default PostDetailModal

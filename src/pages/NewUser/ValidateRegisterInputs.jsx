@@ -62,15 +62,6 @@ const validateForm = (formData) => {
     return "Please enter a valid phone number"
   }
 
-  // Validate avatar url
-  if (trimmedAvatarUrl) {
-    try {
-      new URL(trimmedAvatarUrl)
-    } catch (err) {
-      return "Please enter a valid URL"
-    }
-  }
-
   // If all validations pass
   return ""
 }

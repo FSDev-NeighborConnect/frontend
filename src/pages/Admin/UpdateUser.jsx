@@ -8,6 +8,7 @@ import { useCsrf } from "../../context/CsrfContext.jsx"
 export default function UpdateUser() {
   const { state } = useLocation()
   const { user } = state || {}  // User data fetched from the dashboard
+  const [currentAdminId, setCurrentAdminId] = useState(null)
   const [formData, setFormData] = useState({
     name: user?.name || "",
     email: user?.email || "",
@@ -28,6 +29,23 @@ export default function UpdateUser() {
   const [showHobbiesModal, setShowHobbiesModal] = useState(false)
   const navigate = useNavigate()
 
+
+  // Get current admin ID on component mount
+  useEffect(() => {
+    const fetchCurrentAdmin = async () => {
+      try {
+        const response = await axios.get("/api/users/currentUser", {
+          withCredentials: true,
+          headers: { "X-CSRF-Token": csrfToken }
+        })
+        setCurrentAdminId(response.data.id)
+      } catch (err) {
+        console.error("Failed to fetch current admin:", err)
+      }
+    }
+    fetchCurrentAdmin()
+  }, [csrfToken])
+
   const showError = (message) => {
     setError(message)
     window.scrollTo({ top: 0, behavior: "smooth" })
@@ -35,6 +53,13 @@ export default function UpdateUser() {
 
   const handleChange = (e) => {
     const { name, value } = e.target
+
+    // Prevent admin from changing their own role
+    if (name === "role" && user?._id === currentAdminId) {
+      showError("You cannot change your own admin role")
+      return
+    }
+    
     setFormData({ ...formData, [name]: value })
   }
 
@@ -65,6 +90,12 @@ export default function UpdateUser() {
       return
     }
 
+    // Prevent admin from changing their own role
+    if (user?._id === currentAdminId && formData.role !== "admin") {
+      showError("You cannot remove your own admin role")
+      return
+    }
+
     setError("")
 
     try {
@@ -73,7 +104,7 @@ export default function UpdateUser() {
 
       // If the update is successful, redirect to the dashboard
       if (response.status === 200) {
-      navigate("/admin/dashboard")
+      navigate("/admin/dashboard-users")
     } else {
       showError("Failed to update user.")
     }

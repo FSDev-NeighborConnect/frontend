@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import HobbiesModal from '../NewUser/HobbiesModal.jsx'
 import validateForm from '../NewUser/ValidateRegisterInputs.jsx'
+import { useCsrf } from '../../context/CsrfContext.jsx'
 
 function CreateUser() {
   const [formData, setFormData] = useState({
@@ -22,6 +23,7 @@ function CreateUser() {
   const [error, setError] = useState('')
   const [showHobbiesModal, setShowHobbiesModal] = useState(false)
   const navigate = useNavigate()
+  const { csrfToken } = useCsrf()
 
   const showError = (message) => {
     setError(message)
@@ -64,8 +66,8 @@ function CreateUser() {
 
     try {
       const { confirmPassword, ...userData } = formData
-      await axios.post("/api/signup", userData, { withCredentials: true }) // Temporary route until the admin signup route is implemented
-      navigate("/")
+      await axios.post("/api/admin/users/create", userData, { withCredentials: true, headers: { "X-CSRF-Token": csrfToken }})
+      navigate("/admin/dashboard-users")
     } catch (err) {
       showError(err.response?.data?.message || "Registration failed")
     }

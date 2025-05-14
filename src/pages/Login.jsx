@@ -74,10 +74,12 @@ const Login = () => {
 
     setError("")
 
+    const isProd = import.meta.env.MODE === "production"
     try {
-
       const res = await axios.post(
-        "/api/login",
+        isProd
+        ? `${import.meta.env.VITE_API_URL}api/login` // Path used when site is deployed
+        : "/api/login", // Path used when in dev mode
         { email: email.trim(), password },
         { withCredentials: true }
       )
@@ -85,7 +87,7 @@ const Login = () => {
       setCsrfToken(res.data.csrfToken)
       setUserId(res.data.user.id)
 
-      navigate("/") // Add correct navigation when the page is added to the router.
+      navigate("/profile") // Add correct navigation when the page is added to the router.
     } catch (err) {
       setError(err.response?.data?.message || "Login failed")
     }

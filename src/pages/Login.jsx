@@ -75,6 +75,7 @@ const Login = () => {
     setError("")
 
     try {
+
       const res = await axios.post(
         "/api/login",
         { email: email.trim(), password },

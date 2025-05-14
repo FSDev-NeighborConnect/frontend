@@ -76,7 +76,7 @@ const Login = () => {
 
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}api/login`,
+        "/api/login",
         { email: email.trim(), password },
         { withCredentials: true }
       )

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import api from "../axios"
 import { User, Mail, Phone, MapPin, Home, ImageIcon, X, Save, ArrowLeft, Plus, AlertCircle } from "lucide-react"
-import "./userprofile.css"
+import "./userProfile.css"
 
 function EditProfile() {
   const navigate = useNavigate()

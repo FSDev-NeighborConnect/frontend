@@ -4,6 +4,7 @@ import axios from 'axios'
 import HobbiesModal from '../NewUser/HobbiesModal.jsx'
 import validateForm from '../NewUser/ValidateRegisterInputs.jsx'
 import { useCsrf } from '../../context/CsrfContext.jsx'
+import { apiUrl, apiConfigCsrf } from '../../utils/apiUtil.jsx'
 
 function CreateUser() {
   const [formData, setFormData] = useState({
@@ -66,7 +67,11 @@ function CreateUser() {
 
     try {
       const { confirmPassword, ...userData } = formData
-      await axios.post("/api/admin/users/create", userData, { withCredentials: true, headers: { "X-CSRF-Token": csrfToken }})
+      await axios.post(
+        apiUrl("api/admin/users/create"),
+        userData,
+        apiConfigCsrf(csrfToken)
+      )
       navigate("/admin/dashboard-users")
     } catch (err) {
       showError(err.response?.data?.message || "Registration failed")

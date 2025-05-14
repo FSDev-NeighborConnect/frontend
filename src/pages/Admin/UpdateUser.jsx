@@ -4,6 +4,7 @@ import axios from "axios"
 import HobbiesModal from "../NewUser/HobbiesModal.jsx"
 import validateUpdateForm from "./validateUpdateUserInputs.jsx"
 import { useCsrf } from "../../context/CsrfContext.jsx"
+import { apiUrl, apiConfigCsrf } from "../../utils/apiUtil.jsx"
 
 export default function UpdateUser() {
   const { state } = useLocation()
@@ -34,10 +35,10 @@ export default function UpdateUser() {
   useEffect(() => {
     const fetchCurrentAdmin = async () => {
       try {
-        const response = await axios.get("/api/users/currentUser", {
-          withCredentials: true,
-          headers: { "X-CSRF-Token": csrfToken }
-        })
+        const response = await axios.get(
+          apiUrl("api/users/currentUser"),
+          apiConfigCsrf(csrfToken)
+        )
         setCurrentAdminId(response.data.id)
       } catch (err) {
         console.error("Failed to fetch current admin:", err)

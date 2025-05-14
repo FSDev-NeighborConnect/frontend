@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import { useCsrf } from "../../context/CsrfContext"
+import { apiUrl, apiConfigCsrf } from "../../utils/apiUtil"
 
 const AdminMainDashboard = () => {
   const navigate = useNavigate()
@@ -11,16 +12,11 @@ const AdminMainDashboard = () => {
   // Verify admin status
   useEffect(() => {
     const verifyAdmin = async () => {
-      const isProd = import.meta.env.MODE === "production"
       try {
         const response = await axios.get(
-          isProd
-          ? `${import.meta.env.VITE_API_URL}api/users/currentUser` // Path used when site is deployed
-          : "/api/users/currentUser", // Path used when in dev mode 
-          {
-            withCredentials: true,
-            headers: { "X-CSRF-Token": csrfToken }
-          })
+          apiUrl("api/users/currentUser"),
+          apiConfigCsrf(csrfToken)
+        )
         
         if (response.data.role === "admin") {
           setIsAdmin(true)

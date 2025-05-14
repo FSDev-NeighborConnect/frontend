@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import { useCsrf } from "../../context/CsrfContext"
+import { apiUrl, apiConfig } from "../../utils/apiUtil"
 
 const AdminLogin = () => {
   const [formData, setFormData] = useState({
@@ -72,14 +73,11 @@ const AdminLogin = () => {
 
     setError("")
 
-    const isProd = import.meta.env.MODE === "production"
     try {
       const res = await axios.post(
-        isProd
-        ? `${import.meta.env.VITE_API_URL}api/admin/login` // Path used when site is deployed
-        : "/api/admin/login", // Path used when in dev mode
+        apiUrl("api/admin/login"),
         { email: email.trim(), password },
-        { withCredentials: true }
+        apiConfig()
       )
       setCsrfToken(res.data.csrfToken) // Storing token in React state
 

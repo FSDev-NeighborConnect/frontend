@@ -3,6 +3,7 @@ import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import { useCsrf } from "../../context/CsrfContext.jsx"
 import UserDetailModal from "./UserDetailModal.jsx"
+import { apiUrl, apiConfigCsrf } from "../../utils/apiUtil.jsx"
 
 const AdminDashboardUsers = () => {
   const [users, setUsers] = useState([])
@@ -20,10 +21,10 @@ const AdminDashboardUsers = () => {
   useEffect(() => {
     const verifyAdmin = async () => {
       try {
-        const response = await axios.get("/api/users/currentUser", {
-          withCredentials: true,
-          headers: { "X-CSRF-Token": csrfToken }
-        })
+        const response = await axios.get(
+          apiUrl("api/users/currentUser"),
+          apiConfigCsrf(csrfToken)
+        )
         
         if (response.data.role === "admin") {
           setIsAdmin(true)
@@ -44,10 +45,10 @@ const AdminDashboardUsers = () => {
   // Fetch users from the backend
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("/api/admin/all/users", { 
-        withCredentials: true,
-        headers: { "X-CSRF-Token": csrfToken }
-      })
+      const response = await axios.get(
+        apiUrl("api/admin/all/users"),
+        apiConfigCsrf(csrfToken)
+      )
       setUsers(response.data)
     } catch (err) {
       setError(err.response?.status === 403 
@@ -72,10 +73,10 @@ const AdminDashboardUsers = () => {
         return
       }
 
-      await axios.delete(`/api/admin/users/${userId}`, { 
-        withCredentials: true, 
-        headers: { "X-CSRF-Token": csrfToken } 
-      })
+      await axios.delete(
+        apiUrl(`api/admin/users/${userId}`),
+        apiConfigCsrf(csrfToken)
+      )
       setUsers(users.filter((user) => user._id !== userId))
     } catch (err) {
       alert("Failed to delete user!")

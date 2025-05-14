@@ -41,7 +41,7 @@ const AdminDashboardPosts = () => {
   // Fetch posts from the backend
   const fetchPosts = async () => {
     try {
-      const response = await axios.get("/api/posts/all/posts", {
+      const response = await axios.get("/api/admin/all/posts", {
         withCredentials: true,
         headers: { "X-CSRF-Token": csrfToken }
       })

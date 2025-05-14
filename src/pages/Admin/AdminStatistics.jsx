@@ -19,7 +19,7 @@ const DashboardStatistics = () => {
     setError(null)
     try {
       const [postsRes, usersRes] = await Promise.all([
-        axios.get('/api/posts/all/posts', {
+        axios.get('/api/admin/all/posts', {
           withCredentials: true,
           headers: { 'X-CSRF-Token': csrfToken }
         }),

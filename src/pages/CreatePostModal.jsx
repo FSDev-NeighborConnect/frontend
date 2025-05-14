@@ -16,8 +16,6 @@ function CreatePostModal({ isOpen, onClose, postType = "general", onPostCreated 
     description: "",
     category: [],
     status: "open",
-    street: "",
-    postalCode: "",
     // For events
     date: "",
     startTime: "",
@@ -93,8 +91,7 @@ function CreatePostModal({ isOpen, onClose, postType = "general", onPostCreated 
         eventFormData.append("startTime", formData.startTime)
         eventFormData.append("endTime", formData.endTime)
         eventFormData.append("streetAddress", formData.streetAddress)
-        eventFormData.append("postalCode", formData.postalCode)
-        eventFormData.append("createdBy", userId)
+
 
         // Add hobbies/categories as array
         formData.category.forEach((cat) => {
@@ -108,7 +105,7 @@ function CreatePostModal({ isOpen, onClose, postType = "general", onPostCreated 
 
         console.log("Sending event data:", Object.fromEntries(eventFormData))
 
-        // Create a mock event for the UI
+        /* Create a mock event for the UI
         const mockEvent = {
           _id: Date.now().toString(),
           title: formData.title,
@@ -125,7 +122,7 @@ function CreatePostModal({ isOpen, onClose, postType = "general", onPostCreated 
           comments: [],
           type: "event",
           eventImage: imagePreview ? { url: imagePreview } : null,
-        }
+        }*/
 
         try {
           // Try to create the event on the server
@@ -141,15 +138,12 @@ function CreatePostModal({ isOpen, onClose, postType = "general", onPostCreated 
 
           // If successful, use the server response
           if (onPostCreated) {
-            onPostCreated(response.data || mockEvent)
+            onPostCreated(response.data)
           }
         } catch (eventError) {
           console.error("Error creating event:", eventError)
 
-          // If server creation fails, still update the UI with the mock event
-          if (onPostCreated) {
-            onPostCreated(mockEvent)
-          }
+          
         }
       } else {
         // Regular post creation
@@ -158,21 +152,19 @@ function CreatePostModal({ isOpen, onClose, postType = "general", onPostCreated 
           description: formData.description,
           category: formData.category,
           status: formData.status,
-          street: formData.street || "",
-          postalCode: formData.postalCode || "",
-          createdBy: userId,
+          
         }
 
         console.log("Sending post data:", postData)
 
-        // Create a mock post for the UI
+        /* Create a mock post for the UI
         const mockPost = {
           _id: Date.now().toString(),
           ...postData,
           createdAt: new Date().toISOString(),
           likes: [],
           comments: [],
-        }
+        }*/
 
         try {
           // Try to create the post on the server
@@ -188,15 +180,13 @@ function CreatePostModal({ isOpen, onClose, postType = "general", onPostCreated 
 
           // If successful, use the server response
           if (onPostCreated) {
-            onPostCreated(response.data || mockPost)
+            onPostCreated(response.data)
           }
         } catch (postError) {
           console.error("Error creating post:", postError)
 
-          // If server creation fails, still update the UI with the mock post
-          if (onPostCreated) {
-            onPostCreated(mockPost)
-          }
+          
+          
         }
       }
 
@@ -319,33 +309,8 @@ function CreatePostModal({ isOpen, onClose, postType = "general", onPostCreated 
                 </select>
               </div>
 
-              <div className="mb-4">
-                <label htmlFor="street" className="block text-sm font-medium text-gray-700 mb-1">
-                  Street
-                </label>
-                <input
-                  type="text"
-                  id="street"
-                  name="street"
-                  value={formData.street}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500"
-                />
-              </div>
-
-              <div className="mb-4">
-                <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 mb-1">
-                  Postal Code
-                </label>
-                <input
-                  type="text"
-                  id="postalCode"
-                  name="postalCode"
-                  value={formData.postalCode}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500"
-                />
-              </div>
+              
+              
             </>
           )}
 
@@ -413,20 +378,7 @@ function CreatePostModal({ isOpen, onClose, postType = "general", onPostCreated 
                 />
               </div>
 
-              <div className="mb-4">
-                <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 mb-1">
-                  Postal Code
-                </label>
-                <input
-                  type="text"
-                  id="postalCode"
-                  name="postalCode"
-                  value={formData.postalCode}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500"
-                  required
-                />
-              </div>
+             
 
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Event Image (Optional)</label>

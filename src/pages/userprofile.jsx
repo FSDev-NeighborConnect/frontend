@@ -310,7 +310,8 @@ function UserProfile() {
                     : "bg-gray-100 text-gray-800"
               }`}
             >
-              {post.status.charAt(0).toUpperCase() + post.status.slice(1)}
+               {post.status ? post.status.charAt(0).toUpperCase() + post.status.slice(1) : "Unknown"}
+
             </span>
             <span className="flex items-center">
               <Clock className="h-3 w-3 mr-1" />

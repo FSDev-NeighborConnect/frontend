@@ -1,136 +1,178 @@
-import React, { useState } from 'react';
-
-const allProfiles = Array.from({ length: 25 }, (_, i) => {
-  const categories = ['offers', 'requests', 'events'];
-  const activities = [
-    'Hosting a book exchange 📚', 'Looking for a workout partner 🏋️',
-    'Offering free tutoring 📘', 'Planning a chess night ♟️',
-    'Organizing a pet adoption fair 🐶', 'Cooking class available 🍳',
-    'Yoga in the park 🧘‍♀️', 'Looking for plant swaps 🌿',
-    'Need help moving furniture 🛋️', 'Free music jam 🎶',
-    'Film night this Friday 🎬', 'Hosting a garden tour 🌼',
-    'Looking for painters 🎨', 'Free language exchange 🗣️',
-    'Game night for teens 🎲', 'BBQ at the lake 🍖',
-    'Donation drive this weekend 🎁', 'Lost and found corner 🔍',
-    'Tech support offered 💻', 'Neighborhood cleanup 🌍',
-    'Bike ride meetup 🚴‍♂️', 'Sewing circle 🧵', 'Craft workshop ✂️',
-    'Knitting session 🧶', 'Photography tips exchange 📷'
-  ];
-  const names = [
-    'Youhana Malik', 'Sheila Great', 'Liam Knox', 'Nora Stone', 'Zara Bloom',
-    'Ethan Gray', 'Ava Cruz', 'Leo Marsh', 'Maya Lin', 'Owen Dale',
-    'Noah Ray', 'Sofia James', 'Ben Ford', 'Isla Moon', 'Elijah King',
-    'Grace Bell', 'Henry Black', 'Sophia White', 'Marcus Cole', 'Olivia Brooks',
-    'Daniel Stone', 'Emily Chen', 'Jack Reid', 'Anna Lee', 'Victor Hill'
-  ];
-
-  return {
-    id: i,
-    name: names[i],
-    category: categories[i % 3],
-    activity: activities[i % activities.length],
-    lastSeen: `${(i % 5) + 1} hours ago`,
-    image: `https://i.pravatar.cc/150?img=${(i % 70) + 1}`,
-    email: `user${i + 1}@example.com`,
-    zip: '0007',
-  };
-});
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Menu } from 'lucide-react';
 
 export default function Homepage() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('offers');
-  const currentZip = '0007';
+  const [showMenu, setShowMenu] = useState(false);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showEventForm, setShowEventForm] = useState(false);
+  const [posts, setPosts] = useState([]);
+  const [user, setUser] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [newPost, setNewPost] = useState({ title: '', description: '', status: 'Open', categories: [] });
+  const [newEvent, setNewEvent] = useState({ title: '', description: '', status: 'Open', type: 'Event' });
 
-  const filteredProfiles = allProfiles.filter(
-    (p) => p.category === selectedCategory || p.zip === currentZip
-  );
+  const navigate = useNavigate();
 
-  const zipGroups = Array.from(
-    allProfiles.reduce((map, profile) => {
-      if (!map.has(profile.zip)) map.set(profile.zip, []);
-      map.get(profile.zip).push(profile);
-      return map;
-    }, new Map())
-  );
+  useEffect(() => {
+    // Load current user
+    fetch('http://localhost:5000/user/currentUser', { credentials: 'include' })
+      .then(res => res.json())
+      .then(setUser)
+      .catch(console.error);
+
+    // Load all posts
+    fetch('http://localhost:5000/post')
+      .then(res => res.json())
+      .then(setPosts)
+      .catch(console.error);
+
+    // Load all users (for sidebar)
+    fetch('http://localhost:5000/user')
+      .then(res => res.json())
+      .then(setUsers)
+      .catch(console.error);
+  }, []);
+
+  const handleFormChange = (e, setState) => {
+    const { name, value, type, checked } = e.target;
+    if (type === 'checkbox') {
+      setState(prev => ({
+        ...prev,
+        categories: checked ? [...prev.categories, value] : prev.categories.filter(c => c !== value),
+      }));
+    } else {
+      setState(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const post = {
+      ...newPost,
+      createdBy: user?._id,
+      street: user?.streetAddress,
+      postalCode: user?.postalCode
+    };
+    const res = await fetch('http://localhost:5000/post/post', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(post)
+    });
+    const created = await res.json();
+    setPosts(prev => [created, ...prev]);
+    setShowCreateForm(false);
+  };
+
+  const handleEventSubmit = async (e) => {
+    e.preventDefault();
+    const event = {
+      ...newEvent,
+      createdBy: user?._id,
+      street: user?.streetAddress,
+      postalCode: user?.postalCode
+    };
+    const res = await fetch('http://localhost:5000/post/post', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(event)
+    });
+    const created = await res.json();
+    setPosts(prev => [created, ...prev]);
+    setShowEventForm(false);
+  };
+
+  const categoryOptions = ['Community', 'Environment', 'Education', 'Health', 'Safety', 'Infrastructure', 'Events'];
 
   return (
-    <div className="min-h-screen font-sans flex bg-cover bg-center" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1950&q=80)' }}>
+    <div className="flex">
       {/* Sidebar */}
-      <aside className="w-72 p-6 bg-gradient-to-b from-pink-100 to-white bg-opacity-90 shadow-lg hidden md:block overflow-y-auto">
-        <h2 className="text-xl font-bold text-pink-700 mb-6">Neighbourhood Feed</h2>
-        <ul className="space-y-4 text-gray-700 font-medium">
-          <li className="hover:text-pink-600 cursor-pointer" onClick={() => setSelectedCategory('offers')}>Offers</li>
-          <li className="hover:text-pink-600 cursor-pointer" onClick={() => setSelectedCategory('requests')}>Requests</li>
-          <li className="hover:text-pink-600 cursor-pointer" onClick={() => setSelectedCategory('events')}>Events</li>
-        </ul>
-        {zipGroups.map(([zip, profiles]) => (
-          <div key={zip} className="mt-8">
-            <h3 className="text-pink-700 font-semibold mb-2">Neighbours (Zip: {zip})</h3>
-            <ul className="space-y-2 text-gray-600 text-sm">
-              {profiles.map((n) => (
-                <li key={n.id} className="flex items-center gap-2">
-                  <img src={n.image} alt={n.name} className="w-6 h-6 rounded-full" />
-                  <span className="truncate">{n.name}</span>
-                </li>
-              ))}
+      <div className="w-64 bg-pink-100 min-h-screen p-4">
+        <h2 className="text-xl font-bold text-pink-700 mb-4">Neighbourhood Feed</h2>
+        <div className="space-y-2">
+          <p className="cursor-pointer" onClick={() => navigate('/offers')}>Offers</p>
+          <p className="cursor-pointer" onClick={() => navigate('/requests')}>Requests</p>
+          <p className="cursor-pointer" onClick={() => navigate('/events')}>Events</p>
+        </div>
+        <div className="mt-6 text-sm">
+          <p className="font-bold text-pink-700">Neighbours (Zip: {user?.postalCode || 'N/A'})</p>
+          {users.length ? (
+            <ul className="text-sm">
+              {users.map(u => <li key={u._id}>{u.name}</li>)}
             </ul>
-          </div>
-        ))}
-      </aside>
+          ) : (
+            <p>Loading users...</p>
+          )}
+        </div>
+      </div>
 
-      {/* Main content */}
-      <div className="flex-1 bg-white bg-opacity-90">
-        <header className="flex items-center justify-between px-6 py-4 shadow-md sticky top-0 z-10 relative bg-white bg-opacity-95">
-          <div className="flex items-center space-x-3">
-            <img
-              src="https://img.icons8.com/color/48/community-grants.png"
-              alt="logo"
-              className="w-8 h-8"
-            />
-            <h1 className="text-3xl font-extrabold text-blue-900 tracking-wide drop-shadow-sm">NeighbourConnect</h1>
-          </div>
-          <div className="relative">
-            <button
-              className="rounded-full px-6 py-4 text-lg font-bold bg-pink-300 hover:bg-pink-400"
-              onClick={() => setMenuOpen(!menuOpen)}
-            >
-              ☰
+      {/* Main Content */}
+      <div className="flex-1 p-6 bg-gray-100 min-h-screen">
+        {/* Header */}
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-blue-700">NeighbourConnect</h1>
+          <div className="flex gap-4">
+            <button onClick={() => { setShowCreateForm(true); setShowEventForm(false); }} className="bg-purple-600 text-white px-4 py-2 rounded-full">+ Create Post</button>
+            <button onClick={() => { setShowEventForm(true); setShowCreateForm(false); }} className="bg-indigo-600 text-white px-4 py-2 rounded-full">+ Create Event</button>
+            <button onClick={() => setShowMenu(!showMenu)} className="bg-pink-300 p-2 rounded-full">
+              <Menu />
             </button>
-            {menuOpen && (
-              <div className="absolute right-0 mt-2 w-72 bg-white shadow-xl rounded-lg py-4 z-50 border">
-                <a className="block px-6 py-2 hover:bg-pink-50 cursor-pointer">General</a>
-                <a className="block px-6 py-2 hover:bg-pink-50 cursor-pointer">Edit</a>
-                <a className="block px-6 py-2 hover:bg-pink-50 cursor-pointer">Delete</a>
-                <a className="block px-6 py-2 hover:bg-pink-50 cursor-pointer">Help Center</a>
-                <a className="block px-6 py-2 hover:bg-pink-50 cursor-pointer">Update Profile</a>
-              </div>
-            )}
           </div>
-        </header>
+        </div>
 
-        <main className="p-6 space-y-6 max-w-xl mx-auto">
-          {filteredProfiles.map(profile => (
-            <div key={profile.id} className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition bg-opacity-95">
-              <div className="flex items-center gap-4">
-                <img
-                  src={profile.image}
-                  alt={profile.name}
-                  className="w-14 h-14 rounded-full object-cover transform transition duration-300 hover:scale-110"
-                />
-                <div>
-                  <h2 className="text-lg font-bold text-gray-800">{profile.name}</h2>
-                  <p className="text-sm text-gray-500">{profile.lastSeen}</p>
-                </div>
-              </div>
-              <p className="mt-3 text-gray-700">{profile.activity}</p>
-              <div className="mt-3 flex space-x-6 text-sm text-gray-600">
-                <button className="hover:text-pink-600">👍 Like</button>
-                <button className="hover:text-pink-600">💬 Comment</button>
-                <a href={`mailto:${profile.email}`} className="hover:text-pink-600">✉️ Email</a>
-              </div>
+        {showMenu && (
+          <div className="absolute right-6 top-20 bg-white shadow-md p-4 rounded z-50">
+            <p className="cursor-pointer mb-2" onClick={() => navigate('/profile')}>Profile</p>
+            <p className="cursor-pointer mb-2" onClick={() => navigate('/edit-profile')}>Edit Profile</p>
+            <p className="cursor-pointer text-red-500" onClick={() => navigate('/')}>Logout</p>
+          </div>
+        )}
+
+        {/* Create Post Form */}
+        {showCreateForm && (
+          <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md mt-6">
+            <h2 className="text-2xl font-bold text-center mb-4">Create Post</h2>
+            <input name="title" value={newPost.title} onChange={(e) => handleFormChange(e, setNewPost)} placeholder="Post title" className="w-full border p-2 rounded mb-4" />
+            <textarea name="description" value={newPost.description} onChange={(e) => handleFormChange(e, setNewPost)} placeholder="Describe your post..." className="w-full border p-2 rounded mb-4" rows={4} />
+            <div className="mb-4">
+              {['Open', 'In Progress', 'Closed'].map(status => (
+                <label key={status} className="mr-4">
+                  <input type="radio" name="status" value={status} checked={newPost.status === status} onChange={(e) => handleFormChange(e, setNewPost)} className="mr-1" />{status}
+                </label>
+              ))}
+            </div>
+            <div className="mb-4">
+              {categoryOptions.map(cat => (
+                <label key={cat} className="block">
+                  <input type="checkbox" value={cat} checked={newPost.categories.includes(cat)} onChange={(e) => handleFormChange(e, setNewPost)} className="mr-2" />{cat}
+                </label>
+              ))}
+            </div>
+            <button type="submit" className="bg-purple-600 text-white w-full py-2 rounded">Post</button>
+          </form>
+        )}
+
+        {/* Create Event Form */}
+        {showEventForm && (
+          <form onSubmit={handleEventSubmit} className="bg-white p-6 rounded-lg shadow-md mt-6">
+            <h2 className="text-2xl font-bold text-center mb-4">Create Event</h2>
+            <input name="title" value={newEvent.title} onChange={(e) => handleFormChange(e, setNewEvent)} placeholder="Event title" className="w-full border p-2 rounded mb-4" />
+            <textarea name="description" value={newEvent.description} onChange={(e) => handleFormChange(e, setNewEvent)} placeholder="Describe the event..." className="w-full border p-2 rounded mb-4" rows={4} />
+            <button type="submit" className="bg-indigo-600 text-white w-full py-2 rounded">Create</button>
+          </form>
+        )}
+
+        {/* Posts List */}
+        <div className="mt-6 space-y-4">
+          {posts.map(post => (
+            <div key={post._id} className="bg-white p-4 rounded shadow">
+              <h3 className="text-lg font-semibold">{post.title}</h3>
+              <p>{post.description}</p>
+              <p className="text-sm italic text-gray-500">Status: {post.status}</p>
+              <p className="text-sm text-gray-600">By: {post.createdBy?.name || 'Unknown User'}</p>
             </div>
           ))}
-        </main>
+        </div>
       </div>
     </div>
   );

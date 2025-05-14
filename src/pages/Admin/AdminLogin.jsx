@@ -72,9 +72,12 @@ const AdminLogin = () => {
 
     setError("")
 
+    const isProd = import.meta.env.MODE === "production"
     try {
       const res = await axios.post(
-        "/api/admin/login",
+        isProd
+        ? `${import.meta.env.VITE_API_URL}api/admin/login` // Path used when site is deployed
+        : "/api/admin/login", // Path used when in dev mode
         { email: email.trim(), password },
         { withCredentials: true }
       )

@@ -11,11 +11,16 @@ const AdminMainDashboard = () => {
   // Verify admin status
   useEffect(() => {
     const verifyAdmin = async () => {
+      const isProd = import.meta.env.MODE === "production"
       try {
-        const response = await axios.get("/api/users/currentUser", {
-          withCredentials: true,
-          headers: { "X-CSRF-Token": csrfToken }
-        });
+        const response = await axios.get(
+          isProd
+          ? `${import.meta.env.VITE_API_URL}api/users/currentUser` // Path used when site is deployed
+          : "/api/users/currentUser", // Path used when in dev mode 
+          {
+            withCredentials: true,
+            headers: { "X-CSRF-Token": csrfToken }
+          })
         
         if (response.data.role === "admin") {
           setIsAdmin(true)

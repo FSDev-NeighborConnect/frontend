@@ -21,8 +21,7 @@ import Login from './pages/Login.jsx';
 import NewUser from './pages/NewUser/newuser.jsx';
 import UserProfile from './pages/userprofile.jsx';
 
-// ✅ Correct import for Homepage.jsx (adjusted to match src/pages/homepage.jsx)
-import Homepage from './pages/homepage.jsx';
+import Homepage from './homepage.jsx'; // ✅ CORRECT path based on your project structure
 
 function App() {
   return (
@@ -30,7 +29,7 @@ function App() {
       <UserProvider>
         <Router>
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Homepage />} /> {/* ✅ Loads homepage.jsx */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<NewUser />} />
             <Route path="/about" element={<AboutPage />} />
@@ -45,11 +44,6 @@ function App() {
             <Route path="/admin/update-post" element={<UpdatePost />} />
             <Route path="/admin/create-user" element={<CreateUser />} />
             <Route path="/admin/create-post" element={<AdminCreatePost />} />
-
-            {/* ✅ Route to your custom homepage */}
-            <Route path="/homepage" element={<Homepage />} />
-
-            {/* Catch-all route */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Router>

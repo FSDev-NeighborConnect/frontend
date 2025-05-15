@@ -6,7 +6,7 @@ import axios from "axios"
 import { useUser } from "../context/UserContext"
 import { useCsrf } from "../context/CsrfContext"
 import { User, Mail, Phone, MapPin, Home, ImageIcon, X, Save, ArrowLeft, Plus, AlertCircle } from "lucide-react"
-import "./userProfile.css"
+import "./userprofile.css"
 import HobbiesModal from './NewUser/HobbiesModal'
 
 

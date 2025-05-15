@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import { useCsrf } from "../../context/CsrfContext"
+import { apiUrl, apiConfigCsrf } from "../../utils/apiUtil"
 
 const AdminMainDashboard = () => {
   const navigate = useNavigate()
@@ -12,10 +13,10 @@ const AdminMainDashboard = () => {
   useEffect(() => {
     const verifyAdmin = async () => {
       try {
-        const response = await axios.get("/api/users/currentUser", {
-          withCredentials: true,
-          headers: { "X-CSRF-Token": csrfToken }
-        });
+        const response = await axios.get(
+          apiUrl("api/users/currentUser"),
+          apiConfigCsrf(csrfToken)
+        )
         
         if (response.data.role === "admin") {
           setIsAdmin(true)

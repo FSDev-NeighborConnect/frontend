@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import HobbiesModal from './HobbiesModal'
 import validateForm from './ValidateRegisterInputs.jsx'
+import { apiUrl, apiConfig } from '../../utils/apiUtil.jsx'
 
 function NewUser() {
   const [formData, setFormData] = useState({
@@ -13,7 +14,6 @@ function NewUser() {
     streetAddress: '',
     postalCode: '',
     phone: '',
-    avatarUrl: '',
     bio: '',
     role: 'member',
     hobbies: []
@@ -64,7 +64,10 @@ function NewUser() {
 
     try {
       const { confirmPassword, ...userData } = formData
-      await axios.post("/api/signup", userData, { withCredentials: true })
+      await axios.post(
+        apiUrl("api/signup"),
+        userData,
+        apiConfig())
       navigate("/login")
     } catch (err) {
       showError(err.response?.data?.message || "Registration failed")

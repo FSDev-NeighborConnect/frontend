@@ -6,7 +6,6 @@ const validateForm = (formData) => {
   const trimmedAddress = formData.streetAddress.trim()
   const trimmedPostalCode = formData.postalCode.trim()
   const trimmedPhone = formData.phone.trim()
-  const trimmedAvatarUrl = formData.avatarUrl.trim()
 
   // Validate name
   if (!trimmedName) {

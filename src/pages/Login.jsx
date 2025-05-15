@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom"
 import axios from "axios"
 import { useCsrf } from "../context/CsrfContext"
 import { useUser } from "../context/UserContext"
+import { apiUrl, apiConfig } from "../utils/apiUtil"
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -75,17 +76,16 @@ const Login = () => {
     setError("")
 
     try {
-
       const res = await axios.post(
-        "/api/login",
+        apiUrl("api/login"),
         { email: email.trim(), password },
-        { withCredentials: true }
+        apiConfig()
       )
       // Storing csrf token and user id in React context
       setCsrfToken(res.data.csrfToken)
       setUserId(res.data.user.id)
 
-      navigate("/") // Add correct navigation when the page is added to the router.
+      navigate("/profile") // Add correct navigation when the page is added to the router.
     } catch (err) {
       setError(err.response?.data?.message || "Login failed")
     }

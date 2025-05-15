@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { useCsrf } from '../../context/CsrfContext.jsx'
+import { apiUrl, apiConfigCsrf } from '../../utils/apiUtil.jsx'
 
 function CreatePost() {
   const [formData, setFormData] = useState({
@@ -22,16 +23,16 @@ function CreatePost() {
     const fetchCurrentUser = async () => {
       try {
         // Get basic user info (id and role)
-        const currentUserResponse = await axios.get("/api/users/currentUser", {
-          withCredentials: true,
-          headers: { "X-CSRF-Token": csrfToken }
-        })
-        
+        const currentUserResponse = await axios.get(
+          apiUrl("api/users/currentUser"),
+          apiConfigCsrf(csrfToken)
+        )
+
         // Get full user details including address
-        const userDetailsResponse = await axios.get(`/api/users/user/${currentUserResponse.data.id}`, {
-          withCredentials: true,
-          headers: { "X-CSRF-Token": csrfToken }
-        })
+        const userDetailsResponse = await axios.get(
+          apiUrl(`api/users/user/${currentUserResponse.data.id}`),
+          apiConfigCsrf(csrfToken)
+        )
         
         setCurrentUser(userDetailsResponse.data)
       } catch (err) {
@@ -88,10 +89,11 @@ function CreatePost() {
         category: formData.category
       }
 
-      const response = await axios.post("/api/posts/post", postData, { 
-        withCredentials: true, 
-        headers: { "X-CSRF-Token": csrfToken }
-      })
+      const response = await axios.post(
+        apiUrl("api/posts/post"),
+        postData,
+        apiConfigCsrf(csrfToken)
+      )
       navigate("/admin/dashboard-posts")
     } catch (err) {
       console.error("Full error response:", err.response)

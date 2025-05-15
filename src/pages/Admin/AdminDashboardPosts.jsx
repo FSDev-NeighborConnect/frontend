@@ -3,6 +3,7 @@ import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import { useCsrf } from "../../context/CsrfContext.jsx"
 import PostDetailModal from "./PostDetailModal.jsx"
+import { apiUrl, apiConfigCsrf } from "../../utils/apiUtil.jsx"
 
 const AdminDashboardPosts = () => {
   const [posts, setPosts] = useState([])
@@ -18,10 +19,10 @@ const AdminDashboardPosts = () => {
   useEffect(() => {
     const verifyAdmin = async () => {
       try {
-        const response = await axios.get("/api/users/currentUser", {
-          withCredentials: true,
-          headers: { "X-CSRF-Token": csrfToken }
-        })
+        const response = await axios.get(
+          apiUrl("api/users/currentUser"),
+          apiConfigCsrf(csrfToken)
+        )
 
         if (response.data.role === "admin") {
           setIsAdmin(true)
@@ -41,10 +42,10 @@ const AdminDashboardPosts = () => {
   // Fetch posts from the backend
   const fetchPosts = async () => {
     try {
-      const response = await axios.get("/api/admin/all/posts", {
-        withCredentials: true,
-        headers: { "X-CSRF-Token": csrfToken }
-      })
+      const response = await axios.get(
+        apiUrl("api/admin/all/posts"),
+        apiConfigCsrf(csrfToken)
+      )
       setPosts(response.data)
     } catch (err) {
       setError(err.response?.status === 403
@@ -63,10 +64,10 @@ const AdminDashboardPosts = () => {
   // Handle post delete
   const handleDelete = async (postId) => {
     try {
-      await axios.delete(`/api/admin/posts/${postId}`, {
-        withCredentials: true,
-        headers: { "X-CSRF-Token": csrfToken }
-      })
+      await axios.delete(
+        apiUrl(`api/admin/posts/${postId}`),
+        apiConfigCsrf(csrfToken)
+      )
       setPosts(posts.filter((post) => post._id !== postId))
     } catch (err) {
       alert("Failed to delete post!")

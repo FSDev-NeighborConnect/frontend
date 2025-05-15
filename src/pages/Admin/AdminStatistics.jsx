@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { useCsrf } from '../../context/CsrfContext.jsx'
+import { apiUrl, apiConfigCsrf } from '../../utils/apiUtil.jsx'
 
 const DashboardStatistics = () => {
   const [stats, setStats] = useState({
@@ -19,14 +20,14 @@ const DashboardStatistics = () => {
     setError(null)
     try {
       const [postsRes, usersRes] = await Promise.all([
-        axios.get('/api/admin/all/posts', {
-          withCredentials: true,
-          headers: { 'X-CSRF-Token': csrfToken }
-        }),
-        axios.get('/api/admin/all/users', {
-          withCredentials: true,
-          headers: { 'X-CSRF-Token': csrfToken }
-        })
+        axios.get(
+          apiUrl("api/admin/all/posts"),
+          apiConfigCsrf(csrfToken)
+        ),
+        axios.get(
+          apiUrl("api/admin/all/users"),
+          apiConfigCsrf(csrfToken)
+        )
       ])
 
       const posts = postsRes.data

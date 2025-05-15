@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import axios from "axios"
 import { useCsrf } from "../../context/CsrfContext.jsx"
+import { apiUrl, apiConfigCsrf } from "../../utils/apiUtil.jsx"
 
 export default function UpdatePost() {
   const { state } = useLocation()
@@ -49,10 +50,11 @@ export default function UpdatePost() {
     setError("")
     
     try {
-      const response = await axios.put(`/api/admin/posts/${post._id}`, formData, { 
-        withCredentials: true, 
-        headers: { "X-CSRF-Token": csrfToken }
-      })
+      const response = await axios.put(
+        apiUrl(`api/admin/posts/${post._id}`),
+        formData,
+        apiConfigCsrf(csrfToken)
+      )
 
       if (response.status === 200) {
         navigate("/admin/dashboard-posts")

@@ -4,6 +4,7 @@ import axios from "axios"
 import HobbiesModal from "../NewUser/HobbiesModal.jsx"
 import validateUpdateForm from "./validateUpdateUserInputs.jsx"
 import { useCsrf } from "../../context/CsrfContext.jsx"
+import { apiUrl, apiConfigCsrf } from "../../utils/apiUtil.jsx"
 
 export default function UpdateUser() {
   const { state } = useLocation()
@@ -34,10 +35,10 @@ export default function UpdateUser() {
   useEffect(() => {
     const fetchCurrentAdmin = async () => {
       try {
-        const response = await axios.get("/api/users/currentUser", {
-          withCredentials: true,
-          headers: { "X-CSRF-Token": csrfToken }
-        })
+        const response = await axios.get(
+          apiUrl("api/users/currentUser"),
+          apiConfigCsrf(csrfToken)
+        )
         setCurrentAdminId(response.data.id)
       } catch (err) {
         console.error("Failed to fetch current admin:", err)
@@ -100,7 +101,11 @@ export default function UpdateUser() {
 
     try {
       const { confirmPassword, password, ...userData } = formData  // Remove password and confirmPassword from the user data
-      const response = await axios.put(`/api/admin/users/${user._id}`, userData, { withCredentials: true, headers: {"X-CSRF-Token": csrfToken}})
+      const response = await axios.put(
+        apiUrl(`api/admin/users/${user._id}`),
+        userData,
+        apiConfigCsrf(csrfToken)
+      )
 
       // If the update is successful, redirect to the dashboard
       if (response.status === 200) {

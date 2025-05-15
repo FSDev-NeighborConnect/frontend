@@ -169,69 +169,71 @@ function UserProfile() {
   }
 
   // Function to fetch user data and posts
-  const fetchUserData = async () => {
-    setLoading(true)
-    setError(null)
+    const fetchUserData = async () => {
+      setLoading(true)
+      setError(null)
 
-    try {
-      if (!currentUserId) {
-        throw new Error("User ID not found. Please log in again.")
-      }
-
-      // Fetch user data with CSRF token
-      const userResponse = await axios.get(`/api/users/user/${currentUserId}`, {
-        withCredentials: true,
-        headers: { "X-CSRF-Token": csrfToken },
-      })
-
-      const userData = userResponse.data
-      setUser(userData)
-
-      // Fetch user's posts with error handling - try multiple endpoints
       try {
-        // First try /api/posts/user/:id
-        const postsResponse = await axios.get(`/api/posts/user/${currentUserId}`, {
+        if (!currentUserId) {
+          throw new Error("User ID not found. Please log in again.")
+        }
+
+        // Fetch user data with CSRF token
+        const userResponse = await axios.get(`/api/users/user/${currentUserId}`, {
           withCredentials: true,
           headers: { "X-CSRF-Token": csrfToken },
         })
-        setPosts(postsResponse.data || [])
-      } catch (postError) {
-        console.error("Error fetching posts:", postError)
-        setPosts([])
-      }
 
-      // Fetch events - try multiple endpoints
-      try {
-        // First try /api/events/user/:id
-        const eventsResponse = await axios.get(`/api/events/user/${currentUserId}`, {
-          withCredentials: true,
-          headers: { "X-CSRF-Token": csrfToken },
-        })
-        setEvents(eventsResponse.data || [])
-      } catch (eventError) {
-        console.error("Error fetching events:", eventError)
-        setEvents([])
-      }
+        const userData = userResponse.data
+        setUser(userData)
 
-      // Fetch neighbors (users with same postal code)
-      try {
-        if (isOwnProfile && userData.postalCode) {
-          const neighborsResponse = await axios.get(`/api/users/zip/${userData.postalCode}`, {
+        // Fetch user's posts with error handling - try multiple endpoints
+        try {
+          // First try /api/posts/user/:id
+          const postsResponse = await axios.get(`${import.meta.env.VITE_API_URL}api/posts/user/${currentUserId}`,{
+
+          // const postsResponse = await axios.get(`/api/posts/user/${currentUserId}`, {
             withCredentials: true,
             headers: { "X-CSRF-Token": csrfToken },
           })
-
-          // Filter out the current user from neighbors
-          const allNeighbors = neighborsResponse.data || []
-          setNeighbors(allNeighbors.filter((neighbor) => neighbor._id !== currentUserId))
+          setPosts(postsResponse.data || [])
+        } catch (postError) {
+          console.error("Error fetching posts:", postError)
+          setPosts([])
         }
-      } catch (neighborError) {
-        console.error("Error fetching neighbors:", neighborError)
-        setNeighbors([])
-      }
-    } catch (err) {
-      console.error("Error fetching user data:", err)
-      setError(err.response?.data?.message || "Failed to load data")
+
+        // Fetch events - try multiple endpoints
+        try {
+          // First try /api/events/user/:id
+          const eventsResponse = await axios.get(`/api/events/user/${currentUserId}`, {
+            withCredentials: true,
+            headers: { "X-CSRF-Token": csrfToken },
+          })
+          setEvents(eventsResponse.data || [])
+        } catch (eventError) {
+          console.error("Error fetching events:", eventError)
+          setEvents([])
+        }
+
+        // Fetch neighbors (users with same postal code)
+        try {
+          if (isOwnProfile && userData.postalCode) {
+            const neighborsResponse = await axios.get(`/api/users/zip/${userData.postalCode}`, {
+              withCredentials: true,
+              headers: { "X-CSRF-Token": csrfToken },
+            })
+
+            // Filter out the current user from neighbors
+            const allNeighbors = neighborsResponse.data || []
+            setNeighbors(allNeighbors.filter((neighbor) => neighbor._id !== currentUserId))
+          }
+        } catch (neighborError) {
+          console.error("Error fetching neighbors:", neighborError)
+          setNeighbors([])
+        }
+      } catch (err) {
+        console.error("Error fetching user data:", err)
+        setError(err.response?.data?.message || "Failed to load data")
     } finally {
       setLoading(false)
     }
@@ -465,8 +467,11 @@ function UserProfile() {
                   <Users className="h-3 w-3 mr-1" />
                   Profile
                 </button>
-                <button className="px-3 py-1 text-xs border border-gray-300 rounded-md hover:bg-gray-50 flex items-center">
+                    <button className="px-3 py-1 text-xs border border-gray-300 rounded-md hover:bg-gray-50 flex items-center"
+                        onClick={() => navigate(`/chat/${neighbor._id}`)}>  
+                
                   <MessageSquare className="h-3 w-3 mr-1" />
+
                   Message
                 </button>
               </div>

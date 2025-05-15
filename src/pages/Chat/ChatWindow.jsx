@@ -1,5 +1,6 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext  } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUser  } from "../../context/UserContext";
 
 import { sendMessage } from "../../firebase/sendMessage";
 import { listenToMessages } from "../../firebase/listenToMessages";
@@ -8,16 +9,21 @@ import { useParams } from 'react-router-dom';
 import './ChatBox.css';
 
 export default function ChatBox({ onClose }) {
-  const { targetUserId } = useParams(); // Get from URL like /chat/:targetUserId
-  const { targetAvatar } = useParams(); // Get from URL like /chat/:targetUserId
+  const { targetUserId } = useParams();
+
+
+  // const { targetUserId } = useParams(); // Get from URL like /chat/:targetUserId
+  // const { targetAvatar } = useParams(); // Get from URL like /chat/:targetUserId
   
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user")); // Get logged-in user
+  // const user = JSON.parse(localStorage.getItem("user")); // Get logged-in user
+  const { userId } = useUser();
+console.log({userId})
   let currentUserId;
-  if (user) {
-    currentUserId = user.id;
+  if (userId) {
+    currentUserId = userId;
   }
-
+console.log({currentUserId})
   // If not logged in, redirect to login
   useEffect(() => {
     if (!currentUserId) {
@@ -70,11 +76,11 @@ export default function ChatBox({ onClose }) {
     <div className="chatbox-container">
   <div className="chatbox-header">
     <div className="chatbox-user-info">
-      <img
+      {/* <img
         src={targetAvatar}
         alt={targetUserId}
         className="chatbox-avatar"
-      />
+      /> */}  
       <span className="chatbox-title">
         {targetUserId.charAt(0).toUpperCase() + targetUserId.slice(1)}
       </span>

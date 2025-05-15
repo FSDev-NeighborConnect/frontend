@@ -5,6 +5,7 @@ import { Send, AlertCircle } from "lucide-react"
 import axios from "axios"
 import { useUser } from "../context/UserContext"
 import { useCsrf } from "../context/CsrfContext"
+import { apiUrl } from  "../utils/apiUtil"
 
 function PostComments({ postId, initialComments = [] }) {
   const { userId } = useUser()
@@ -28,7 +29,7 @@ function PostComments({ postId, initialComments = [] }) {
 
     try {
       const response = await axios.post(
-        `/api/posts/${postId}/comments`,
+        apiUrl(`api/posts/${postId}/comments`),
         { content: newComment, userId },
         {
           withCredentials: true,

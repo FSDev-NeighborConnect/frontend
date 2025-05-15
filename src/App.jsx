@@ -21,6 +21,9 @@ import Login from './pages/Login.jsx'
 import NewUser from './pages/NewUser/newuser.jsx'
 import UserProfile from './pages/userprofile.jsx'
 
+// To create Chat component
+import ChatWindow from './pages/Chat/ChatWindow';
+
 function App() {
   return (
     <CsrfProvider>
@@ -45,6 +48,9 @@ function App() {
             <Route path="/admin/create-post" element={<AdminCreatePost />} />
             {/* Catch-all route that redirects to home */}
             <Route path="*" element={<Navigate to="/" replace />} />
+            {/* Route created for Chatting */}
+            <Route path="/chat/:targetUserId" element={<ChatWindow />} />
+
           </Routes>
         </Router>
       </UserProvider>

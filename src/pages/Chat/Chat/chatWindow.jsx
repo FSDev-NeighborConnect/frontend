@@ -1,21 +1,54 @@
-// src/components/ChatBox.jsx
 import { useEffect, useState, useRef } from "react";
-import { sendMessage } from "../firebase/sendMessage";
-import { listenToMessages } from "../firebase/listenToMessages";
-import { startChat } from "../firebase/startChat";
+import { useNavigate } from "react-router-dom";
 
-export default function ChatBox({ currentUserId, targetUserId, onClose }) {
+import { sendMessage } from "../../firebase/sendMessage";
+import { listenToMessages } from "../../firebase/listenToMessages";
+import { startChat } from "../../firebase/startChat";
+import { useParams } from 'react-router-dom';
+import './ChatBox.css';
+
+export default function ChatBox({ onClose }) {
+  const { targetUserId } = useParams(); // Get from URL like /chat/:targetUserId
+  const { targetAvatar } = useParams(); // Get from URL like /chat/:targetUserId
+  
+  const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user")); // Get logged-in user
+  let currentUserId;
+  if (user) {
+    currentUserId = user.id;
+  }
+
+  // If not logged in, redirect to login
+  useEffect(() => {
+    if (!currentUserId) {
+      navigate("/login");
+    }
+  }, [currentUserId, navigate]);
+
   const [messages, setMessages] = useState([]);
   const [chatId, setChatId] = useState(null);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    startChat(currentUserId, targetUserId).then((id) => {
-      setChatId(id);
-      const unsub = listenToMessages(id, setMessages);
-      return () => unsub();
-    });
+    console.log("currentUserId:", currentUserId);
+    console.log("targetUserId:", targetUserId);
+
+    if (!currentUserId || !targetUserId) {
+      console.error("Missing IDs, cannot start chat");
+      return;
+    }
+
+    startChat(currentUserId, targetUserId)
+      .then((id) => {
+        console.log(":-) Chat ID from startChat:", id);
+        setChatId(id);
+        const unsub = listenToMessages(id, setMessages);
+        return () => unsub(); // Stop listening when component unmounts
+      })
+      .catch(err => {
+        console.error(" X Error from startChat:", err);
+      });
   }, [currentUserId, targetUserId]);
 
   useEffect(() => {
@@ -24,26 +57,45 @@ export default function ChatBox({ currentUserId, targetUserId, onClose }) {
 
   const handleSend = async () => {
     if (!input.trim()) return;
+    if (!chatId) {
+      alert("Chat not ready");
+      return;
+    }
+
     await sendMessage(chatId, currentUserId, input.trim());
     setInput("");
   };
 
   return (
-    <div className="fixed bottom-4 right-4 w-80 h-96 bg-white border border-gray-300 rounded-lg shadow-lg flex flex-col z-50">
-      <div className="flex justify-between items-center p-3 border-b border-gray-200 bg-gray-100">
-        <span className="font-semibold">Chat</span>
-        <button onClick={onClose} className="text-xl font-bold hover:text-red-500">&times;</button>
-      </div>
+    <div className="chatbox-container">
+  <div className="chatbox-header">
+    <div className="chatbox-user-info">
+      <img
+        src={targetAvatar}
+        alt={targetUserId}
+        className="chatbox-avatar"
+      />
+      <span className="chatbox-title">
+        {targetUserId.charAt(0).toUpperCase() + targetUserId.slice(1)}
+      </span>
+    </div>
 
-      <div className="flex-1 overflow-y-auto p-3 space-y-2 bg-gray-50">
+    
+      <button
+    onClick={() => navigate("/users")}
+    className="chatbox-close"
+    title="Close chat"
+  >
+    &times;
+  </button>
+  
+  </div>
+  
+      <div className="chatbox-messages">
         {messages.map((msg) => (
           <div
             key={msg.id}
-            className={`text-sm px-3 py-2 rounded max-w-[80%] ${
-              msg.senderId === currentUserId
-                ? "ml-auto bg-blue-500 text-white"
-                : "mr-auto bg-gray-200 text-gray-900"
-            }`}
+            className={`chatbox-message ${msg.senderId === currentUserId ? "chatbox-message-sent" : "chatbox-message-received"}`}
           >
             {msg.text}
           </div>
@@ -51,17 +103,17 @@ export default function ChatBox({ currentUserId, targetUserId, onClose }) {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="flex items-center border-t border-gray-200 p-2">
+      <div className="chatbox-input-area">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSend()}
-          className="flex-1 border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none"
-          placeholder="Type a message..."
+          className="chatbox-input"
+          placeholder="Type a message"
         />
         <button
           onClick={handleSend}
-          className="ml-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded text-sm"
+          className="chatbox-send"
         >
           Send
         </button>

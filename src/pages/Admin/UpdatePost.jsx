@@ -4,6 +4,7 @@ import axios from "axios"
 import { useCsrf } from "../../context/CsrfContext.jsx"
 import { apiUrl, apiConfigCsrf } from "../../utils/apiUtil.jsx"
 import { AuthPageHeader } from "../AuthPageHeader.jsx"
+import HobbiesModal from "../NewUser/HobbiesModal.jsx"
 
 export default function UpdatePost() {
   const { state } = useLocation()
@@ -17,6 +18,7 @@ export default function UpdatePost() {
 
   const { csrfToken } = useCsrf()
   const [error, setError] = useState("")
+  const [showCategoriesModal, setShowCategoriesModal] = useState(false)
   const navigate = useNavigate()
 
   const showError = (message) => {
@@ -29,22 +31,23 @@ export default function UpdatePost() {
     setFormData({ ...formData, [name]: value })
   }
 
-  const handleCategoryChange = (e) => {
-    const { value, checked } = e.target
-    setFormData(prev => {
-      if (checked) {
+  const toggleCategory = (category) => {
+    setFormData((prev) => {
+      if (prev.category.includes(category)) {
         return {
           ...prev,
-          category: [...prev.category, value]
+          category: prev.category.filter((c) => c !== category),
         }
       } else {
         return {
           ...prev,
-          category: prev.category.filter(cat => cat !== value)
+          category: [...prev.category, category],
         }
       }
     })
   }
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -66,17 +69,6 @@ export default function UpdatePost() {
       showError(err.response?.data?.message || "Update failed")
     }
   }
-
-  // Define available categories
-  const availableCategories = [
-    'Community',
-    'Environment',
-    'Education',
-    'Health',
-    'Safety',
-    'Infrastructure',
-    'Events'
-  ]
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -181,24 +173,28 @@ export default function UpdatePost() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 font-roboto">
-                      Categories
+                      Categories (optional)
                     </label>
-                    <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      {availableCategories.map((category) => (
-                        <label key={category} className="inline-flex items-center">
-                          <input
-                            type="checkbox"
-                            value={category}
-                            checked={formData.category.includes(category)}
-                            onChange={handleCategoryChange}
-                            className="form-checkbox text-purple-600"
-                          />
-                          <span className="ml-2 text-gray-700 font-roboto">
-                            {category}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowCategoriesModal(true)}
+                      className="mt-1 w-full flex justify-between items-center px-3 py-2 bg-purple-50 border border-gray-300 
+                      text-gray-800 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                    >
+                      <span>
+                        {formData.category.length > 0
+                          ? formData.category.join(", ")
+                          : "Select categories"}
+                      </span>
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        width="18" height="18" viewBox="0 0 24 24" 
+                        fill="none" stroke="#1f2937" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="16"/>
+                        <line x1="8" y1="12" x2="16" y2="12"/>
+                      </svg>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -242,6 +238,14 @@ export default function UpdatePost() {
           </div>
         </div>
       </div>
+
+      {showCategoriesModal && (
+        <HobbiesModal
+          selectedHobbies={formData.category}
+          toggleHobby={toggleCategory}
+          onClose={() => setShowCategoriesModal(false)}
+        />
+      )}
     </div>
   )
 }

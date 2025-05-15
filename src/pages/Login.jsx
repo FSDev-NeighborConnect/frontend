@@ -75,7 +75,6 @@ const Login = () => {
 
     setError("")
 
-    const isProd = import.meta.env.MODE === "production"
     try {
       const res = await axios.post(
         apiUrl("api/login"),

@@ -6,6 +6,7 @@ import axios from "axios"
 import { useUser } from "../context/UserContext"
 import { useCsrf } from "../context/CsrfContext"
 import CreatePostModal from "./CreatePostModal"
+import CreateEventModal from "./CreateEventModal"
 import PostComments from "./PostComments"
 import { apiUrl } from  "../utils/apiUtil"
 import {
@@ -48,7 +49,7 @@ function UserProfile() {
   const [error, setError] = useState(null)
   const [activeTab, setActiveTab] = useState("posts")
   const [showCreatePostModal, setShowCreatePostModal] = useState(false)
-  const [showCreateEventModal, setShowCreateEventModal] = useState(false)
+  const [showCreateEventModal, setShowCreateEventModal] = useState(false) 
   const [expandedComments, setExpandedComments] = useState({})
   const [showDropdown, setShowDropdown] = useState(false)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
@@ -204,7 +205,7 @@ function UserProfile() {
       // Fetch events - try multiple endpoints
       try {
         // First try /api/events/user/:id
-        const eventsResponse = await axios.get(apiUrl(`api/events/user/${currentUserId}`), {
+        const eventsResponse = await axios.get(apiUrl(`api/event/user/${currentUserId}`), {
           withCredentials: true,
           headers: { "X-CSRF-Token": csrfToken },
         })
@@ -691,12 +692,12 @@ function UserProfile() {
         onPostCreated={handlePostCreated}
       />
 
+      
       {/* Create Event Modal */}
-      <CreatePostModal
+      <CreateEventModal
         isOpen={showCreateEventModal}
         onClose={() => setShowCreateEventModal(false)}
-        postType="event"
-        onPostCreated={handlePostCreated}
+        onEventCreated={handlePostCreated}
       />
     </div>
   )

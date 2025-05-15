@@ -8,6 +8,7 @@ const AdminMainDashboard = () => {
   const navigate = useNavigate()
   const { csrfToken } = useCsrf()
   const [isAdmin, setIsAdmin] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   // Verify admin status
   useEffect(() => {
@@ -26,6 +27,8 @@ const AdminMainDashboard = () => {
       } catch (error) {
         console.error("Admin verification failed:", error)
         navigate("/admin/login")
+      } finally {
+        setIsLoading(false)
       }
     }
 
@@ -33,8 +36,12 @@ const AdminMainDashboard = () => {
   }, [navigate, csrfToken])
 
   // If not admin (will redirect automatically)
-  if (!isAdmin) {
-    return null
+  if (!isAdmin || isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-700"></div>
+      </div>
+    )
   }
   
   return (

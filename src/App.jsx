@@ -22,7 +22,7 @@ import NewUser from './pages/NewUser/newuser.jsx'
 import UserProfile from './pages/userprofile.jsx'
 
 // To create Chat component
-import ChatWindow from './pages/Chat/ChatWindow';
+import ChatWindow from './pages/Chat/ChatWindow.jsx';
 
 function App() {
   return (

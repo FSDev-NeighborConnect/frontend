@@ -1,6 +1,6 @@
 
 //  Import Firestore functions to interact with your Firebase database.
-src/firebase/startChat.js
+// src/firebase/startChat.js
 import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
 import { db } from "./firebase";
 

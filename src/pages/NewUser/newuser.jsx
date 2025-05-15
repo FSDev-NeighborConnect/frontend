@@ -14,7 +14,6 @@ function NewUser() {
     streetAddress: '',
     postalCode: '',
     phone: '',
-    avatarUrl: '',
     bio: '',
     role: 'member',
     hobbies: []

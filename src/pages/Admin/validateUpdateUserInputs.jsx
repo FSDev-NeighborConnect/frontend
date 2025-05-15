@@ -4,7 +4,6 @@ const validateUpdateForm = (formData) => {
   const trimmedAddress = formData.streetAddress.trim()
   const trimmedPostalCode = formData.postalCode.trim()
   const trimmedPhone = formData.phone.trim()
-  const trimmedAvatarUrl = formData.avatarUrl.trim()
 
   // Validate name
   if (!trimmedName) {
@@ -40,15 +39,6 @@ const validateUpdateForm = (formData) => {
     return "Phone number is required"
   } else if (!/^[0-9-+() ]+$/.test(trimmedPhone)) {
     return "Please enter a valid phone number"
-  }
-
-  // Validate avatar url
-  if (trimmedAvatarUrl) {
-    try {
-      new URL(trimmedAvatarUrl)
-    } catch (err) {
-      return "Please enter a valid URL"
-    }
   }
 
   // If all validations pass

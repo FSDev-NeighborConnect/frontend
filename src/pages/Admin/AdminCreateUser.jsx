@@ -16,7 +16,6 @@ function CreateUser() {
     streetAddress: '',
     postalCode: '',
     phone: '',
-    avatarUrl: '',
     bio: '',
     role: 'member',
     hobbies: []
@@ -205,14 +204,6 @@ function CreateUser() {
                   Profile Details
                 </h3>
                 <div className="grid grid-cols-1 gap-6">
-                  <div>
-                    <label htmlFor="avatarUrl" className="block text-sm font-medium text-gray-700 font-roboto">
-                      Avatar URL (optional) {/* Might change to enable upload of image in the future. Need backend support for this first */}
-                    </label>
-                    <input id="avatarUrl" name="avatarUrl" type="text" placeholder="https://example.com/avatar.jpg"
-                    value={formData.avatarUrl} onChange={handleChange} className={`mt-1 ${inputStyle}`} />
-                  </div>
-
                   <div>
                     <label htmlFor="bio" className="block text-sm font-medium text-gray-700 font-roboto">
                       Short Bio (max 500 characters)(optional)

@@ -19,7 +19,6 @@ export default function UpdateUser() {
     streetAddress: user?.streetAddress || "",
     postalCode: user?.postalCode || "",
     phone: user?.phone || "",
-    avatarUrl: user?.avatarUrl || "",
     bio: user?.bio || "",
     role: user?.role || "member",
     hobbies: user?.hobbies || []
@@ -229,14 +228,6 @@ export default function UpdateUser() {
                   Profile Details
                 </h3>
                 <div className="grid grid-cols-1 gap-6">
-                  <div>
-                    <label htmlFor="avatarUrl" className="block text-sm font-medium text-gray-700 font-roboto">
-                      Avatar URL (optional)
-                    </label>
-                    <input  id="avatarUrl"  name="avatarUrl"  type="text"  placeholder="https://example.com/avatar.jpg"
-                      value={formData.avatarUrl}  onChange={handleChange}  className={`mt-1 ${inputStyle}`} />
-                  </div>
-
                   <div>
                     <label htmlFor="bio" className="block text-sm font-medium text-gray-700 font-roboto">
                       Short Bio (max 500 characters) (optional)

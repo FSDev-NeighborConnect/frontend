@@ -6,6 +6,7 @@ import { UserProvider } from './context/UserContext.jsx'
 
 import AdminCreatePost from './pages/Admin/AdminCreatePost.jsx'
 import AdminDashboard from './pages/Admin/AdminDashboard.jsx'
+import AdminDashboardEvents from './pages/Admin/AdminDashboardEvents.jsx'
 import AdminDashboardPosts from './pages/Admin/AdminDashboardPosts.jsx'
 import AdminDashboardUsers from './pages/Admin/AdminDashboardUsers.jsx'
 import AdminLogin from './pages/Admin/AdminLogin.jsx'
@@ -36,6 +37,7 @@ function App() {
             <Route path="/edit-profile" element={<EditProfile />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/dashboard-events" element={<AdminDashboardEvents />} />
             <Route path="/admin/dashboard-users" element={<AdminDashboardUsers />} />
             <Route path="/admin/dashboard-posts" element={<AdminDashboardPosts />} />
             <Route path="/admin/dashboard-statistics" element={<DashboardStatistics />} />

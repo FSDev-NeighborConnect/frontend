@@ -64,6 +64,12 @@ const AdminMainDashboard = () => {
         Posts
       </button>
       <button
+        onClick={() => navigate("/admin/dashboard-events")}
+        className={"px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"}
+      >
+        Events
+      </button>
+      <button
         onClick={() => navigate("/admin/dashboard-statistics")}
         className={"px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"}
       >

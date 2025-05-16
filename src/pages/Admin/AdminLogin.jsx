@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import { useCsrf } from "../../context/CsrfContext"
+import { apiUrl, apiConfig } from "../../utils/apiUtil"
 
 const AdminLogin = () => {
   const [formData, setFormData] = useState({
@@ -74,9 +75,9 @@ const AdminLogin = () => {
 
     try {
       const res = await axios.post(
-        "/api/admin/login",
+        apiUrl("api/admin/login"),
         { email: email.trim(), password },
-        { withCredentials: true }
+        apiConfig()
       )
       setCsrfToken(res.data.csrfToken) // Storing token in React state
 

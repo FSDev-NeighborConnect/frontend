@@ -8,6 +8,7 @@ import { useCsrf } from "../context/CsrfContext"
 import CreatePostModal from "./CreatePostModal"
 import PostComments from "./PostComments"
 import ChatBox from "./Chat/ChatWindow"
+import { apiUrl } from  "../utils/apiUtil"
 import {
   CalendarDays,
   MapPin,
@@ -86,7 +87,7 @@ function UserProfile() {
 
       // Based on the backend code, the correct endpoint is /api/users/upload-avatar
       try {
-        const avatarResponse = await axios.post(`/api/users/upload-avatar`, avatarFormData, {
+        const avatarResponse = await axios.post(apiUrl("api/users/upload-avatar"), avatarFormData, {
           withCredentials: true,
           headers: {
             "Content-Type": "multipart/form-data",
@@ -121,7 +122,7 @@ function UserProfile() {
   const handleLike = async (postId) => {
     try {
       await axios.post(
-        `/api/posts/${postId}/like`,
+        apiUrl(`api/posts/${postId}/like`),
         { userId: currentUserId },
         {
           withCredentials: true,
@@ -185,7 +186,7 @@ function UserProfile() {
       }
 
       // Fetch user data with CSRF token
-      const userResponse = await axios.get(`/api/users/user/${currentUserId}`, {
+      const userResponse = await axios.get(apiUrl(`api/users/user/${currentUserId}`), {
         withCredentials: true,
         headers: { "X-CSRF-Token": csrfToken },
       })
@@ -196,7 +197,7 @@ function UserProfile() {
       // Fetch user's posts with error handling - try multiple endpoints
       try {
         // First try /api/posts/user/:id
-        const postsResponse = await axios.get(`/api/posts/user/${currentUserId}`, {
+        const postsResponse = await axios.get(apiUrl(`api/posts/user/${currentUserId}`), {
           withCredentials: true,
           headers: { "X-CSRF-Token": csrfToken },
         })
@@ -209,7 +210,7 @@ function UserProfile() {
       // Fetch events - try multiple endpoints
       try {
         // First try /api/events/user/:id
-        const eventsResponse = await axios.get(`/api/events/user/${currentUserId}`, {
+        const eventsResponse = await axios.get(apiUrl(`api/events/user/${currentUserId}`), {
           withCredentials: true,
           headers: { "X-CSRF-Token": csrfToken },
         })
@@ -222,7 +223,7 @@ function UserProfile() {
       // Fetch neighbors (users with same postal code)
       try {
         if (isOwnProfile && userData.postalCode) {
-          const neighborsResponse = await axios.get(`/api/users/zip/${userData.postalCode}`, {
+          const neighborsResponse = await axios.get(apiUrl(`api/users/zip/${userData.postalCode}`), {
             withCredentials: true,
             headers: { "X-CSRF-Token": csrfToken },
           })

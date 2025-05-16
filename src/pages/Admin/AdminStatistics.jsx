@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
-import { useCsrf } from '../../context/CsrfContext.jsx'
+import React, { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import axios from "axios"
+import { useCsrf } from "../../context/CsrfContext.jsx"
+import { apiUrl, apiConfigCsrf } from "../../utils/apiUtil.jsx"
 
 const DashboardStatistics = () => {
   const [stats, setStats] = useState({
@@ -18,39 +19,53 @@ const DashboardStatistics = () => {
     setLoading(true)
     setError(null)
     try {
-      const [postsRes, usersRes] = await Promise.all([
-        axios.get('/api/admin/all/posts', {
-          withCredentials: true,
-          headers: { 'X-CSRF-Token': csrfToken }
-        }),
-        axios.get('/api/admin/all/users', {
-          withCredentials: true,
-          headers: { 'X-CSRF-Token': csrfToken }
-        })
+      const [postsRes, usersRes, eventsRes] = await Promise.all([
+        axios.get(
+          apiUrl("api/admin/all/posts"),
+          apiConfigCsrf(csrfToken)
+        ),
+        axios.get(
+          apiUrl("api/admin/all/users"),
+          apiConfigCsrf(csrfToken)
+        ),
+        axios.get(
+          apiUrl("api/admin/all/events"),
+          apiConfigCsrf(csrfToken)
+        )
       ])
 
       const posts = postsRes.data
       const users = usersRes.data
+      const events = eventsRes.data
 
       // Combine neighborhood data
       const neighborhoodData = {}
       
       // Process posts
       posts.forEach(post => {
-        const zip = post.postalCode || 'Unknown'
+        const zip = post.postalCode || "Unknown"
         if (!neighborhoodData[zip]) {
-          neighborhoodData[zip] = { posts: 0, users: 0 }
+          neighborhoodData[zip] = { posts: 0, users: 0, events: 0 }
         }
         neighborhoodData[zip].posts += 1
       })
       
       // Process users
       users.forEach(user => {
-        const zip = user.postalCode || 'Unknown'
+        const zip = user.postalCode || "Unknown"
         if (!neighborhoodData[zip]) {
-          neighborhoodData[zip] = { posts: 0, users: 0 }
+          neighborhoodData[zip] = { posts: 0, users: 0, events: 0 }
         }
         neighborhoodData[zip].users += 1
+      })
+      
+      // Process events
+      events.forEach(event => {
+        const zip = event.postalCode || "Unknown"
+        if (!neighborhoodData[zip]) {
+          neighborhoodData[zip] = { posts: 0, users: 0, events: 0 }
+        }
+        neighborhoodData[zip].events += 1
       })
 
       // Calculate user roles
@@ -164,6 +179,9 @@ const DashboardStatistics = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Number of Posts
                   </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Number of Events
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -177,6 +195,9 @@ const DashboardStatistics = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {data.posts}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {data.events}
                     </td>
                   </tr>
                 ))}

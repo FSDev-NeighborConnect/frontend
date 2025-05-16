@@ -2,16 +2,16 @@ import React, { useEffect, useState } from "react"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import { useCsrf } from "../../context/CsrfContext.jsx"
-import PostDetailModal from "./PostDetailModal.jsx"
+import EventDetailModal from "./EventDetailModal.jsx"
 import { apiUrl, apiConfigCsrf } from "../../utils/apiUtil.jsx"
 
-const AdminDashboardPosts = () => {
-  const [posts, setPosts] = useState([])
+const AdminDashboardEvents = () => {
+  const [events, setEvents] = useState([])
   const [error, setError] = useState(null)
   const [isAdmin, setIsAdmin] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [groupByPostalCode, setGroupByPostalCode] = useState(false)
-  const [selectedPost, setSelectedPost] = useState(null)
+  const [selectedEvent, setSelectedEvent] = useState(null)
   const { csrfToken } = useCsrf()
   const navigate = useNavigate()
 
@@ -26,7 +26,7 @@ const AdminDashboardPosts = () => {
 
         if (response.data.role === "admin") {
           setIsAdmin(true)
-          fetchPosts() // Only fetch posts if admin
+          fetchEvents() // Only fetch events if admin
         } else {
           navigate("/admin/login")
         }
@@ -39,46 +39,46 @@ const AdminDashboardPosts = () => {
     verifyAdmin()
   }, [navigate, csrfToken])
 
-  // Fetch posts from the backend
-  const fetchPosts = async () => {
+  // Fetch events from the backend
+  const fetchEvents = async () => {
     try {
       const response = await axios.get(
-        apiUrl("api/admin/all/posts"),
+        apiUrl("api/admin/all/events"),
         apiConfigCsrf(csrfToken)
       )
-      setPosts(response.data)
+      setEvents(response.data)
     } catch (err) {
       setError(err.response?.status === 403
         ? "Admin access required!"
-        : "Error fetching posts!")
+        : "Error fetching events!")
     } finally {
       setIsLoading(false)
     }
   }
 
-  // Handle post update
-  const handleUpdate = (post) => {
-    navigate("/admin/update-post", { state: { post } })
+  // Handle event update
+  const handleUpdate = (event) => {
+    navigate("/admin/update-event", { state: { event } })
   }
 
-  // Handle post delete
-  const handleDelete = async (postId) => {
+  // Handle event delete
+  const handleDelete = async (eventId) => {
     try {
       await axios.delete(
-        apiUrl(`api/admin/posts/${postId}`),
+        apiUrl(`api/admin/events/${eventId}`),
         apiConfigCsrf(csrfToken)
       )
-      setPosts(posts.filter((post) => post._id !== postId))
+      setEvents(events.filter((event) => event._id !== eventId))
     } catch (err) {
-      alert("Failed to delete post!")
+      alert("Failed to delete event!")
     }
   }
 
-  // Group posts by postal code
-  const groupedByPostalCode = posts.reduce((acc, post) => {
-    const postal = post.postalCode || "Unknown"
+  // Group events by postal code
+  const groupedByPostalCode = events.reduce((acc, event) => {
+    const postal = event.postalCode || "Unknown"
     if (!acc[postal]) acc[postal] = []
-    acc[postal].push(post)
+    acc[postal].push(event)
     return acc
   }, {})
 
@@ -96,7 +96,7 @@ const AdminDashboardPosts = () => {
       <div className="sm:mx-auto sm:w-full sm:max-w-4xl">
         {/* Header with back button */}
         <div className="flex justify-between items-center mb-16 mt-8">
-          <h1 className="text-3xl font-extrabold text-gray-900">Post Management</h1>
+          <h1 className="text-3xl font-extrabold text-gray-900">Event Management</h1>
           <button
             onClick={() => navigate("/admin/dashboard")}
             className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 flex items-center"
@@ -137,7 +137,7 @@ const AdminDashboardPosts = () => {
 
         <div className="flex justify-center space-x-4 mb-6">
           <button
-            onClick={fetchPosts}
+            onClick={fetchEvents}
             className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
           >
             <svg
@@ -157,42 +157,46 @@ const AdminDashboardPosts = () => {
             {groupByPostalCode ? "Unsort by Postal Code" : "Sort by Postal Code"}
           </button>
           <button
-            onClick={() => navigate("/admin/create-post")}
+            onClick={() => navigate("/admin/create-event")}
             className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
           >
-            + New Post
+            + New Event
           </button>
         </div>
 
         <div className="overflow-hidden bg-gray-50 shadow sm:rounded-lg">
-          {posts.length === 0 ? (
-            <p className="text-gray-500 p-4">No posts found.</p>
+          {events.length === 0 ? (
+            <p className="text-gray-500 p-4">No events found.</p>
           ) : groupByPostalCode ? (
-            Object.entries(groupedByPostalCode).map(([postalCode, posts]) => (
+            Object.entries(groupedByPostalCode).map(([postalCode, events]) => (
               <div key={postalCode}>
                 <h3 className="mt-6 ml-6 text-lg font-semibold text-gray-700">Postal Code: {postalCode}</h3>
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Author</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Organizer</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Postal Code</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider flex justify-center">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {posts.map((post) => (
-                      <tr key={post._id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{post.title}</td>
+                    {events.map((event) => (
+                      <tr key={event._id}>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{event.title}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                          {post.createdBy.name || 'Unknown'}
+                          {event.createdBy?.name || "Unknown"}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{post.postalCode}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                          {new Date(event.date).toLocaleDateString()}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{event.postalCode}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex justify-center">
-                            <button onClick={() => handleUpdate(post)} className="mr-4 text-blue-600 hover:text-blue-900">Update</button>
-                            <button onClick={() => handleDelete(post._id)} className="mr-4 text-red-600 hover:text-red-900">Delete</button>
-                            <button onClick={() => setSelectedPost(post)} className="mr-4 text-green-600 hover:text-green-900">View</button>
+                            <button onClick={() => handleUpdate(event)} className="mr-4 text-blue-600 hover:text-blue-900">Update</button>
+                            <button onClick={() => handleDelete(event._id)} className="mr-4 text-red-600 hover:text-red-900">Delete</button>
+                            <button onClick={() => setSelectedEvent(event)} className="mr-4 text-green-600 hover:text-green-900">View</button>
                           </div>
                         </td>
                       </tr>
@@ -206,24 +210,28 @@ const AdminDashboardPosts = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Author</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Organizer</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Postal Code</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider flex justify-center">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {posts.map((post) => (
-                  <tr key={post._id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{post.title}</td>
+                {events.map((event) => (
+                  <tr key={event._id}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{event.title}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {post.createdBy.name || 'Unknown'}
+                      {event.createdBy?.name || "Unknown"}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{post.postalCode}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {new Date(event.date).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{event.postalCode}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex justify-center">
-                        <button onClick={() => handleUpdate(post)} className="mr-4 text-blue-600 hover:text-blue-900">Update</button>
-                        <button onClick={() => handleDelete(post._id)} className="mr-4 text-red-600 hover:text-red-900">Delete</button>
-                        <button onClick={() => setSelectedPost(post)} className="mr-4 text-green-600 hover:text-green-900">View</button>
+                        <button onClick={() => handleUpdate(event)} className="mr-4 text-blue-600 hover:text-blue-900">Update</button>
+                        <button onClick={() => handleDelete(event._id)} className="mr-4 text-red-600 hover:text-red-900">Delete</button>
+                        <button onClick={() => setSelectedEvent(event)} className="mr-4 text-green-600 hover:text-green-900">View</button>
                       </div>
                     </td>
                   </tr>
@@ -233,11 +241,11 @@ const AdminDashboardPosts = () => {
           )}
         </div>
       </div>
-      {selectedPost && (
-        <PostDetailModal post={selectedPost} onClose={() => setSelectedPost(null)} />
+      {selectedEvent && (
+        <EventDetailModal event={selectedEvent} onClose={() => setSelectedEvent(null)} />
       )}
     </div>
   )
 }
 
-export default AdminDashboardPosts
+export default AdminDashboardEvents

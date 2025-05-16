@@ -5,6 +5,7 @@ import { X, Send, Calendar } from "lucide-react"
 import axios from "axios"
 import { useUser } from "../context/UserContext"
 import { useCsrf } from "../context/CsrfContext"
+import { apiUrl } from  "../utils/apiUtil"
 
 function CreatePostModal({ isOpen, onClose, postType = "general", onPostCreated }) {
   const { userId: contextUserId } = useUser()
@@ -100,7 +101,7 @@ function CreatePostModal({ isOpen, onClose, postType = "general", onPostCreated 
           eventFormData.append("eventImage", formData.eventImage)
         }
 
-        const response = await axios.post("/api/events", eventFormData, {
+        const response = await axios.post(apiUrl("api/events"), eventFormData, {
           withCredentials: true,
           headers: {
             "Content-Type": "multipart/form-data",
@@ -119,7 +120,7 @@ function CreatePostModal({ isOpen, onClose, postType = "general", onPostCreated 
           status: formData.status,
         }
 
-        const response = await axios.post("/api/posts/post", postData, {
+        const response = await axios.post(apiUrl("api/posts/post"), postData, {
           withCredentials: true,
           headers: {
             "Content-Type": "application/json",

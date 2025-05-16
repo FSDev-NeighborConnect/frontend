@@ -6,8 +6,9 @@ import axios from "axios"
 import { useUser } from "../context/UserContext"
 import { useCsrf } from "../context/CsrfContext"
 import { User, Mail, Phone, MapPin, Home, ImageIcon, X, Save, ArrowLeft, Plus, AlertCircle } from "lucide-react"
-import "./userProfile.css"
+import "./userprofile.css"
 import HobbiesModal from './NewUser/HobbiesModal'
+import { apiUrl } from  "../utils/apiUtil"
 
 
 function EditProfile() {
@@ -56,7 +57,7 @@ function EditProfile() {
         }
 
         // Fetch user data from API with CSRF token
-        const response = await axios.get(`/api/users/user/${userId}`, {
+        const response = await axios.get(apiUrl(`api/users/user/${userId}`), {
           withCredentials: true,
           headers: { "X-CSRF-Token": csrfToken },
         })
@@ -193,7 +194,7 @@ function EditProfile() {
 
       try {
         // First try /api/users/update/:id
-        await axios.put(`/api/users/${userId}`, formData, {
+        await axios.put(apiUrl(`api/users/${userId}`), formData, {
           withCredentials: true,
           headers: {
             "Content-Type": "application/json",
@@ -207,7 +208,7 @@ function EditProfile() {
 
         try {
           // Try alternative endpoint
-          await axios.put(`/api/users/update/${userId}`, formData, {
+          await axios.put(apiUrl(`api/users/update/${userId}`), formData, {
             withCredentials: true,
             headers: {
               "Content-Type": "application/json",
@@ -231,7 +232,7 @@ function EditProfile() {
 
         // Based on the backend code, the correct endpoint is /api/users/upload-avatar
         try {
-          const avatarResponse = await axios.post(`/api/users/upload-avatar`, avatarFormData, {
+          const avatarResponse = await axios.post(apiUrl(`api/users/upload-avatar`), avatarFormData, {
             withCredentials: true,
             headers: {
               "Content-Type": "multipart/form-data",
@@ -254,7 +255,7 @@ function EditProfile() {
 
         // Based on the backend code, the correct endpoint is /api/users/upload-cover
         try {
-          const coverResponse = await axios.post(`/api/users/upload-cover`, coverFormData, {
+          const coverResponse = await axios.post(apiUrl(`api/users/upload-cover`), coverFormData, {
             withCredentials: true,
             headers: {
               "Content-Type": "multipart/form-data",

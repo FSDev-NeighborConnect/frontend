@@ -60,7 +60,7 @@ cp .env.example .env
 ```bash
 npm run dev
 ```
-The app should now be running at `http://localhost:5173` by default
+The app should now be running at `http://localhost:3000`
 
 > To use a different port, set `VITE_PORT` in your `.env` file
 

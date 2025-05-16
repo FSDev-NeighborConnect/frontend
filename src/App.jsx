@@ -11,6 +11,7 @@ import AdminDashboardEvents from './pages/Admin/AdminDashboardEvents.jsx'
 import AdminDashboardPosts from './pages/Admin/AdminDashboardPosts.jsx'
 import AdminDashboardUsers from './pages/Admin/AdminDashboardUsers.jsx'
 import AdminLogin from './pages/Admin/AdminLogin.jsx'
+import CreateComment from './pages/Admin/AdminCreateComment.jsx'
 import CreateEvent from './pages/Admin/AdminCreateEvent.jsx'
 import CreateUser from './pages/Admin/AdminCreateUser.jsx'
 import DashboardStatistics from './pages/Admin/AdminStatistics.jsx'
@@ -48,6 +49,7 @@ function App() {
             <Route path="/admin/update-event" element={<UpdateEvent />} />
             <Route path="/admin/update-user" element={<UpdateUser />} />
             <Route path="/admin/update-post" element={<UpdatePost />} />
+            <Route path="/admin/create-comment/:postId" element={<CreateComment />} />
             <Route path="/admin/create-event" element={<CreateEvent />} />
             <Route path="/admin/create-user" element={<CreateUser />} />
             <Route path="/admin/create-post" element={<AdminCreatePost />} />

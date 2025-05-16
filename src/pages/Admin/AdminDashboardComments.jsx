@@ -145,6 +145,13 @@ const AdminDashboardComments = () => {
               <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
             </svg>
           </button>
+
+          <button
+            onClick={() => navigate(`/admin/create-comment/${postId}`)}
+            className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
+          >
+            + New Comment
+          </button>
         </div>
 
         <div className="overflow-hidden bg-gray-50 shadow sm:rounded-lg">

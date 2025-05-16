@@ -56,6 +56,7 @@ function UserProfile() {
   const [showChat, setShowChat] = useState(false)
   const [chatTarget, setChatTarget] = useState(null)
   const [targetName, setTargetName] = useState("")
+  const [targetAvatar, setTargetAvatar] = useState(null)
 
   // Get the current user ID from context, URL params, or localStorage
   const currentUserId = urlUserId || loggedInUserId || localStorage.getItem("userId")
@@ -475,6 +476,7 @@ function UserProfile() {
                   onClick={() => {
                     setChatTarget(neighbor._id)
                     setTargetName(neighbor.name)
+                    setTargetAvatar(neighbor.avatar?.url)
                     setShowChat(true)
                   }}
                 >
@@ -583,6 +585,7 @@ function UserProfile() {
                 onClick={() => {
                   setChatTarget(currentUserId)
                   setTargetName(name)
+                  setTargetAvatar(avatar?.url)
                   setShowChat(true)
                 }}
               >
@@ -723,6 +726,7 @@ function UserProfile() {
           <ChatBox 
             targetUserId={chatTarget}
             targetUserName={targetName}
+            targetUserAvatar={targetAvatar}
             onClose={() => setShowChat(false)}
           />
         </div>

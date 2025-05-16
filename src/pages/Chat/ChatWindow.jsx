@@ -4,7 +4,7 @@ import { sendMessage } from "../../firebase/sendMessage"
 import { listenToMessages } from "../../firebase/listenToMessages"
 import { startChat } from "../../firebase/startChat"
 
-export default function ChatBox({ targetUserId, targetUserName, onClose }) {
+export default function ChatBox({ targetUserId, targetUserName, targetUserAvatar, onClose }) {
   const { userId: currentUserId } = useUser()
   const [messages, setMessages] = useState([])
   const [chatId, setChatId] = useState(null)
@@ -62,6 +62,19 @@ export default function ChatBox({ targetUserId, targetUserName, onClose }) {
       {/* Header */}
       <div className="flex justify-between items-center p-3 bg-gray-50 border-b border-gray-200 rounded-t-lg">
         <div className="flex items-center gap-2 max-w-[calc(100%-40px)]">
+          {targetUserAvatar ? (
+            <img
+              src={targetUserAvatar}
+              alt={targetUserName}
+              className="w-10 h-10 rounded-full object-cover"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+              <span className="text-gray-500 text-sm">
+                {targetUserName?.[0] || '?'}
+              </span>
+            </div>
+          )}
           <span className="font-medium text-gray-800 truncate">
             {targetUserName || `User ${targetUserId?.slice(0, 4)}`}
           </span>

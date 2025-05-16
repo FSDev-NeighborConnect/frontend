@@ -91,7 +91,7 @@ const AdminMainDashboard = () => {
           onClick={() => navigate("/admin/dashboard-posts")}
           className={"px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"}
         >
-          Posts
+          Posts & Comments
         </button>
         <button
           onClick={() => navigate("/admin/dashboard-events")}

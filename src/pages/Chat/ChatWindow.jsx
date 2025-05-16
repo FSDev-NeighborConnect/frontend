@@ -3,9 +3,8 @@ import { useUser } from "../../context/UserContext"
 import { sendMessage } from "../../firebase/sendMessage"
 import { listenToMessages } from "../../firebase/listenToMessages"
 import { startChat } from "../../firebase/startChat"
-import "./ChatBox.css"
 
-export default function ChatBox({ targetUserId, targetUserName, onClose }) { // Added targetUserName prop
+export default function ChatBox({ targetUserId, targetUserName, onClose }) {
   const { userId: currentUserId } = useUser()
   const [messages, setMessages] = useState([])
   const [chatId, setChatId] = useState(null)
@@ -59,57 +58,60 @@ export default function ChatBox({ targetUserId, targetUserName, onClose }) { // 
   }
 
   return (
-    <div className="chatbox-container">
-      <div className="chatbox-header">
-        <div className="chatbox-user-info">
-          <span className="chatbox-title">
-            {targetUserName || `User ${targetUserId?.slice(0, 4)}`} {/* Show name or fallback */}
+    <div className="fixed bottom-4 right-4 w-96 h-[500px] bg-white border border-gray-200 rounded-lg shadow-lg flex flex-col z-50">
+      {/* Header */}
+      <div className="flex justify-between items-center p-3 bg-gray-50 border-b border-gray-200 rounded-t-lg">
+        <div className="flex items-center gap-2 max-w-[calc(100%-40px)]">
+          <span className="font-medium text-gray-800 truncate">
+            {targetUserName || `User ${targetUserId?.slice(0, 4)}`}
           </span>
         </div>
         <button 
           onClick={onClose}
-          className="chatbox-close"
+          className="text-gray-500 hover:text-gray-700 text-xl font-bold"
           title="Close chat"
         >
           &times;
         </button>
       </div>
 
-      <div className="chatbox-messages">
+      {/* Messages area */}
+      <div className="flex-1 p-3 overflow-y-auto bg-gray-50">
         {messages.length > 0 ? (
           messages.map((msg) => (
             <div
               key={msg.id}
-              className={`chatbox-message ${
+              className={`mb-2 p-2 rounded-lg max-w-[80%] text-sm ${
                 msg.senderId === currentUserId
-                  ? "chatbox-message-sent"
-                  : "chatbox-message-received"
+                  ? "bg-blue-500 text-white ml-auto"
+                  : "bg-gray-200 text-gray-800 mr-auto"
               }`}
             >
               {msg.text}
             </div>
           ))
         ) : (
-          <div className="chatbox-message chatbox-message-received">
+          <div className="text-center text-gray-500 p-4">
             Start your conversation with {targetUserName}
           </div>
         )}
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="chatbox-input-area">
+      {/* Input area */}
+      <div className="p-3 border-t border-gray-200 flex gap-2">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyPress}
-          className="chatbox-input"
+          className="bg-white flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
           placeholder={`Message ${targetUserName}`}
           disabled={!isChatReady}
         />
         <button
           onClick={handleSend}
-          className="chatbox-send"
+          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed w-fit"
           disabled={!input.trim() || !isChatReady}
         >
           Send

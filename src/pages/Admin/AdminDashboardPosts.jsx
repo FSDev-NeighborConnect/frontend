@@ -190,7 +190,17 @@ const AdminDashboardPosts = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{post.postalCode}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex justify-center">
-                            <button onClick={() => navigate(`/admin/dashboard-comments/${post._id}`)} className="mr-4 text-yellow-600 hover:text-yellow-900">Comments</button>
+                            <button
+                              onClick={() => navigate(`/admin/dashboard-comments/${post._id}`, { 
+                                state: { 
+                                  postTitle: post.title,
+                                  postAuthor: post.createdBy?.name || "Unknown"
+                                } 
+                              })}
+                              className="mr-4 text-yellow-600 hover:text-yellow-900"
+                            >
+                              View Comments
+                            </button>
                             <button onClick={() => handleUpdate(post)} className="mr-4 text-blue-600 hover:text-blue-900">Update</button>
                             <button onClick={() => handleDelete(post._id)} className="mr-4 text-red-600 hover:text-red-900">Delete</button>
                             <button onClick={() => setSelectedPost(post)} className="mr-4 text-green-600 hover:text-green-900">View</button>
@@ -222,8 +232,17 @@ const AdminDashboardPosts = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{post.postalCode}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex justify-center">
-                        <button onClick={() => navigate(`/admin/dashboard-comments/${post._id}`)} 
-                          className="mr-4 text-yellow-600 hover:text-yellow-900">Comments</button>
+                        <button
+                          onClick={() => navigate(`/admin/dashboard-comments/${post._id}`, { 
+                            state: { 
+                              postTitle: post.title,
+                              postAuthor: post.createdBy?.name || "Unknown"
+                            } 
+                          })}
+                          className="mr-4 text-yellow-600 hover:text-yellow-900"
+                        >
+                          View Comments
+                        </button>
                         <button onClick={() => handleUpdate(post)} className="mr-4 text-blue-600 hover:text-blue-900">Update</button>
                         <button onClick={() => handleDelete(post._id)} className="mr-4 text-red-600 hover:text-red-900">Delete</button>
                         <button onClick={() => setSelectedPost(post)} className="mr-4 text-green-600 hover:text-green-900">View</button>

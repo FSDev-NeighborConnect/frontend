@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react"
 import axios from "axios"
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useParams, useLocation } from "react-router-dom"
 import { useCsrf } from "../../context/CsrfContext.jsx"
 import { apiUrl, apiConfigCsrf } from "../../utils/apiUtil.jsx"
+import CommentDetailModal from "./CommentDetailModal.jsx"
 
 const AdminDashboardComments = () => {
   const [comments, setComments] = useState([])
   const [error, setError] = useState(null)
   const [isAdmin, setIsAdmin] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [selectedComment, setSelectedComment] = useState(null)
   const { postId } = useParams()
+  const { state } = useLocation()
   const { csrfToken } = useCsrf()
   const navigate = useNavigate()
 
@@ -79,9 +82,17 @@ const AdminDashboardComments = () => {
   return (
     <div className="min-h-screen bg-gray-100 py-12 px-6 sm:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-4xl">
-        {/* Header with back button */}
-        <div className="flex justify-between items-center mb-16 mt-8">
-          <h1 className="text-3xl font-extrabold text-gray-900">Comments for Post #{postId}</h1>
+        {/* Header with post information */}
+        <div className="flex justify-between items-center mb-8 mt-8">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-extrabold text-gray-900">Comments for Post</h1>
+            <h2 className="text-xl font-semibold text-gray-800">
+              Title: {state?.postTitle || "Loading..."}
+            </h2>
+            <h3 className="text-md font-medium text-gray-700">
+              Author: {state?.postAuthor || "Unknown"}
+            </h3>
+          </div>
           <button
             onClick={() => navigate(-1)}
             className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 flex items-center"
@@ -94,7 +105,7 @@ const AdminDashboardComments = () => {
               strokeLinecap="round" strokeLinejoin="round">
               <path d="M10 16l-6-6 6-6"/><path d="M20 21v-7a4 4 0 0 0-4-4H5"/>
             </svg>
-            Back to Dashboard
+            Back to Posts
           </button>
         </div>
 
@@ -145,7 +156,6 @@ const AdminDashboardComments = () => {
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Content</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Author</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Postal Code</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider flex justify-center">Actions</th>
                 </tr>
               </thead>
@@ -154,12 +164,12 @@ const AdminDashboardComments = () => {
                   <tr key={comment._id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{comment.content}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {comment.createdBy?.name || 'Unknown'}
+                      {comment.author?.name || 'Unknown'}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{comment.postalCode}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex justify-center">
-                        <button onClick={() => handleDelete(comment._id)} className="text-red-600 hover:text-red-900">Delete</button>
+                        <button onClick={() => handleDelete(comment._id)} className="mr-4 text-red-600 hover:text-red-900">Delete</button>
+                        <button onClick={() => setSelectedComment(comment)} className="mr-4 text-green-600 hover:text-green-900">View</button>
                       </div>
                     </td>
                   </tr>
@@ -169,6 +179,9 @@ const AdminDashboardComments = () => {
           )}
         </div>
       </div>
+      {selectedComment && (
+        <CommentDetailModal comment={selectedComment} onClose={() => setSelectedComment(null)} />
+      )}
     </div>
   )
 }

@@ -726,7 +726,10 @@ function UserProfile() {
       {/* Create Event Modal */}
       <CreateEventModal
         isOpen={showCreateEventModal}
-        onClose={() => setShowCreateEventModal(false)}
+        onClose={() => {
+          setShowCreateEventModal(false)
+          fetchUserData()
+        }}
         onEventCreated={handlePostCreated}
       />
     </div>

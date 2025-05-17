@@ -167,30 +167,7 @@ function CreateEventModal({ isOpen, onClose, onEventCreated }) {
       })
 
       if (response.data) {
-        // Create a complete event object with all necessary fields for immediate display
-        const newEvent = {
-          _id: Date.now().toString(), // Temporary ID until page refresh gets the real one
-          type: "event",
-          title: formData.title,
-          description: formData.description,
-          date: eventDate.toISOString(),
-          startTime: startTime.toISOString(),
-          endTime: endTime.toISOString(),
-          streetAddress: formData.streetAddress,
-          postalCode: formData.postalCode,
-          hobbies: formData.hobbies,
-          createdBy: userId,
-          createdAt: new Date().toISOString(),
-          likes: [],
-          comments: [],
-          eventImage: {
-            url: "https://res.cloudinary.com/dp6nzg4mn/image/upload/event_iz9q6w.webp",
-            public_id: "event_iz9q6w",
-          },
-        }
-
-        // Pass the complete event object to the parent component
-        onEventCreated(newEvent)
+        onEventCreated(response.data)
         onClose()
       }
     } catch (err) {
@@ -334,7 +311,6 @@ function CreateEventModal({ isOpen, onClose, onEventCreated }) {
                 required
               />
             </div>
-            // Add the image upload field to the form (add this after the postal code field)
             <div>
               <label htmlFor="eventImage" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Event Image (Optional)

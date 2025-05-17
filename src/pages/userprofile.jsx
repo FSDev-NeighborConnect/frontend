@@ -53,6 +53,8 @@ function UserProfile() {
   const [expandedComments, setExpandedComments] = useState({})
   const [showDropdown, setShowDropdown] = useState(false)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
+  // Add state to track post likes
+  const [postLikes, setPostLikes] = useState({})
 
   // Get the current user ID from context, URL params, or localStorage
   const currentUserId = urlUserId || loggedInUserId || localStorage.getItem("userId")
@@ -113,9 +115,32 @@ function UserProfile() {
     }))
   }
 
-  // Handle post like
-  const handleLike = async (postId) => {
+  // Fetch likes for a post
+  const fetchPostLikes = async (postId) => {
     try {
+      const response = await axios.get(apiUrl(`api/posts/likes/${postId}`), {
+        withCredentials: true,
+        headers: { "X-CSRF-Token": csrfToken },
+      })
+
+      // Update the postLikes state with the fetched likes
+      setPostLikes((prev) => ({
+        ...prev,
+        [postId]: {
+          count: response.data.count,
+          // Create a list of userIds who liked the post
+          userIds: response.data.likes.map((like) => like.userId),
+        },
+      }))
+    } catch (err) {
+      console.error("Error fetching post likes:", err)
+    }
+  }
+
+  // Handle post like
+  const handlePostLike = async (postId) => {
+    try {
+      // Call the like endpoint
       await axios.post(
         apiUrl(`api/posts/${postId}/like`),
         { userId: currentUserId },
@@ -125,26 +150,57 @@ function UserProfile() {
         },
       )
 
-      // Update the posts state to reflect the like
-      setPosts((prevPosts) =>
-        prevPosts.map((post) => {
-          if (post._id === postId) {
-            const userLiked = post.likes?.includes(currentUserId)
-            return {
-              ...post,
-              likes: userLiked
-                ? post.likes.filter((id) => id !== currentUserId)
-                : [...(post.likes || []), currentUserId],
-            }
+      // Update the UI optimistically
+      setPostLikes((prev) => {
+        const currentLikes = prev[postId] || { count: 0, userIds: [] }
+        const userLikedIndex = currentLikes.userIds.indexOf(currentUserId)
+
+        if (userLikedIndex !== -1) {
+          // User already liked, so unlike
+          const newUserIds = [...currentLikes.userIds]
+          newUserIds.splice(userLikedIndex, 1)
+          return {
+            ...prev,
+            [postId]: {
+              count: currentLikes.count - 1,
+              userIds: newUserIds,
+            },
           }
-          return post
-        }),
+        } else {
+          // User hasn't liked, so add like
+          return {
+            ...prev,
+            [postId]: {
+              count: currentLikes.count + 1,
+              userIds: [...currentLikes.userIds, currentUserId],
+            },
+          }
+        }
+      })
+
+      // Fetch the updated likes to ensure UI is in sync with server
+      await fetchPostLikes(postId)
+    } catch (err) {
+      console.error("Error liking post:", err)
+    }
+  }
+
+  // Handle event like
+  const handleEventLike = async (eventId) => {
+    try {
+      await axios.post(
+        apiUrl(`api/events/${eventId}/like`),
+        { userId: currentUserId },
+        {
+          withCredentials: true,
+          headers: { "X-CSRF-Token": csrfToken },
+        },
       )
 
-      // Also update events if needed
+      // Update the events state to reflect the like
       setEvents((prevEvents) =>
         prevEvents.map((event) => {
-          if (event._id === postId) {
+          if (event._id === eventId) {
             const userLiked = event.likes?.includes(currentUserId)
             return {
               ...event,
@@ -157,7 +213,7 @@ function UserProfile() {
         }),
       )
     } catch (err) {
-      console.error("Error liking post:", err)
+      console.error("Error liking event:", err)
     }
   }
 
@@ -203,6 +259,12 @@ function UserProfile() {
           headers: { "X-CSRF-Token": csrfToken },
         })
         setPosts(postsResponse.data || [])
+
+        // Fetch likes for each post
+        const fetchedPosts = postsResponse.data || []
+        for (const post of fetchedPosts) {
+          await fetchPostLikes(post._id)
+        }
       } catch (postError) {
         console.error("Error fetching posts:", postError)
         setPosts([])
@@ -227,7 +289,7 @@ function UserProfile() {
           fetchedEvents = eventsResponse.data || []
         }
 
-        // MODIFIED: Sort events by createdAt date, newest first
+        // Sort events by createdAt date, newest first
         fetchedEvents.sort((a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date))
         setEvents(fetchedEvents)
       } catch (eventError) {
@@ -311,6 +373,12 @@ function UserProfile() {
     month: "long",
   })
 
+  // Check if user has liked a post
+  const hasUserLikedPost = (postId) => {
+    const postLikeData = postLikes[postId]
+    return postLikeData && postLikeData.userIds && postLikeData.userIds.includes(currentUserId)
+  }
+
   // Render a single post
   const renderPost = (post) => (
     <div key={post._id} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
@@ -348,11 +416,11 @@ function UserProfile() {
       <div className="px-6 py-3 border-t dark:border-gray-700 flex justify-between text-sm text-gray-600 dark:text-gray-400">
         <div className="flex gap-4">
           <button
-            className={`flex items-center gap-1 ${post.likes?.includes(currentUserId) ? "text-purple-600 dark:text-purple-400" : ""}`}
-            onClick={() => handleLike(post._id)}
+            className={`flex items-center gap-1 ${hasUserLikedPost(post._id) ? "text-purple-600 dark:text-purple-400" : ""}`}
+            onClick={() => handlePostLike(post._id)}
           >
             <ThumbsUp className="h-4 w-4" />
-            {post.likes?.length || 0}
+            {postLikes[post._id]?.count || 0}
           </button>
           <button className="flex items-center gap-1" onClick={() => toggleComments(post._id)}>
             <MessageSquare className="h-4 w-4" />
@@ -428,7 +496,7 @@ function UserProfile() {
         <div className="flex gap-4">
           <button
             className={`flex items-center gap-1 ${event.likes?.includes(currentUserId) ? "text-purple-600 dark:text-purple-400" : ""}`}
-            onClick={() => handleLike(event._id)}
+            onClick={() => handleEventLike(event._id)}
           >
             <ThumbsUp className="h-4 w-4" />
             {event.likes?.length || 0}

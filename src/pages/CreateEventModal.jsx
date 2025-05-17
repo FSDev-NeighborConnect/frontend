@@ -6,7 +6,6 @@ import axios from "axios"
 import { useUser } from "../context/UserContext"
 import { useCsrf } from "../context/CsrfContext"
 import { apiUrl } from "../utils/apiUtil"
-import {apiConfigCsrf } from "../utils/apiUtil"
 
 function CreateEventModal({ isOpen, onClose, onEventCreated }) {
   const { userId } = useUser()
@@ -22,6 +21,7 @@ function CreateEventModal({ isOpen, onClose, onEventCreated }) {
     streetAddress: "",
     postalCode: "",
     hobbies: [],
+    eventImage: null, 
   })
   const [hobbyInput, setHobbyInput] = useState("")
 
@@ -37,6 +37,7 @@ function CreateEventModal({ isOpen, onClose, onEventCreated }) {
         streetAddress: "",
         postalCode: "",
         hobbies: [],
+        eventImage: null,
       })
       setError(null)
     }
@@ -67,6 +68,39 @@ function CreateEventModal({ isOpen, onClose, onEventCreated }) {
     }))
   }
 
+  // function to handle image upload
+  const handleImageChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0]
+
+      // Check file size (limit to 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError("Image size should be less than 5MB")
+        return
+      }
+
+      // Check file type
+      if (!file.type.match("image.*")) {
+        setError("Please select an image file")
+        return
+      }
+
+      // Create a preview URL
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        setFormData((prev) => ({
+          ...prev,
+          eventImage: {
+            file,
+            preview: event.target.result,
+          },
+        }))
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  // Add image upload to the handleSubmit function
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
@@ -104,24 +138,59 @@ function CreateEventModal({ isOpen, onClose, onEventCreated }) {
         throw new Error("End time must be after start time")
       }
 
-      const eventData = {
-        title: formData.title,
-        description: formData.description,
-        date: eventDate.toISOString(),
-        startTime: startTime.toISOString(),
-        endTime: endTime.toISOString(),
-        streetAddress: formData.streetAddress,
-        postalCode: formData.postalCode,
-        hobbies: formData.hobbies,
-        createdBy: userId,
+      // Create FormData for file upload
+      const eventFormData = new FormData()
+      eventFormData.append("title", formData.title)
+      eventFormData.append("description", formData.description)
+      eventFormData.append("date", eventDate.toISOString())
+      eventFormData.append("startTime", startTime.toISOString())
+      eventFormData.append("endTime", endTime.toISOString())
+      eventFormData.append("streetAddress", formData.streetAddress)
+      eventFormData.append("postalCode", formData.postalCode)
+      eventFormData.append("createdBy", userId)
+
+      // Add hobbies as JSON string
+      eventFormData.append("hobbies", JSON.stringify(formData.hobbies))
+
+      // Add image if available
+      if (formData.eventImage && formData.eventImage.file) {
+        eventFormData.append("eventImage", formData.eventImage.file)
       }
 
-      const response = await axios.post(apiUrl("api/events/event"), eventData,
-        apiConfigCsrf(csrfToken)
-      )
+      // Make the API request with FormData
+      const response = await axios.post(apiUrl("api/events/event"), eventFormData, {
+        withCredentials: true,
+        headers: {
+          "X-CSRF-Token": csrfToken,
+          "Content-Type": "multipart/form-data",
+        },
+      })
 
       if (response.data) {
-        onEventCreated(response.data)
+        // Create a complete event object with all necessary fields for immediate display
+        const newEvent = {
+          _id: Date.now().toString(), // Temporary ID until page refresh gets the real one
+          type: "event",
+          title: formData.title,
+          description: formData.description,
+          date: eventDate.toISOString(),
+          startTime: startTime.toISOString(),
+          endTime: endTime.toISOString(),
+          streetAddress: formData.streetAddress,
+          postalCode: formData.postalCode,
+          hobbies: formData.hobbies,
+          createdBy: userId,
+          createdAt: new Date().toISOString(),
+          likes: [],
+          comments: [],
+          eventImage: {
+            url: "https://res.cloudinary.com/dp6nzg4mn/image/upload/event_iz9q6w.webp",
+            public_id: "event_iz9q6w",
+          },
+        }
+
+        // Pass the complete event object to the parent component
+        onEventCreated(newEvent)
         onClose()
       }
     } catch (err) {
@@ -136,20 +205,27 @@ function CreateEventModal({ isOpen, onClose, onEventCreated }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center p-4 border-b">
-          <h2 className="text-xl font-bold text-gray-900">Create New Event</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center p-4 border-b dark:border-gray-700">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Create New Event</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-4">
-          {error && <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-md text-sm">{error}</div>}
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-md text-sm">
+              {error}
+            </div>
+          )}
 
           <div className="space-y-4">
             <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Event Title*
               </label>
               <input
@@ -158,13 +234,12 @@ function CreateEventModal({ isOpen, onClose, onEventCreated }) {
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
                 required
               />
             </div>
-
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Description*
               </label>
               <textarea
@@ -173,15 +248,14 @@ function CreateEventModal({ isOpen, onClose, onEventCreated }) {
                 value={formData.description}
                 onChange={handleChange}
                 rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
                 required
               />
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
-                  <Calendar className="h-4 w-4 inline mr-1" />
+                <label htmlFor="date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <Calendar className="h-4 w-4 inline mr-1 text-gray-700 dark:text-gray-300" />
                   Date*
                 </label>
                 <input
@@ -190,16 +264,15 @@ function CreateEventModal({ isOpen, onClose, onEventCreated }) {
                   name="date"
                   value={formData.date}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
                   required
                 />
               </div>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="startTime" className="block text-sm font-medium text-gray-700 mb-1">
-                  <Clock className="h-4 w-4 inline mr-1" />
+                <label htmlFor="startTime" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <Clock className="h-4 w-4 inline mr-1 text-gray-700 dark:text-gray-300" />
                   Start Time*
                 </label>
                 <input
@@ -208,13 +281,13 @@ function CreateEventModal({ isOpen, onClose, onEventCreated }) {
                   name="startTime"
                   value={formData.startTime}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
                   required
                 />
               </div>
               <div>
-                <label htmlFor="endTime" className="block text-sm font-medium text-gray-700 mb-1">
-                  <Clock className="h-4 w-4 inline mr-1" />
+                <label htmlFor="endTime" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <Clock className="h-4 w-4 inline mr-1 text-gray-700 dark:text-gray-300" />
                   End Time*
                 </label>
                 <input
@@ -223,15 +296,17 @@ function CreateEventModal({ isOpen, onClose, onEventCreated }) {
                   name="endTime"
                   value={formData.endTime}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
                   required
                 />
               </div>
             </div>
-
             <div>
-              <label htmlFor="streetAddress" className="block text-sm font-medium text-gray-700 mb-1">
-                <MapPin className="h-4 w-4 inline mr-1" />
+              <label
+                htmlFor="streetAddress"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              >
+                <MapPin className="h-4 w-4 inline mr-1 text-gray-700 dark:text-gray-300" />
                 Street Address*
               </label>
               <input
@@ -240,14 +315,13 @@ function CreateEventModal({ isOpen, onClose, onEventCreated }) {
                 name="streetAddress"
                 value={formData.streetAddress}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
                 required
               />
             </div>
-
             <div>
-              <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 mb-1">
-                <MapPin className="h-4 w-4 inline mr-1" />
+              <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <MapPin className="h-4 w-4 inline mr-1 text-gray-700 dark:text-gray-300" />
                 Postal Code*
               </label>
               <input
@@ -256,20 +330,54 @@ function CreateEventModal({ isOpen, onClose, onEventCreated }) {
                 name="postalCode"
                 value={formData.postalCode}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
                 required
               />
             </div>
-
+            // Add the image upload field to the form (add this after the postal code field)
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Categories/Hobbies</label>
+              <label htmlFor="eventImage" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Event Image (Optional)
+              </label>
+              <div className="mt-1 flex items-center">
+                <input
+                  type="file"
+                  id="eventImage"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                />
+              </div>
+              {formData.eventImage && formData.eventImage.preview && (
+                <div className="mt-2">
+                  <div className="relative w-full h-32">
+                    <img
+                      src={formData.eventImage.preview || "/placeholder.svg"}
+                      alt="Event preview"
+                      className="w-full h-full object-cover rounded-md"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setFormData((prev) => ({ ...prev, eventImage: null }))}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Categories/Hobbies
+              </label>
               <div className="flex items-center">
                 <input
                   type="text"
                   value={hobbyInput}
                   onChange={(e) => setHobbyInput(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addHobby())}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-l-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
                   placeholder="Add a category"
                 />
                 <button
@@ -285,13 +393,13 @@ function CreateEventModal({ isOpen, onClose, onEventCreated }) {
                   {formData.hobbies.map((hobby, index) => (
                     <span
                       key={index}
-                      className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-sm flex items-center"
+                      className="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 rounded-full text-sm flex items-center"
                     >
                       {hobby}
                       <button
                         type="button"
                         onClick={() => removeHobby(hobby)}
-                        className="ml-1 text-purple-800 hover:text-purple-900"
+                        className="ml-1 text-purple-800 dark:text-purple-300 hover:text-purple-900 dark:hover:text-purple-200"
                       >
                         <X className="h-3 w-3" />
                       </button>
@@ -306,7 +414,7 @@ function CreateEventModal({ isOpen, onClose, onEventCreated }) {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
             >
               Cancel
             </button>

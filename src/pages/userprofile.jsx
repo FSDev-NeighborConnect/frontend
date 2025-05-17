@@ -8,7 +8,7 @@ import { useCsrf } from "../context/CsrfContext"
 import CreatePostModal from "./CreatePostModal"
 import CreateEventModal from "./CreateEventModal"
 import PostComments from "./PostComments"
-import { apiUrl } from  "../utils/apiUtil"
+import { apiUrl } from "../utils/apiUtil"
 import {
   CalendarDays,
   MapPin,
@@ -28,13 +28,13 @@ import {
   Clock,
   Share2,
   Camera,
-  ArrowLeft, 
+  ArrowLeft,
 } from "lucide-react"
 import "./userprofile.css"
 
 const buttonBase = "flex items-center gap-1 font-medium text-sm"
 const primaryBtn = `${buttonBase} bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-md`
-const secondaryBtn = `${buttonBase} bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-md`
+const secondaryBtn = `${buttonBase} bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 px-4 py-2 rounded-md`
 
 function UserProfile() {
   const navigate = useNavigate()
@@ -49,7 +49,7 @@ function UserProfile() {
   const [error, setError] = useState(null)
   const [activeTab, setActiveTab] = useState("posts")
   const [showCreatePostModal, setShowCreatePostModal] = useState(false)
-  const [showCreateEventModal, setShowCreateEventModal] = useState(false) 
+  const [showCreateEventModal, setShowCreateEventModal] = useState(false)
   const [expandedComments, setExpandedComments] = useState({})
   const [showDropdown, setShowDropdown] = useState(false)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
@@ -162,9 +162,15 @@ function UserProfile() {
   }
 
   // Handle post creation
+  // MODIFIED: Updated to add new events to the beginning of the array and switch to events tab
   const handlePostCreated = (newPost) => {
+    console.log("New post/event created:", newPost)
+
     if (newPost.type === "event") {
+      // Add the new event to the beginning of the events array
       setEvents((prevEvents) => [newPost, ...prevEvents])
+      // Automatically switch to events tab when an event is created
+      setActiveTab("events")
     } else {
       setPosts((prevPosts) => [newPost, ...prevPosts])
     }
@@ -205,11 +211,25 @@ function UserProfile() {
       // Fetch events - try multiple endpoints
       try {
         // First try /api/events/user/:id
-        const eventsResponse = await axios.get(apiUrl(`api/event/user/${currentUserId}`), {
+        console.log("Fetching events from:", apiUrl(`api/events/user/${currentUserId}`))
+        const eventsResponse = await axios.get(apiUrl(`api/events/user/${currentUserId}`), {
           withCredentials: true,
           headers: { "X-CSRF-Token": csrfToken },
         })
-        setEvents(eventsResponse.data || [])
+
+        console.log("Events response:", eventsResponse.data)
+
+        // Check if the response has eventDetails property (based on your controller)
+        let fetchedEvents = []
+        if (eventsResponse.data && eventsResponse.data.eventDetails) {
+          fetchedEvents = eventsResponse.data.eventDetails || []
+        } else {
+          fetchedEvents = eventsResponse.data || []
+        }
+
+        // MODIFIED: Sort events by createdAt date, newest first
+        fetchedEvents.sort((a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date))
+        setEvents(fetchedEvents)
       } catch (eventError) {
         console.error("Error fetching events:", eventError)
         setEvents([])
@@ -262,8 +282,8 @@ function UserProfile() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-4">
         <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Something went wrong</h2>
-        <p className="text-gray-600 mb-4">{error}</p>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Something went wrong</h2>
+        <p className="text-gray-600 dark:text-gray-300 mb-4">{error}</p>
         <div className="flex gap-4">
           <button className={primaryBtn} onClick={() => window.location.reload()}>
             Try Again
@@ -293,43 +313,42 @@ function UserProfile() {
 
   // Render a single post
   const renderPost = (post) => (
-    <div key={post._id} className="bg-white rounded-lg shadow-sm">
+    <div key={post._id} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
       <div className="px-6 pt-4 pb-2 flex justify-between">
         <div>
-          <h3 className="text-lg font-bold text-gray-900">{post.title}</h3>
-          <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white">{post.title}</h3>
+          <div className="flex items-center gap-2 mt-1 text-xs text-gray-500 dark:text-gray-400">
             {post.category && post.category.length > 0 && (
-              <span className="bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full font-medium">
+              <span className="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 px-2 py-0.5 rounded-full font-medium">
                 {post.category[0]}
               </span>
             )}
             <span
               className={`px-2 py-0.5 rounded-full font-medium ${
                 post.status === "open"
-                  ? "bg-green-100 text-green-800"
+                  ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300"
                   : post.status === "in progress"
-                    ? "bg-blue-100 text-blue-800"
-                    : "bg-gray-100 text-gray-800"
+                    ? "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300"
+                    : "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300"
               }`}
             >
-               {post.status ? post.status.charAt(0).toUpperCase() + post.status.slice(1) : "Unknown"}
-
+              {post.status ? post.status.charAt(0).toUpperCase() + post.status.slice(1) : "Unknown"}
             </span>
             <span className="flex items-center">
-              <Clock className="h-3 w-3 mr-1" />
+              <Clock className="h-3 w-3 mr-1 text-gray-500 dark:text-gray-400" />
               {new Date(post.createdAt).toLocaleDateString()}
             </span>
           </div>
         </div>
-        <button className="text-gray-400 hover:text-gray-700">
+        <button className="text-gray-400 hover:text-gray-700 dark:text-gray-500 dark:hover:text-gray-300">
           <MoreHorizontal className="h-5 w-5" />
         </button>
       </div>
-      <div className="px-6 py-4 text-gray-700">{post.description}</div>
-      <div className="px-6 py-3 border-t flex justify-between text-sm text-gray-600">
+      <div className="px-6 py-4 text-gray-700 dark:text-gray-300">{post.description}</div>
+      <div className="px-6 py-3 border-t dark:border-gray-700 flex justify-between text-sm text-gray-600 dark:text-gray-400">
         <div className="flex gap-4">
           <button
-            className={`flex items-center gap-1 ${post.likes?.includes(currentUserId) ? "text-purple-600" : ""}`}
+            className={`flex items-center gap-1 ${post.likes?.includes(currentUserId) ? "text-purple-600 dark:text-purple-400" : ""}`}
             onClick={() => handleLike(post._id)}
           >
             <ThumbsUp className="h-4 w-4" />
@@ -348,7 +367,7 @@ function UserProfile() {
 
       {/* Comments section */}
       {expandedComments[post._id] && (
-        <div className="px-6 py-4 border-t">
+        <div className="px-6 py-4 border-t dark:border-gray-700">
           <PostComments postId={post._id} initialComments={post.comments || []} />
         </div>
       )}
@@ -357,7 +376,7 @@ function UserProfile() {
 
   // Render an event
   const renderEvent = (event) => (
-    <div key={event._id} className="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div key={event._id} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
       {event.eventImage?.url && (
         <div className="h-48 overflow-hidden">
           <img
@@ -368,42 +387,47 @@ function UserProfile() {
         </div>
       )}
       <div className="px-6 pt-4 pb-2">
-        <h3 className="text-lg font-bold text-gray-900">{event.title}</h3>
-        <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-gray-500">
-          <span className="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full font-medium">Event</span>
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white">{event.title}</h3>
+        <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-gray-500 dark:text-gray-400">
+          <span className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 px-2 py-0.5 rounded-full font-medium">
+            Event
+          </span>
           <span className="flex items-center">
-            <Calendar className="h-3 w-3 mr-1" />
+            <Calendar className="h-3 w-3 mr-1 text-gray-500 dark:text-gray-400" />
             {new Date(event.date).toLocaleDateString()}
           </span>
           <span className="flex items-center">
-            <Clock className="h-3 w-3 mr-1" />
+            <Clock className="h-3 w-3 mr-1 text-gray-500 dark:text-gray-400" />
             {new Date(event.startTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} -
             {new Date(event.endTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
           </span>
         </div>
         <div className="mt-2">
-          <span className="flex items-center text-xs text-gray-500">
-            <MapPin className="h-3 w-3 mr-1" />
+          <span className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+            <MapPin className="h-3 w-3 mr-1 text-gray-500 dark:text-gray-400" />
             {event.streetAddress}, {event.postalCode}
           </span>
         </div>
       </div>
-      <div className="px-6 py-4 text-gray-700">{event.description}</div>
+      <div className="px-6 py-4 text-gray-700 dark:text-gray-300">{event.description}</div>
       {event.hobbies && event.hobbies.length > 0 && (
         <div className="px-6 pb-4">
           <div className="flex flex-wrap gap-1">
             {event.hobbies.map((hobby, index) => (
-              <span key={index} className="px-2 py-0.5 bg-gray-100 rounded-full text-xs text-gray-800">
+              <span
+                key={index}
+                className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded-full text-xs text-gray-800 dark:text-gray-300"
+              >
                 {hobby}
               </span>
             ))}
           </div>
         </div>
       )}
-      <div className="px-6 py-3 border-t flex justify-between text-sm text-gray-600">
+      <div className="px-6 py-3 border-t dark:border-gray-700 flex justify-between text-sm text-gray-600 dark:text-gray-400">
         <div className="flex gap-4">
           <button
-            className={`flex items-center gap-1 ${event.likes?.includes(currentUserId) ? "text-purple-600" : ""}`}
+            className={`flex items-center gap-1 ${event.likes?.includes(currentUserId) ? "text-purple-600 dark:text-purple-400" : ""}`}
             onClick={() => handleLike(event._id)}
           >
             <ThumbsUp className="h-4 w-4" />
@@ -422,7 +446,7 @@ function UserProfile() {
 
       {/* Comments section */}
       {expandedComments[event._id] && (
-        <div className="px-6 py-4 border-t">
+        <div className="px-6 py-4 border-t dark:border-gray-700">
           <PostComments postId={event._id} initialComments={event.comments || []} />
         </div>
       )}
@@ -434,8 +458,8 @@ function UserProfile() {
       {posts && posts.length > 0 ? (
         posts.map(renderPost)
       ) : (
-        <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-          <p className="text-gray-500 mb-4">No posts yet. Create your first post!</p>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-8 text-center">
+          <p className="text-gray-500 dark:text-gray-400 mb-4">No posts yet. Create your first post!</p>
         </div>
       )}
       {isOwnProfile && (
@@ -451,14 +475,17 @@ function UserProfile() {
       {neighbors && neighbors.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {neighbors.map((neighbor) => (
-            <div key={neighbor._id} className="bg-white rounded-lg shadow-sm p-4 flex flex-col items-center">
+            <div
+              key={neighbor._id}
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 flex flex-col items-center"
+            >
               <img
                 src={neighbor.avatar?.url || "/placeholder.svg"}
                 alt={neighbor.name}
                 className="w-20 h-20 rounded-full object-cover mb-3"
               />
-              <h3 className="font-medium text-gray-900">{neighbor.name}</h3>
-              <p className="text-sm text-gray-500 mb-3">{neighbor.postalCode}</p>
+              <h3 className="font-medium text-gray-900 dark:text-white">{neighbor.name}</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">{neighbor.postalCode}</p>
               <div className="flex gap-2 mt-auto">
                 <button
                   className="px-3 py-1 text-xs bg-purple-700 text-white rounded-md hover:bg-purple-800 flex items-center"
@@ -467,7 +494,7 @@ function UserProfile() {
                   <Users className="h-3 w-3 mr-1" />
                   Profile
                 </button>
-                <button className="px-3 py-1 text-xs border border-gray-300 rounded-md hover:bg-gray-50 flex items-center">
+                <button className="px-3 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 flex items-center">
                   <MessageSquare className="h-3 w-3 mr-1" />
                   Message
                 </button>
@@ -476,20 +503,24 @@ function UserProfile() {
           ))}
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-          <p className="text-gray-500 mb-4">No neighbors found in your area.</p>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-8 text-center">
+          <p className="text-gray-500 dark:text-gray-400 mb-4">No neighbors found in your area.</p>
         </div>
       )}
     </div>
   )
 
+  // MODIFIED: Updated renderEvents to sort events by date (newest first)
   const renderEvents = () => (
     <div className="space-y-4">
       {events && events.length > 0 ? (
-        events.map(renderEvent)
+        // Sort events by createdAt date, newest first
+        [...events]
+          .sort((a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date))
+          .map(renderEvent)
       ) : (
-        <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-          <p className="text-gray-500 mb-4">No events yet. Create your first event!</p>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-8 text-center">
+          <p className="text-gray-500 dark:text-gray-400 mb-4">No events yet. Create your first event!</p>
         </div>
       )}
       {isOwnProfile && (
@@ -508,14 +539,17 @@ function UserProfile() {
   ]
 
   return (
-    <div className="bg-gray-50 min-h-screen pb-10">
+    <div className="bg-gray-50 dark:bg-gray-900 min-h-screen pb-10">
       {/* Header */}
-      <div className="bg-white shadow">
+      <div className="bg-white dark:bg-gray-800 shadow">
         <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center">
             {/* Add back button when viewing other user's profile */}
             {!isOwnProfile && (
-              <button onClick={() => navigate(-1)} className="mr-4 flex items-center text-gray-600 hover:text-gray-900">
+              <button
+                onClick={() => navigate(-1)}
+                className="mr-4 flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+              >
                 <ArrowLeft className="h-5 w-5 mr-1" />
                 <span className="font-medium">Back</span>
               </button>
@@ -527,15 +561,14 @@ function UserProfile() {
 
       {/* Cover Image */}
       <div className="relative h-[300px] bg-gradient-to-r from-purple-700 to-purple-900 overflow-hidden">
-        <img src={coverUrl} className="w-full h-full object-cover" alt="Cover" />
-
+        <img src={coverUrl || "/placeholder.svg"} className="w-full h-full object-cover" alt="Cover" />
 
         {/* Action buttons in top right of cover */}
         <div className="absolute top-4 right-4 flex gap-2">
           {isOwnProfile ? (
             <>
               <button
-                className="px-4 py-2 bg-white rounded-md shadow-sm text-gray-700 hover:bg-gray-50 flex items-center gap-1 font-medium text-sm"
+                className="px-4 py-2 bg-white dark:bg-gray-800 rounded-md shadow-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-1 font-medium text-sm"
                 onClick={() => navigate("/edit-profile")}
               >
                 <Edit className="h-4 w-4 mr-1" />
@@ -543,18 +576,18 @@ function UserProfile() {
               </button>
               <div className="relative">
                 <button
-                  className="p-2 bg-white rounded-md shadow-sm text-gray-700 hover:bg-gray-50"
+                  className="p-2 bg-white dark:bg-gray-800 rounded-md shadow-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                   onClick={() => setShowDropdown(!showDropdown)}
                 >
                   <MoreHorizontal className="h-5 w-5" />
                 </button>
 
                 {showDropdown && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10">
                     <div className="py-1">
                       <button
                         onClick={handleLogout}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                       >
                         <div className="flex items-center">
                           <LogOut className="h-4 w-4 mr-2" />
@@ -576,7 +609,7 @@ function UserProfile() {
                 <Users className="h-4 w-4 mr-1" />
                 Connect
               </button>
-              <button className="p-2 bg-white rounded-md shadow-sm text-gray-700 hover:bg-gray-50">
+              <button className="p-2 bg-white dark:bg-gray-800 rounded-md shadow-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
                 <Share2 className="h-5 w-5" />
               </button>
             </>
@@ -589,7 +622,7 @@ function UserProfile() {
           <div className="relative z-10">
             <img
               src={avatarUrl || "/placeholder.svg"}
-              className="w-[150px] h-[150px] border-4 border-white shadow-lg rounded-full object-cover"
+              className="w-[150px] h-[150px] border-4 border-white dark:border-gray-800 shadow-lg rounded-full object-cover"
               alt={name}
             />
             {isOwnProfile && (
@@ -612,9 +645,11 @@ function UserProfile() {
 
           {/* User Info - Positioned to the right of the profile image */}
           <div className="ml-6 mt-[75px]">
-            <h1 className="text-3xl font-bold text-gray-900">{name}</h1>
-            <div className="flex items-center gap-2 text-gray-600 mt-1">
-              <span className="bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full text-xs">{role || "Member"}</span>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{name}</h1>
+            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 mt-1">
+              <span className="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 px-2 py-0.5 rounded-full text-xs">
+                {role || "Member"}
+              </span>
               <span className="flex items-center gap-1">
                 <MapPin className="h-3 w-3" /> {streetAddress}, {postalCode}
               </span>
@@ -623,23 +658,23 @@ function UserProfile() {
         </div>
 
         {/* Bio and Details */}
-        <div className="mt-6 bg-white p-6 rounded-lg shadow-sm">
-          <p className="text-gray-700">{bio || "No bio provided yet."}</p>
+        <div className="mt-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+          <p className="text-gray-700 dark:text-gray-300">{bio || "No bio provided yet."}</p>
           <div className="mt-4 flex flex-wrap gap-2">
             {hobbies && hobbies.length > 0 ? (
               hobbies.map((hobby, i) => (
                 <span
                   key={i}
-                  className="px-2.5 py-0.5 bg-gray-100 rounded-full text-sm text-gray-800 hover:bg-gray-200"
+                  className="px-2.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded-full text-sm text-gray-800 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                 >
                   {hobby}
                 </span>
               ))
             ) : (
-              <span className="text-gray-500 text-sm">No hobbies added yet.</span>
+              <span className="text-gray-500 dark:text-gray-400 text-sm">No hobbies added yet.</span>
             )}
           </div>
-          <div className="mt-6 flex flex-wrap gap-6 text-sm text-gray-500">
+          <div className="mt-6 flex flex-wrap gap-6 text-sm text-gray-500 dark:text-gray-400">
             <div className="flex items-center gap-1">
               <Mail className="h-4 w-4" />
               {email}
@@ -657,19 +692,15 @@ function UserProfile() {
 
         {/* Tabs */}
         <div className="mt-6">
-          <div className="flex border-b">
-            {[
-              { label: "Posts", value: "posts", icon: <Grid3X3 className="h-4 w-4" /> },
-              { label: "Neighbors", value: "friends", icon: <Users className="h-4 w-4" /> },
-              { label: "Events", value: "events", icon: <Calendar className="h-4 w-4" /> },
-            ].map(({ label, value, icon }) => (
+          <div className="flex border-b dark:border-gray-700">
+            {tabs.map(({ label, value, icon }) => (
               <button
                 key={value}
                 onClick={() => setActiveTab(value)}
                 className={`px-4 py-2 ${buttonBase} ${
                   activeTab === value
-                    ? "border-b-2 border-purple-700 text-purple-700"
-                    : "text-gray-500 hover:text-gray-700"
+                    ? "border-b-2 border-purple-700 text-purple-700 dark:text-purple-400"
+                    : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
                 }`}
               >
                 {icon} {label}
@@ -692,7 +723,6 @@ function UserProfile() {
         onPostCreated={handlePostCreated}
       />
 
-      
       {/* Create Event Modal */}
       <CreateEventModal
         isOpen={showCreateEventModal}

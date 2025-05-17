@@ -6,10 +6,12 @@ import { UserProvider } from './context/UserContext.jsx'
 
 import AdminCreatePost from './pages/Admin/AdminCreatePost.jsx'
 import AdminDashboard from './pages/Admin/AdminDashboard.jsx'
+import AdminDashboardComments from './pages/Admin/AdminDashboardComments.jsx'
 import AdminDashboardEvents from './pages/Admin/AdminDashboardEvents.jsx'
 import AdminDashboardPosts from './pages/Admin/AdminDashboardPosts.jsx'
 import AdminDashboardUsers from './pages/Admin/AdminDashboardUsers.jsx'
 import AdminLogin from './pages/Admin/AdminLogin.jsx'
+import CreateComment from './pages/Admin/AdminCreateComment.jsx'
 import CreateEvent from './pages/Admin/AdminCreateEvent.jsx'
 import CreateUser from './pages/Admin/AdminCreateUser.jsx'
 import DashboardStatistics from './pages/Admin/AdminStatistics.jsx'
@@ -39,6 +41,7 @@ function App() {
             <Route path="/edit-profile" element={<EditProfile />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/dashboard-comments/:postId" element={<AdminDashboardComments />} />
             <Route path="/admin/dashboard-events" element={<AdminDashboardEvents />} />
             <Route path="/admin/dashboard-users" element={<AdminDashboardUsers />} />
             <Route path="/admin/dashboard-posts" element={<AdminDashboardPosts />} />
@@ -46,6 +49,7 @@ function App() {
             <Route path="/admin/update-event" element={<UpdateEvent />} />
             <Route path="/admin/update-user" element={<UpdateUser />} />
             <Route path="/admin/update-post" element={<UpdatePost />} />
+            <Route path="/admin/create-comment/:postId" element={<CreateComment />} />
             <Route path="/admin/create-event" element={<CreateEvent />} />
             <Route path="/admin/create-user" element={<CreateUser />} />
             <Route path="/admin/create-post" element={<AdminCreatePost />} />

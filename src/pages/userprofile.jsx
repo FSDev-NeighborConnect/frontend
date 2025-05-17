@@ -9,7 +9,8 @@ import { useCsrf } from "../context/CsrfContext"
 import CreatePostModal from "./CreatePostModal"
 import CreateEventModal from "./CreateEventModal"
 import PostComments from "./PostComments"
-import { apiUrl } from "../utils/apiUtil"
+import ChatBox from "./Chat/ChatWindow"
+import { apiUrl } from  "../utils/apiUtil"
 import {
   CalendarDays,
   MapPin,
@@ -57,6 +58,11 @@ function UserProfile() {
   const [showProfileDropdown, setShowProfileDropdown] = useState(null)
   const [showContentDropdown, setShowContentDropdown] = useState(null)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
+  // Chat related states
+  const [showChat, setShowChat] = useState(false)
+  const [chatTarget, setChatTarget] = useState(null)
+  const [targetName, setTargetName] = useState("")
+  const [targetAvatar, setTargetAvatar] = useState(null)
   const [postLikes, setPostLikes] = useState({})
 
   // Current user ID determination
@@ -585,7 +591,15 @@ function UserProfile() {
                   <Users className="h-3 w-3 mr-1" />
                   Profile
                 </button>
-                <button className="px-3 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 flex items-center">
+                <button 
+                  className="px-3 py-1 text-xs border border-gray-300 rounded-md hover:bg-gray-50 flex items-center"
+                  onClick={() => {
+                    setChatTarget(neighbor._id)
+                    setTargetName(neighbor.name)
+                    setTargetAvatar(neighbor.avatar?.url)
+                    setShowChat(true)
+                  }}
+                >
                   <MessageSquare className="h-3 w-3 mr-1" />
                   Message
                 </button>
@@ -686,7 +700,15 @@ function UserProfile() {
             </>
           ) : (
             <>
-              <button className={primaryBtn}>
+              <button 
+                className={primaryBtn}
+                onClick={() => {
+                  setChatTarget(currentUserId)
+                  setTargetName(name)
+                  setTargetAvatar(avatar?.url)
+                  setShowChat(true)
+                }}
+              >
                 <MessageSquare className="h-4 w-4 mr-1" />
                 Message
               </button>
@@ -827,6 +849,18 @@ function UserProfile() {
         }}
         onEventCreated={handlePostCreated}
       />
+
+      {/* Chat Modal */}
+      {showChat && (
+        <div className="fixed bottom-4 right-4 z-50">
+          <ChatBox 
+            targetUserId={chatTarget}
+            targetUserName={targetName}
+            targetUserAvatar={targetAvatar}
+            onClose={() => setShowChat(false)}
+          />
+        </div>
+      )}
     </div>
   )
 }

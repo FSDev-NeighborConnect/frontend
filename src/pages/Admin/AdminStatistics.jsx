@@ -8,7 +8,9 @@ const DashboardStatistics = () => {
   const [stats, setStats] = useState({
     neighborhoodData: {},
     statusCounts: {},
-    userRoles: {}
+    userRoles: {},
+    totalComments: 0,
+    avgCommentsPerPost: 0
   })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -16,79 +18,73 @@ const DashboardStatistics = () => {
   const navigate = useNavigate()
 
   const fetchStatistics = async () => {
-    setLoading(true)
-    setError(null)
     try {
-      const [postsRes, usersRes, eventsRes] = await Promise.all([
-        axios.get(
-          apiUrl("api/admin/all/posts"),
-          apiConfigCsrf(csrfToken)
-        ),
-        axios.get(
-          apiUrl("api/admin/all/users"),
-          apiConfigCsrf(csrfToken)
-        ),
-        axios.get(
-          apiUrl("api/admin/all/events"),
-          apiConfigCsrf(csrfToken)
-        )
+      const [postsRes, usersRes, eventsRes, commentsRes] = await Promise.all([
+        axios.get(apiUrl("api/admin/all/posts"), apiConfigCsrf(csrfToken)),
+        axios.get(apiUrl("api/admin/all/users"), apiConfigCsrf(csrfToken)),
+        axios.get(apiUrl("api/admin/all/events"), apiConfigCsrf(csrfToken)),
+        axios.get(apiUrl("api/admin/all/comments"), apiConfigCsrf(csrfToken))
       ])
 
       const posts = postsRes.data
       const users = usersRes.data
       const events = eventsRes.data
+      const comments = commentsRes.data
 
-      // Combine neighborhood data
-      const neighborhoodData = {}
-      
-      // Process posts
-      posts.forEach(post => {
-        const zip = post.postalCode || "Unknown"
-        if (!neighborhoodData[zip]) {
-          neighborhoodData[zip] = { posts: 0, users: 0, events: 0 }
-        }
-        neighborhoodData[zip].posts += 1
-      })
-      
-      // Process users
-      users.forEach(user => {
-        const zip = user.postalCode || "Unknown"
-        if (!neighborhoodData[zip]) {
-          neighborhoodData[zip] = { posts: 0, users: 0, events: 0 }
-        }
-        neighborhoodData[zip].users += 1
-      })
-      
-      // Process events
-      events.forEach(event => {
-        const zip = event.postalCode || "Unknown"
-        if (!neighborhoodData[zip]) {
-          neighborhoodData[zip] = { posts: 0, users: 0, events: 0 }
-        }
-        neighborhoodData[zip].events += 1
-      })
-
-      // Calculate user roles
-      const userRoles = users.reduce((acc, user) => {
-        acc[user.role] = (acc[user.role] || 0) + 1
-        return acc
-      }, {})
+      const neighborhoodData = getNeighborhoodData(posts, users, events)
+      const statusCounts = getStatusCounts(posts)
+      const userRoles = getUserRoleCounts(users)
+      const totalComments = comments.length
+      const avgCommentsPerPost = posts.length > 0 
+        ? totalComments / posts.length 
+        : 0
 
       setStats({
         neighborhoodData,
-        statusCounts: posts.reduce((acc, post) => {
-          acc[post.status] = (acc[post.status] || 0) + 1
-          return acc
-        }, {}),
-        userRoles
+        statusCounts,
+        userRoles,
+        totalComments,
+        avgCommentsPerPost
       })
-    } catch (err) {
-      setError(err.response?.data?.message || "Failed to load statistics")
-      console.error("Statistics error:", err)
+    } catch (error) {
+      setError(error.response?.data?.message || "Failed to load statistics")
+      console.error("Statistics error:", error)
     } finally {
       setLoading(false)
     }
   }
+
+  const getNeighborhoodData = (posts, users, events) => {
+    const neighborhoodData = {}
+    
+    const updateData = (data, key) => {
+      data.forEach(item => {
+        const zip = item.postalCode || "Unknown"
+        if (!neighborhoodData[zip]) {
+          neighborhoodData[zip] = { posts: 0, users: 0, events: 0 }
+        }
+        neighborhoodData[zip][key] += 1
+      })
+    }
+
+    updateData(posts, "posts")
+    updateData(users, "users")
+    updateData(events, "events")
+
+    return neighborhoodData
+  }
+
+  const getStatusCounts = (posts) => 
+    posts.reduce((acc, post) => {
+      acc[post.status] = (acc[post.status] || 0) + 1
+      return acc
+    }, {})
+
+  const getUserRoleCounts = (users) =>
+    users.reduce((acc, user) => {
+      acc[user.role] = (acc[user.role] || 0) + 1
+      return acc
+    }, {})
 
   useEffect(() => {
     fetchStatistics()
@@ -161,53 +157,8 @@ const DashboardStatistics = () => {
           </div>
         )}
 
-        {/* Neighborhood Statistics */}
-        <div className="bg-white shadow sm:rounded-lg overflow-hidden mb-8">
-          <div className="px-6 py-4 bg-gray-50">
-            <h2 className="text-xl font-semibold text-gray-900">Neighborhood Activity</h2>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Postal Code
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Number of Users
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Number of Posts
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Number of Events
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {Object.entries(stats.neighborhoodData).map(([zip, data]) => (
-                  <tr key={`neighborhood-${zip}`}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {zip}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {data.users}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {data.posts}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {data.events}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Combined Status and Roles */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Post Status and User Roles */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
           {/* Post Status */}
           <div className="bg-white shadow sm:rounded-lg overflow-hidden">
             <div className="px-6 py-4 bg-gray-50">
@@ -280,6 +231,80 @@ const DashboardStatistics = () => {
                 </tbody>
               </table>
             </div>
+          </div>
+        </div>
+
+        {/* Comments Statistics */}
+        <div className="bg-white shadow sm:rounded-lg overflow-hidden mb-8">
+          <div className="px-6 py-4 bg-gray-50">
+            <h2 className="text-xl font-semibold text-gray-900">Comments Statistics</h2>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-gray-200">
+                <tr>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    Total Comments
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {stats.totalComments}
+                  </td>
+                </tr>
+                <tr>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    Average Comments per Post
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {stats.avgCommentsPerPost.toFixed(2)}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Neighborhood Statistics */}
+        <div className="bg-white shadow sm:rounded-lg overflow-hidden">
+          <div className="px-6 py-4 bg-gray-50">
+            <h2 className="text-xl font-semibold text-gray-900">Neighborhood Activity</h2>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Postal Code
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Number of Users
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Number of Posts
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Number of Events
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {Object.entries(stats.neighborhoodData).map(([zip, data]) => (
+                  <tr key={`neighborhood-${zip}`}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {zip}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {data.users}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {data.posts}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {data.events}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

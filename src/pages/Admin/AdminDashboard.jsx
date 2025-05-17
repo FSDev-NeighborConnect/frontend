@@ -12,11 +12,26 @@ const AdminMainDashboard = () => {
   const [isAdmin, setIsAdmin] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
-  const handleSignOut = () => {
-    setCsrfToken("")
+  const handleSignOut = async () => {
+  try {
+    await axios.post(
+      apiUrl("api/logout"),
+      {}, // Needed since it is a post request and needs to include a body
+      apiConfigCsrf(csrfToken))
+
+    // Clear client state only if logout is successful
     setUserId(null)
+    setCsrfToken("")
+    navigate("/admin/login")
+  } catch (error) {
+    console.error("Logout failed", error)
+
+    // Still attempt to clean up client state on error
+    setUserId(null)
+    setCsrfToken("")
     navigate("/admin/login")
   }
+}
 
   // Verify admin status
   useEffect(() => {
@@ -76,7 +91,7 @@ const AdminMainDashboard = () => {
           onClick={() => navigate("/admin/dashboard-posts")}
           className={"px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"}
         >
-          Posts
+          Posts & Comments
         </button>
         <button
           onClick={() => navigate("/admin/dashboard-events")}

@@ -138,6 +138,15 @@ function CreateEventModal({ isOpen, onClose, onEventCreated }) {
         throw new Error("End time must be after start time")
       }
 
+      // Validate title and description lengths
+      if (formData.title.length < 5) {
+        throw new Error("Title must be at least 5 characters long")
+      }
+
+      if (formData.description.length < 10) {
+        throw new Error("Description must be at least 10 characters long")
+      }
+
       // Create FormData for file upload
       const eventFormData = new FormData()
       eventFormData.append("title", formData.title)

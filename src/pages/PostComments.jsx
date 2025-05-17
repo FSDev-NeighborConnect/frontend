@@ -5,20 +5,36 @@ import { Send, AlertCircle } from "lucide-react"
 import axios from "axios"
 import { useUser } from "../context/UserContext"
 import { useCsrf } from "../context/CsrfContext"
-import { apiUrl } from  "../utils/apiUtil"
+import { apiUrl, apiConfigCsrf } from "../utils/apiUtil"
 
-function PostComments({ postId, initialComments = [] }) {
+function PostComments({ postId }) {
   const { userId } = useUser()
   const { csrfToken } = useCsrf()
-  const [comments, setComments] = useState(initialComments)
+  const [comments, setComments] = useState([])
   const [newComment, setNewComment] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [fetchingComments, setFetchingComments] = useState(true)
 
   useEffect(() => {
-    // Update comments if initialComments changes
-    setComments(initialComments)
-  }, [initialComments])
+    const fetchComments = async () => {
+      setFetchingComments(true)
+      setError(null)
+      try {
+        const response = await axios.get(
+          apiUrl(`api/posts/${postId}/comments`),
+          apiConfigCsrf(csrfToken)
+        )
+        setComments(response.data)
+      } catch (err) {
+        console.error("Error fetching comments:", err)
+        setError("Failed to load comments.")
+      } finally {
+        setFetchingComments(false)
+      }
+    }
+    fetchComments()
+  }, [postId])
 
   const handleSubmitComment = async (e) => {
     e.preventDefault()
@@ -34,11 +50,15 @@ function PostComments({ postId, initialComments = [] }) {
         {
           withCredentials: true,
           headers: { "X-CSRF-Token": csrfToken },
-        },
+        }
       )
 
-      // Add the new comment to the list
-      setComments([...comments, response.data])
+      // Refetch comments to ensure proper population
+      const updatedComments = await axios.get(
+        apiUrl(`api/posts/${postId}/comments`),
+        apiConfigCsrf(csrfToken)
+      )
+      setComments(updatedComments.data)
       setNewComment("")
     } catch (err) {
       console.error("Error posting comment:", err)
@@ -59,28 +79,38 @@ function PostComments({ postId, initialComments = [] }) {
         </div>
       )}
 
-      <div className="space-y-4 mb-4">
-        {comments.length > 0 ? (
-          comments.map((comment) => (
-            <div key={comment._id} className="bg-gray-50 p-3 rounded-lg">
-              <div className="flex items-center mb-2">
-                <img
-                  src={comment.user?.avatar?.url || "/placeholder.svg"}
-                  alt={comment.user?.name || "User"}
-                  className="w-8 h-8 rounded-full mr-2 object-cover"
-                />
-                <div>
-                  <p className="font-medium text-sm">{comment.user?.name || "Anonymous"}</p>
-                  <p className="text-xs text-gray-500">{new Date(comment.createdAt).toLocaleDateString()}</p>
+      {fetchingComments ? (
+        <p className="text-gray-500 text-sm">Loading comments...</p>
+      ) : (
+        <div className="space-y-4 mb-4">
+          {comments.length > 0 ? (
+            comments.map((comment) => (
+              <div key={comment._id} className="bg-gray-50 p-3 rounded-lg">
+                <div className="flex items-center mb-2">
+                  {comment.author?.avatar?.url ? (
+                    <img
+                      src={comment.author.avatar.url}
+                      alt={comment.author.name}
+                      className="w-8 h-8 rounded-full mr-2 object-cover"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-semibold text-gray-600 mr-2">
+                      {comment.author?.name?.charAt(0).toUpperCase() || "?"}
+                    </div>
+                  )}
+                  <div>
+                    <p className="font-medium text-sm">{comment.author?.name || "Anonymous"}</p>
+                    <p className="text-xs text-gray-500">{new Date(comment.createdAt).toLocaleDateString()}</p>
+                  </div>
                 </div>
+                <p className="text-gray-700 text-sm">{comment.content}</p>
               </div>
-              <p className="text-gray-700 text-sm">{comment.content}</p>
-            </div>
-          ))
-        ) : (
-          <p className="text-gray-500 text-sm">No comments yet. Be the first to comment!</p>
-        )}
-      </div>
+            ))
+          ) : (
+            <p className="text-gray-500 text-sm">No comments yet. Be the first to comment!</p>
+          )}
+        </div>
+      )}
 
       <form onSubmit={handleSubmitComment} className="flex">
         <input

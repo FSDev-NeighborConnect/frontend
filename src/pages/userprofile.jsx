@@ -428,7 +428,6 @@ function UserProfile() {
           </button>
           <button className="flex items-center gap-1" onClick={() => toggleComments(post._id)}>
             <MessageSquare className="h-4 w-4" />
-            {post.comments?.length || 0}
           </button>
         </div>
         <button className="flex items-center gap-1">
@@ -439,7 +438,7 @@ function UserProfile() {
 
       {expandedComments[post._id] && (
         <div className="px-6 py-4 border-t dark:border-gray-700">
-          <PostComments postId={post._id} initialComments={post.comments || []} />
+          <PostComments postId={post._id}/>
         </div>
       )}
     </div>
@@ -530,22 +529,12 @@ function UserProfile() {
             <ThumbsUp className="h-4 w-4" />
             {event.likes?.length || 0}
           </button>
-          <button className="flex items-center gap-1" onClick={() => toggleComments(event._id)}>
-            <MessageSquare className="h-4 w-4" />
-            {event.comments?.length || 0}
-          </button>
         </div>
         <button className="flex items-center gap-1">
           <Bookmark className="h-4 w-4" />
           Save
         </button>
       </div>
-
-      {expandedComments[event._id] && (
-        <div className="px-6 py-4 border-t dark:border-gray-700">
-          <PostComments postId={event._id} initialComments={event.comments || []} />
-        </div>
-      )}
     </div>
   )
 

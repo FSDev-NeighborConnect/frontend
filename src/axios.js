@@ -2,7 +2,7 @@ import axios from "axios"
 
 // Create an axios instance with a base URL
 const api = axios.create({
-  baseURL: "https://backend-7lde.onrender.com/", // Adjust this to match your backend URL
+  baseURL: "http://localhost:5000", // Adjust this to match your backend URL
   headers: {
     "Content-Type": "application/json",
   },

@@ -190,7 +190,7 @@ function CreateEventModal({ isOpen, onClose, onEventCreated }) {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center p-4 border-b dark:border-gray-700">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">Create New Event</h2>
@@ -220,7 +220,7 @@ function CreateEventModal({ isOpen, onClose, onEventCreated }) {
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-900 dark:bg-white dark:text-gray-900 dark:border-gray-300"
                 required
               />
             </div>
@@ -234,7 +234,7 @@ function CreateEventModal({ isOpen, onClose, onEventCreated }) {
                 value={formData.description}
                 onChange={handleChange}
                 rows={4}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-900 dark:bg-white dark:text-gray-900 dark:border-gray-300"
                 required
               />
             </div>
@@ -250,7 +250,7 @@ function CreateEventModal({ isOpen, onClose, onEventCreated }) {
                   name="date"
                   value={formData.date}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-whitew-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-900 dark:bg-white dark:text-gray-900 dark:border-gray-300"
                   required
                 />
               </div>
@@ -267,7 +267,7 @@ function CreateEventModal({ isOpen, onClose, onEventCreated }) {
                   name="startTime"
                   value={formData.startTime}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-900 dark:bg-white dark:text-gray-900 dark:border-gray-300"
                   required
                 />
               </div>
@@ -282,7 +282,7 @@ function CreateEventModal({ isOpen, onClose, onEventCreated }) {
                   name="endTime"
                   value={formData.endTime}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-900 dark:bg-white dark:text-gray-900 dark:border-gray-300"
                   required
                 />
               </div>
@@ -301,7 +301,7 @@ function CreateEventModal({ isOpen, onClose, onEventCreated }) {
                 name="streetAddress"
                 value={formData.streetAddress}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-900 dark:bg-white dark:text-gray-900 dark:border-gray-300"
                 required
               />
             </div>
@@ -316,7 +316,7 @@ function CreateEventModal({ isOpen, onClose, onEventCreated }) {
                 name="postalCode"
                 value={formData.postalCode}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-900 dark:bg-white dark:text-gray-900 dark:border-gray-300"
                 required
               />
             </div>
@@ -330,7 +330,7 @@ function CreateEventModal({ isOpen, onClose, onEventCreated }) {
                   id="eventImage"
                   accept="image/*"
                   onChange={handleImageChange}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-900 dark:bg-white dark:text-gray-900 dark:border-gray-300"
                 />
               </div>
               {formData.eventImage && formData.eventImage.preview && (
@@ -362,7 +362,7 @@ function CreateEventModal({ isOpen, onClose, onEventCreated }) {
                   value={hobbyInput}
                   onChange={(e) => setHobbyInput(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addHobby())}
-                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-l-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-900 dark:bg-white dark:text-gray-900 dark:border-gray-300"
                   placeholder="Add a category"
                 />
                 <button

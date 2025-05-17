@@ -258,6 +258,7 @@ function UserProfile() {
           withCredentials: true,
           headers: { "X-CSRF-Token": csrfToken },
         })
+        setPosts(postsResponse.data || [])
 
         // Sort posts by createdAt date, newest first
         const fetchedPosts = postsResponse.data || []

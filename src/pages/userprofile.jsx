@@ -349,7 +349,7 @@ function UserProfile() {
   if (!user) return null
 
   const { name, email, streetAddress, postalCode, phone, bio, hobbies, role, createdAt, avatar, cover } = user
-  const avatarUrl = avatar?.url || "/placeholder.svg"
+  const avatarUrl = avatar?.url
   const coverUrl = cover?.url || "/placeholder.svg"
   const joinDate = new Date(createdAt).toLocaleDateString("en-US", { year: "numeric", month: "long" })
 
@@ -573,13 +573,19 @@ function UserProfile() {
           {neighbors.map((neighbor) => (
             <div
               key={neighbor._id}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 flex flex-col items-center"
+              className="bg-white rounded-lg shadow-sm p-4 flex flex-col items-center"
             >
-              <img
-                src={neighbor.avatar?.url || "/placeholder.svg"}
-                alt={neighbor.name}
-                className="w-20 h-20 rounded-full object-cover mb-3"
-              />
+              {neighbor.avatar?.url ? (
+                <img
+                  src={neighbor.avatar.url}
+                  alt={neighbor.name}
+                  className="w-20 h-20 rounded-full object-cover mb-3"
+                />
+              ) : (
+                <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center text-2xl font-bold text-gray-600 mb-3">
+                  {neighbor.name?.charAt(0).toUpperCase() || "?"}
+                </div>
+              )}
               <h3 className="font-medium text-gray-900 dark:text-white">{neighbor.name}</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">{neighbor.postalCode}</p>
               <div className="flex gap-2 mt-auto">
@@ -710,11 +716,18 @@ function UserProfile() {
       <div className="max-w-6xl mx-auto px-6">
         <div className="flex relative -mt-[75px]">
           <div className="relative z-10">
-            <img
-              src={avatarUrl || "/placeholder.svg"}
-              className="w-[150px] h-[150px] border-4 border-white dark:border-gray-800 shadow-lg rounded-full object-cover"
-              alt={name}
-            />
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                className="w-[150px] h-[150px] border-4 border-white dark:border-gray-800 shadow-lg rounded-full object-cover"
+                alt={name}
+              />
+            ) : (
+              <div className="w-[150px] h-[150px] border-4 border-white dark:border-gray-800 shadow-lg rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-5xl font-bold text-gray-600 dark:text-gray-300">
+                {name?.charAt(0).toUpperCase() || "?"}
+              </div>
+            )}
+
             {isOwnProfile && (
               <label className="absolute bottom-2 right-2 p-2 rounded-full bg-purple-700 text-white hover:bg-purple-800 cursor-pointer">
                 <input

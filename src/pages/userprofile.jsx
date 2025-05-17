@@ -258,10 +258,13 @@ function UserProfile() {
           withCredentials: true,
           headers: { "X-CSRF-Token": csrfToken },
         })
-        setPosts(postsResponse.data || [])
+
+        // Sort posts by createdAt date, newest first
+        const fetchedPosts = postsResponse.data || []
+        fetchedPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        setPosts(fetchedPosts)
 
         // Fetch likes for each post
-        const fetchedPosts = postsResponse.data || []
         for (const post of fetchedPosts) {
           await fetchPostLikes(post._id)
         }
@@ -269,6 +272,7 @@ function UserProfile() {
         console.error("Error fetching posts:", postError)
         setPosts([])
       }
+
 
       // Fetch events - try multiple endpoints
       try {

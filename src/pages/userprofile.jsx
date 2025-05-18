@@ -9,8 +9,8 @@ import { useCsrf } from "../context/CsrfContext"
 import CreatePostModal from "./CreatePostModal"
 import CreateEventModal from "./CreateEventModal"
 import PostComments from "./PostComments"
+import { apiUrl, apiConfigCsrf } from "../utils/apiUtil"
 import ChatBox from "./Chat/ChatWindow"
-import { apiUrl } from  "../utils/apiUtil"
 import {
   CalendarDays,
   MapPin,
@@ -70,10 +70,19 @@ function UserProfile() {
   const isOwnProfile = !urlUserId || urlUserId === loggedInUserId || urlUserId === localStorage.getItem("userId")
 
   // Logout handler
-  const handleLogout = () => {
-    localStorage.removeItem("userId")
+  const handleLogout = async () => {
+  try {
+    await axios.post(
+      apiUrl("api/logout"),
+      {}, // Needed since it is a post request and needs to include a body
+      apiConfigCsrf(csrfToken))
+
+    navigate("/login")
+  } catch (error) {
+    console.error("Logout failed", error)
     navigate("/login")
   }
+}
 
   // Handle avatar change
   const handleAvatarChange = async (e) => {
@@ -261,7 +270,12 @@ function UserProfile() {
         })
         setPosts(postsResponse.data || [])
 
+        // Sort posts by createdAt date, newest first
         const fetchedPosts = postsResponse.data || []
+        fetchedPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        setPosts(fetchedPosts)
+
+        // Fetch likes for each post
         for (const post of fetchedPosts) {
           await fetchPostLikes(post._id)
         }
@@ -356,7 +370,7 @@ function UserProfile() {
 
   const { name, email, streetAddress, postalCode, phone, bio, hobbies, role, createdAt, avatar, cover } = user
   const avatarUrl = avatar?.url
-  const coverUrl = cover?.url || "/placeholder.svg"
+  const coverUrl = cover?.url
   const joinDate = new Date(createdAt).toLocaleDateString("en-US", { year: "numeric", month: "long" })
 
   const hasUserLikedPost = (postId) => {
@@ -660,7 +674,9 @@ function UserProfile() {
 
       {/* Cover Image */}
       <div className="relative h-[300px] bg-gradient-to-r from-purple-700 to-purple-900 overflow-hidden">
-        <img src={coverUrl || "/placeholder.svg"} className="w-full h-full object-cover" alt="Cover" />
+        {coverUrl && (
+          <img src={coverUrl} className="w-full h-full object-cover" alt="" />
+        )}
 
         {/* Action buttons in top right of cover */}
         <div className="absolute top-4 right-4 flex gap-2">
@@ -673,30 +689,13 @@ function UserProfile() {
                 <Edit className="h-4 w-4 mr-1" />
                 Edit Profile
               </button>
-              <div className="relative">
-                <button
-                  className="p-2 bg-white dark:bg-gray-800 rounded-md shadow-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-                >
-                  <MoreHorizontal className="h-5 w-5" />
-                </button>
-
-                {showProfileDropdown && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10">
-                    <div className="py-1">
-                      <button
-                        onClick={handleLogout}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                      >
-                        <div className="flex items-center">
-                          <LogOut className="h-4 w-4 mr-2" />
-                          Logout
-                        </div>
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
+              <button
+                className="px-4 py-2 bg-white dark:bg-gray-800 rounded-md shadow-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-1 font-medium text-sm"
+                onClick={handleLogout}
+              >
+                <LogOut className="h-4 w-4 mr-1" />
+                Logout
+              </button>
             </>
           ) : (
             <>

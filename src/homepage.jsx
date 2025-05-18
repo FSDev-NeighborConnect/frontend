@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import React, { useState, useEffect } from 'react';
 
 import axios from 'axios';
@@ -14,6 +15,19 @@ const Homepage = () => {
   
 
   const [userProfile, setUserProfile] = useState(null);
+=======
+import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { CsrfContext } from '../context/CsrfContext';
+import { AuthContext } from '../context/AuthContext';
+
+const Homepage = () => {
+  const navigate = useNavigate();
+  const csrfToken = useContext(CsrfContext);
+  const { user: currentUser } = useContext(AuthContext);
+
+>>>>>>> Stashed changes
   const [showPostModal, setShowPostModal] = useState(false);
   const [showEventModal, setShowEventModal] = useState(false);
   const [showToggleMenu, setShowToggleMenu] = useState(false);
@@ -128,6 +142,77 @@ const Homepage = () => {
     setCategoryCounts(counts);
   };
 
+<<<<<<< Updated upstream
+=======
+  const fetchData = async (postalCode) => {
+    setLoading(true);
+    try {
+      const [postsRes, neighborsRes] = await Promise.all([
+        axios.get(`/api/posts/zip`, {
+          withCredentials: true,
+          headers: { 'X-CSRF-Token': csrfToken }
+        }),
+        axios.get(`/api/users/zip/${postalCode}`, {
+          withCredentials: true,
+          headers: { 'X-CSRF-Token': csrfToken }
+        })
+      ]);
+
+      setPosts(postsRes.data);
+      calculateCategoryCounts(postsRes.data);
+      setUsers(neighborsRes.data);
+
+      setPostForm(prev => ({
+        ...prev,
+        street: currentUser.streetAddress,
+        postalCode: currentUser.postalCode
+      }));
+    } catch (err) {
+      setError("Failed to load posts. Please try again.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (currentUser) {
+      fetchData(currentUser.postalCode);
+    }
+  }, [currentUser]);
+
+  const handlePostSubmit = async () => {
+    try {
+      const postWithUser = { ...postForm, createdBy: currentUser._id };
+      await axios.post('/api/posts/post', postWithUser, {
+        withCredentials: true,
+        headers: { 'X-CSRF-Token': csrfToken }
+      });
+      alert('Post created successfully');
+      setShowPostModal(false);
+      fetchData(currentUser.postalCode);
+    } catch (err) {
+      alert('Failed to create post');
+      console.error(err);
+    }
+  };
+
+  const handleEventSubmit = async () => {
+    try {
+      const eventWithUser = { ...eventForm, createdBy: currentUser._id };
+      await axios.post('/api/events/event', eventWithUser, {
+        withCredentials: true,
+        headers: { 'X-CSRF-Token': csrfToken }
+      });
+      alert('Event created successfully');
+      setShowEventModal(false);
+    } catch (err) {
+      alert('Failed to create event');
+      console.error(err);
+    }
+  };
+
+>>>>>>> Stashed changes
   const toggleCategory = (cat) => {
     setPostForm(prev => ({
       ...prev,
@@ -299,6 +384,7 @@ const Homepage = () => {
           </>
         )}
       </main>
+<<<<<<< Updated upstream
 
       {/* Post Modal */}
       {showPostModal && (
@@ -340,6 +426,8 @@ const Homepage = () => {
     fetchEvents(); // already defined in your file
   }}
 />
+=======
+>>>>>>> Stashed changes
     </div>
   );
 };

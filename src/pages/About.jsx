@@ -135,7 +135,20 @@ const AboutPage = () => {
             <h3 className="text-xl font-semibold text-purple-700 mb-4">
               Meenu Gupta
             </h3>
-            <p className="text-gray-700"></p>
+            <div className="text-gray-700 space-y-2">
+              <ul className="list-disc ml-6 space-y-1">
+                <li>Backend Development: Developed backend routes for login, signup, events, users, posts, Like (Get, Post, Delete)</li>
+                <li>Testing: Testing and debugging API's using Insomnia</li>
+                <li>Database: Created Like and Event database structures</li>
+                <li>Security: Implemented security features including hashing, validation, sanitization, and rate limiting</li>
+                <li>Chat System: Independently developed secure one-to-one chat functionality with real-time updates</li>
+                <li>Frontend: Designed and developed welcome page using React with images</li>
+                <li>Integration: Resolved critical integration issues between frontend and backend</li>
+                <li>Optimization: Proactively identified and resolved performance bottlenecks</li>
+                <li>Leadership: Guided team coordination during time-sensitive development phases</li>
+                <li>Team Support: Provided key assistance to teammates during high-pressure stages</li>
+              </ul>
+            </div>
           </div>
 
 

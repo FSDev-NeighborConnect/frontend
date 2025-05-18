@@ -135,19 +135,65 @@ const AboutPage = () => {
             <h3 className="text-xl font-semibold text-purple-700 mb-4">
               Meenu Gupta
             </h3>
-            <div className="text-gray-700 space-y-2">
-              <ul className="list-disc ml-6 space-y-1">
-                <li>Backend Development: Developed backend routes for login, signup, events, users, posts, Like (Get, Post, Delete)</li>
-                <li>Testing: Testing and debugging API's using Insomnia</li>
-                <li>Database: Created Like and Event database structures</li>
-                <li>Security: Implemented security features including hashing, validation, sanitization, and rate limiting</li>
-                <li>Chat System: Independently developed secure one-to-one chat functionality with real-time updates</li>
-                <li>Frontend: Designed and developed welcome page using React with images</li>
-                <li>Integration: Resolved critical integration issues between frontend and backend</li>
-                <li>Optimization: Proactively identified and resolved performance bottlenecks</li>
-                <li>Leadership: Guided team coordination during time-sensitive development phases</li>
-                <li>Team Support: Provided key assistance to teammates during high-pressure stages</li>
-              </ul>
+            <div className="text-gray-700 space-y-4">
+              <p className="font-medium">Focus Area: Backend Architecture, Development & System Integration</p>
+              
+              <p className="font-medium">Key Contributions:</p>
+              
+              <div className="ml-4">
+                <p className="font-medium mb-1">Backend Development & Architecture</p>
+                <ul className="list-disc ml-6 space-y-1">
+                  <li>Implemented backend using Node.js, Express.js and MVC structure</li>
+                  <li>Developed major backend features: login, signup, users, posts, events, and like/unlike (GET, POST, DELETE) etc.</li>
+                  <li>Took full responsibility for these features — including testing, bug fixing, and integration with frontend.</li>
+                </ul>
+              </div>
+
+              <div className="ml-4">
+                <p className="font-medium mb-1">Security & Middleware</p>
+                <ul className="list-disc ml-6 space-y-1">
+                  <li>Added key backend security features like Password hashing , Input validation , Data sanitization , Rate limiting etc. to protect the app from XSS, injections, and brute-force attacks.</li>
+                </ul>
+              </div>
+
+              <div className="ml-4">
+                <p className="font-medium mb-1">Database</p>
+                <ul className="list-disc ml-6 space-y-1">
+                  <li>Created the database models for Events and Likes completely from scratch.</li>
+                  <li>Ensured clean data structure to support future scalability.</li>
+                </ul>
+              </div>
+
+              <div className="ml-4">
+                <p className="font-medium mb-1">Frontend UI</p>
+                <ul className="list-disc ml-6 space-y-1">
+                  <li>Designed and built the Welcome Page in React with images and user-friendly layout.</li>
+                </ul>
+              </div>
+
+              <div className="ml-4">
+                <p className="font-medium mb-1">Chat System (Real-time 1-to-1 chat)</p>
+                <ul className="list-disc ml-6 space-y-1">
+                  <li>Independently developed the private 1-on-1 chat feature using Firebase.</li>
+                  <li>Users can securely send real-time messages.</li>
+                </ul>
+              </div>
+
+              <div className="ml-4">
+                <p className="font-medium mb-1">Integration & Coordination</p>
+                <ul className="list-disc ml-6 space-y-1">
+                  <li>Collaborate closely with frontend teammates to integrate backend APIs smoothly.</li>
+                  <li>Shared knowledge, resolved blockers, and kept team communication strong.</li>
+                </ul>
+              </div>
+
+              <div className="ml-4">
+                <p className="font-medium mb-1">Strong Commitment to Success of Project</p>
+                <ul className="list-disc ml-6 space-y-1">
+                  <li>Always stayed focused during critical deadlines.</li>
+                  <li>Completed all assigned tasks — and took responsibility for extra work when needed to help the team succeed.</li>
+                </ul>
+              </div>
             </div>
           </div>
 

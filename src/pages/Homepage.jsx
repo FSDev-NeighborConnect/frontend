@@ -159,7 +159,15 @@ const Homepage = () => {
 
       alert('Post created successfully');
       setShowPostModal(false);
-      window.location.reload();
+      
+      // Added by Max as a quick fix since fetchData() does not correctly fetch the page and let create post happen ( it is currently 50 minutes before submission time and it just needs to work. would normally never do something like this.)
+      const res = await axios.get(apiUrl('api/posts/zip'), {
+        withCredentials: true,
+        headers: { 'X-CSRF-Token': csrfToken }
+      });
+      setPosts(res.data);
+      countCategories(res.data);
+      
     } catch (err) {
       console.error("Post creation error:", err.response?.data || err.message);
       alert("Post creation failed. Check console.");

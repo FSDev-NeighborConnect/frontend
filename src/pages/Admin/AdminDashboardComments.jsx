@@ -158,31 +158,33 @@ const AdminDashboardComments = () => {
           {comments.length === 0 ? (
             <p className="text-gray-500 p-4">No comments found for this post.</p>
           ) : (
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Content</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Author</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider flex justify-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {comments.map((comment) => (
-                  <tr key={comment._id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{comment.content}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {comment.author?.name || 'Unknown'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex justify-center">
-                        <button onClick={() => handleDelete(comment._id)} className="mr-4 text-red-600 hover:text-red-900">Delete</button>
-                        <button onClick={() => setSelectedComment(comment)} className="mr-4 text-green-600 hover:text-green-900">View</button>
-                      </div>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Content</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Author</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider flex justify-center">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {comments.map((comment) => (
+                    <tr key={comment._id}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{comment.content}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        {comment.author?.name || 'Unknown'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div className="flex justify-center">
+                          <button onClick={() => handleDelete(comment._id)} className="mr-4 text-red-600 hover:text-red-900">Delete</button>
+                          <button onClick={() => setSelectedComment(comment)} className="mr-4 text-green-600 hover:text-green-900">View</button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       </div>

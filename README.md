@@ -83,6 +83,7 @@ npm run preview
 src/
 ├── assets/       # Images and static assets
 ├── context/      # React context providers
+├── firebase/     # Chat functionality
 ├── pages/        # Page-level React components (routes)
 ├── utils/        # Utility functions
 ├── App.jsx       # Root app component

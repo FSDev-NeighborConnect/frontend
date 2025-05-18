@@ -143,7 +143,15 @@ const AboutPage = () => {
             <h3 className="text-xl font-semibold text-purple-700 mb-4">
               Muhammad Hamza Jamil
             </h3>
-            <p className="text-gray-700"></p>
+            <div className="text-gray-700">
+              <p className="mb-4">
+                I was responsible for developing the Homepage of the application using React.js, 
+                Tailwind CSS, and Axios for API integration. I implemented dynamic rendering of 
+                posts and events based on user location (postal code) and ensured secure data 
+                access using CSRF tokens and context-based authentication. The design is responsive 
+                and provides interactive modals for creating posts and events.
+              </p>
+            </div>
           </div>
 
 

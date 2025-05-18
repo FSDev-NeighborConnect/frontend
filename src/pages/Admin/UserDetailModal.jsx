@@ -3,6 +3,13 @@ import React from "react"
 const UserDetailModal = ({ user, onClose }) => {
   if (!user) return null
 
+  const getInitials = () => {
+    if (user.name) {
+      return user.name.charAt(0).toUpperCase()
+    }
+    return "?" // Fallback if name is empty
+  }
+
   return (
     <div className="fixed z-10 inset-0 overflow-y-auto">
       <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -29,9 +36,31 @@ const UserDetailModal = ({ user, onClose }) => {
         ">
           {/* Modal Header */}
           <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <h3 className="text-lg leading-6 font-medium text-gray-900 font-roboto">
-              User Information
-            </h3>
+            <div className="flex flex-col">
+              {/* User Information */}
+              <div className="-4">
+                <h3 className="text-lg leading-6 font-medium text-gray-900 font-roboto">
+                  User Information
+                </h3>
+              </div>
+
+              {/* Avatar */}
+              <div className="mt-4">
+                {user.avatar?.url ? (
+                  <img 
+                    src={user.avatar.url} 
+                    alt="User avatar" 
+                    className="w-20 h-20 object-cover rounded-full"
+                  />
+                ) : (
+                  <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center">
+                    <span className="text-3xl font-bold text-gray-700">
+                      {getInitials()}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Scrollable content */}
@@ -42,7 +71,6 @@ const UserDetailModal = ({ user, onClose }) => {
               <p><strong>Street Address:</strong> {user.streetAddress}</p>
               <p><strong>Postal Code:</strong> {user.postalCode}</p>
               <p><strong>Phone:</strong> {user.phone}</p>
-              <p><strong>Avatar Url:</strong> {user.avatarUrl|| "N/A"}</p>
               <p><strong>Bio:</strong> {user.bio || "N/A"}</p>
               <p><strong>Role:</strong> {user.role}</p>
               <p><strong>Hobbies:</strong> {user.hobbies?.join(", ") || "N/A"}</p>

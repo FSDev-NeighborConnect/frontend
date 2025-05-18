@@ -9,7 +9,7 @@ import { useCsrf } from "../context/CsrfContext"
 import CreatePostModal from "./CreatePostModal"
 import CreateEventModal from "./CreateEventModal"
 import PostComments from "./PostComments"
-import { apiUrl } from "../utils/apiUtil"
+import { apiUrl, apiConfigCsrf } from "../utils/apiUtil"
 import {
   CalendarDays,
   MapPin,
@@ -64,10 +64,19 @@ function UserProfile() {
   const isOwnProfile = !urlUserId || urlUserId === loggedInUserId || urlUserId === localStorage.getItem("userId")
 
   // Logout handler
-  const handleLogout = () => {
-    localStorage.removeItem("userId")
+  const handleLogout = async () => {
+  try {
+    await axios.post(
+      apiUrl("api/logout"),
+      {}, // Needed since it is a post request and needs to include a body
+      apiConfigCsrf(csrfToken))
+
+    navigate("/login")
+  } catch (error) {
+    console.error("Logout failed", error)
     navigate("/login")
   }
+}
 
   // Handle avatar change
   const handleAvatarChange = async (e) => {
@@ -664,30 +673,13 @@ function UserProfile() {
                 <Edit className="h-4 w-4 mr-1" />
                 Edit Profile
               </button>
-              <div className="relative">
-                <button
-                  className="p-2 bg-white dark:bg-gray-800 rounded-md shadow-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-                >
-                  <MoreHorizontal className="h-5 w-5" />
-                </button>
-
-                {showProfileDropdown && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10">
-                    <div className="py-1">
-                      <button
-                        onClick={handleLogout}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                      >
-                        <div className="flex items-center">
-                          <LogOut className="h-4 w-4 mr-2" />
-                          Logout
-                        </div>
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
+              <button
+                className="px-4 py-2 bg-white dark:bg-gray-800 rounded-md shadow-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-1 font-medium text-sm"
+                onClick={handleLogout}
+              >
+                <LogOut className="h-4 w-4 mr-1" />
+                Logout
+              </button>
             </>
           ) : (
             <>

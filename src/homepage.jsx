@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +12,26 @@ const Homepage = () => {
   const [posts, setPosts] = useState([]);
   const [categoryCounts, setCategoryCounts] = useState({});
   const [currentUser, setCurrentUser] = useState(null);
+=======
+import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { CSRFContext } from '../context/CsrfContext.jsx';
+import { UserContext } from '../context/UserContext.jsx';
+
+const Homepage = () => {
+  const navigate = useNavigate();
+  const { csrfToken } = useContext(CSRFContext);
+  const { currentUser } = useContext(UserContext);
+
+  const [showPostModal, setShowPostModal] = useState(false);
+  const [showEventModal, setShowEventModal] = useState(false);
+  const [showToggleMenu, setShowToggleMenu] = useState(false);
+
+  const [users, setUsers] = useState([]);
+  const [posts, setPosts] = useState([]);
+  const [categoryCounts, setCategoryCounts] = useState({});
+>>>>>>> Stashed changes
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -45,6 +66,7 @@ const Homepage = () => {
   };
 
   useEffect(() => {
+<<<<<<< Updated upstream
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -79,17 +101,72 @@ const Homepage = () => {
       } catch (err) {
         console.error('Error fetching homepage data:', err);
         setError("Failed to load posts. Please try again.");
+=======
+    const fetchHomepageData = async () => {
+      if (!currentUser) return;
+
+      setLoading(true);
+      try {
+        const usersRes = await axios.get('/api/admin/all/users', {
+          withCredentials: true,
+          headers: { 'X-CSRF-Token': csrfToken }
+        });
+        const neighbors = usersRes.data.filter(u =>
+          u.postalCode === currentUser.postalCode && u._id !== currentUser._id
+        );
+        setUsers(neighbors);
+
+        const postsRes = await axios.get('/api/posts/zip', {
+          withCredentials: true,
+          headers: { 'X-CSRF-Token': csrfToken }
+        });
+        setPosts(postsRes.data);
+        calculateCategoryCounts(postsRes.data);
+
+        setPostForm(prev => ({
+          ...prev,
+          street: currentUser.streetAddress,
+          postalCode: currentUser.postalCode
+        }));
+
+      } catch (err) {
+        console.error("Homepage load error:", err);
+        setError("Failed to load homepage data.");
+>>>>>>> Stashed changes
       } finally {
         setLoading(false);
       }
     };
 
+<<<<<<< Updated upstream
     fetchData();
   }, []);
 
   const handlePostSubmit = async () => {
     try {
       const csrfToken = document.cookie.split('; ').find(row => row.startsWith('csrfToken='))?.split('=')[1];
+=======
+    fetchHomepageData();
+  }, [currentUser, csrfToken]);
+
+  useEffect(() => {
+    if (!loading && !currentUser) {
+      navigate('/login');
+    }
+  }, [loading, currentUser]);
+
+  const toggleCategory = (cat) => {
+    setPostForm(prev => ({
+      ...prev,
+      category: prev.category.includes(cat)
+        ? prev.category.filter(c => c !== cat)
+        : [...prev.category, cat]
+    }));
+  };
+
+  const handlePostSubmit = async () => {
+    try {
+>>>>>>> Stashed changes
       const postWithUser = { ...postForm, createdBy: currentUser._id };
       await axios.post('/api/posts/post', postWithUser, {
         withCredentials: true,
@@ -106,7 +183,10 @@ const Homepage = () => {
 
   const handleEventSubmit = async () => {
     try {
+<<<<<<< Updated upstream
       const csrfToken = document.cookie.split('; ').find(row => row.startsWith('csrfToken='))?.split('=')[1];
+=======
+>>>>>>> Stashed changes
       const eventWithUser = { ...eventForm, createdBy: currentUser._id };
       await axios.post('/api/events/event', eventWithUser, {
         withCredentials: true,
@@ -121,6 +201,7 @@ const Homepage = () => {
     }
   };
 
+<<<<<<< Updated upstream
   const toggleCategory = (cat) => {
     setPostForm(prev => ({
       ...prev,
@@ -133,6 +214,16 @@ const Homepage = () => {
   return (
     <div className="flex min-h-screen font-sans">
       <aside className="w-72 bg-pink-100 p-6" style={{ backgroundImage: `url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1950&q=80')`, backgroundSize: 'cover', backgroundBlendMode: 'multiply' }}>
+=======
+  return (
+    <div className="flex min-h-screen font-sans">
+      {/* Sidebar */}
+      <aside className="w-72 bg-pink-100 p-6" style={{
+        backgroundImage: `url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1950&q=80')`,
+        backgroundSize: 'cover',
+        backgroundBlendMode: 'multiply'
+      }}>
+>>>>>>> Stashed changes
         <h2 className="text-xl font-bold text-pink-900">Neighbourhood Feed</h2>
         <ul className="mt-4 space-y-2">
           <li className="text-pink-900 font-semibold">All Posts <span className="ml-2 text-pink-600">{posts.length}</span></li>
@@ -143,15 +234,29 @@ const Homepage = () => {
           ))}
         </ul>
         <div className="mt-6">
+<<<<<<< Updated upstream
           <h3 className="text-md font-bold text-pink-900">Neighbours in your ZIP</h3>
           <ul className="text-sm text-white">
             {users.length === 0 ? <li>No neighbors found.</li> : users.map(u => (
               <li key={u._id}>{u.name}</li>
             ))}
+=======
+          <h3 className="text-md font-bold text-pink-900">Neighbours (Zip: {currentUser?.postalCode || 'N/A'})</h3>
+          <ul className="text-sm text-white">
+            {loading ? <li>Loading users...</li> :
+              users.length === 0 ? <li>No neighbors found.</li> :
+                users.map(u => (
+                  <li key={u._id}>{u.name}</li>
+                ))}
+>>>>>>> Stashed changes
           </ul>
         </div>
       </aside>
 
+<<<<<<< Updated upstream
+=======
+      {/* Main content */}
+>>>>>>> Stashed changes
       <main className="flex-1 p-6">
         <header className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-blue-600">NeighbourConnect</h1>

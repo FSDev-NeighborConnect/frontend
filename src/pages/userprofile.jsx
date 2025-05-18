@@ -364,7 +364,7 @@ function UserProfile() {
 
   const { name, email, streetAddress, postalCode, phone, bio, hobbies, role, createdAt, avatar, cover } = user
   const avatarUrl = avatar?.url
-  const coverUrl = cover?.url || "/placeholder.svg"
+  const coverUrl = cover?.url
   const joinDate = new Date(createdAt).toLocaleDateString("en-US", { year: "numeric", month: "long" })
 
   const hasUserLikedPost = (postId) => {
@@ -660,7 +660,9 @@ function UserProfile() {
 
       {/* Cover Image */}
       <div className="relative h-[300px] bg-gradient-to-r from-purple-700 to-purple-900 overflow-hidden">
-        <img src={coverUrl || "/placeholder.svg"} className="w-full h-full object-cover" alt="Cover" />
+        {coverUrl && (
+          <img src={coverUrl} className="w-full h-full object-cover" alt="" />
+        )}
 
         {/* Action buttons in top right of cover */}
         <div className="absolute top-4 right-4 flex gap-2">

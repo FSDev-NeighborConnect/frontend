@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { useCsrf } from '../context/CsrfContext';
 import CreateEventModal from "./CreateEventModal"
+import { apiUrl } from '../utils/apiUtil';
 
 const Homepage = () => {
   const navigate = useNavigate();
@@ -43,7 +44,7 @@ const Homepage = () => {
 
   const fetchEvents = async () => {
   try {
-    const res = await axios.get('/api/events/zip', {
+    const res = await axios.get(apiUrl('api/events/zip'), {
       withCredentials: true,
       headers: {
         'X-CSRF-Token': csrfToken
@@ -89,14 +90,14 @@ const Homepage = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const resPosts = await axios.get('/api/posts/zip', {
+      const resPosts = await axios.get(apiUrl('api/posts/zip'), {
         withCredentials: true,
         headers: { 'X-CSRF-Token': csrfToken }
       });
       setPosts(resPosts.data);
       countCategories(resPosts.data);
 
-      const resEvents = await axios.get('/api/events/zip', {
+      const resEvents = await axios.get(apiUrl('api/events/zip'), {
         withCredentials: true,
         headers: { 'X-CSRF-Token': csrfToken }
       });
@@ -149,7 +150,7 @@ const Homepage = () => {
         createdBy: userId
       };
 
-      await axios.post('/api/posts/post', postWithUser, {
+      await axios.post(apiUrl('api/posts/post'), postWithUser, {
         withCredentials: true,
         headers: {
           'X-CSRF-Token': csrfToken
@@ -187,7 +188,7 @@ const Homepage = () => {
 
     console.log("Creating event:", eventWithUser);
 
-    const response = await axios.post('/api/events/event', eventWithUser, {
+    const response = await axios.post(apiUrl('api/events/event'), eventWithUser, {
       withCredentials: true,
       headers: {
         'X-CSRF-Token': csrfToken,

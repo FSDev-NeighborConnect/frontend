@@ -86,7 +86,7 @@ const Login = () => {
       setCsrfToken(res.data.csrfToken)
       setUserId(res.data.user.id)
 
-      navigate("/profile") // Add correct navigation when the page is added to the router.
+      navigate("/home") // Add correct navigation when the page is added to the router.
     } catch (err) {
       setError(err.response?.data?.message || "Login failed")
     }

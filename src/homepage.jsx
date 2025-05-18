@@ -1,16 +1,26 @@
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 import React, { useState, useEffect } from 'react';
+=======
+import React, { useState, useEffect, useContext } from 'react';
+>>>>>>> Stashed changes
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { CsrfContext } from '../context/CsrfContext';
+import { AuthContext } from '../context/AuthContext';
 
 const Homepage = () => {
   const navigate = useNavigate();
+  const csrfToken = useContext(CsrfContext);
+  const { user: currentUser } = useContext(AuthContext);
+
   const [showPostModal, setShowPostModal] = useState(false);
   const [showEventModal, setShowEventModal] = useState(false);
   const [showToggleMenu, setShowToggleMenu] = useState(false);
   const [users, setUsers] = useState([]);
   const [posts, setPosts] = useState([]);
   const [categoryCounts, setCategoryCounts] = useState({});
+<<<<<<< Updated upstream
   const [currentUser, setCurrentUser] = useState(null);
 =======
 import React, { useState, useEffect, useContext } from 'react';
@@ -31,6 +41,8 @@ const Homepage = () => {
   const [users, setUsers] = useState([]);
   const [posts, setPosts] = useState([]);
   const [categoryCounts, setCategoryCounts] = useState({});
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -65,7 +77,39 @@ const Homepage = () => {
     setCategoryCounts(counts);
   };
 
+  const fetchData = async (postalCode) => {
+    setLoading(true);
+    try {
+      const [postsRes, neighborsRes] = await Promise.all([
+        axios.get(`/api/posts/zip`, {
+          withCredentials: true,
+          headers: { 'X-CSRF-Token': csrfToken }
+        }),
+        axios.get(`/api/users/zip/${postalCode}`, {
+          withCredentials: true,
+          headers: { 'X-CSRF-Token': csrfToken }
+        })
+      ]);
+
+      setPosts(postsRes.data);
+      calculateCategoryCounts(postsRes.data);
+      setUsers(neighborsRes.data);
+
+      setPostForm(prev => ({
+        ...prev,
+        street: currentUser.streetAddress,
+        postalCode: currentUser.postalCode
+      }));
+    } catch (err) {
+      setError("Failed to load posts. Please try again.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
     const fetchData = async () => {
       setLoading(true);
@@ -167,6 +211,15 @@ const Homepage = () => {
   const handlePostSubmit = async () => {
     try {
 >>>>>>> Stashed changes
+=======
+    if (currentUser) {
+      fetchData(currentUser.postalCode);
+    }
+  }, [currentUser]);
+
+  const handlePostSubmit = async () => {
+    try {
+>>>>>>> Stashed changes
       const postWithUser = { ...postForm, createdBy: currentUser._id };
       await axios.post('/api/posts/post', postWithUser, {
         withCredentials: true,
@@ -174,7 +227,7 @@ const Homepage = () => {
       });
       alert('Post created successfully');
       setShowPostModal(false);
-      window.location.reload();
+      fetchData(currentUser.postalCode);
     } catch (err) {
       alert('Failed to create post');
       console.error(err);
@@ -184,7 +237,10 @@ const Homepage = () => {
   const handleEventSubmit = async () => {
     try {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       const csrfToken = document.cookie.split('; ').find(row => row.startsWith('csrfToken='))?.split('=')[1];
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
       const eventWithUser = { ...eventForm, createdBy: currentUser._id };
@@ -194,7 +250,6 @@ const Homepage = () => {
       });
       alert('Event created successfully');
       setShowEventModal(false);
-      window.location.reload();
     } catch (err) {
       alert('Failed to create event');
       console.error(err);
@@ -297,66 +352,6 @@ const Homepage = () => {
           </>
         )}
       </main>
-
-      {/* Post Modal */}
-      {showPostModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white rounded-md w-1/2 p-6 relative">
-            <button onClick={() => setShowPostModal(false)} className="absolute top-2 right-2 text-gray-700 text-xl">&times;</button>
-            <h2 className="text-2xl font-bold mb-4">Create New Post</h2>
-            <input value={postForm.title} onChange={e => setPostForm({ ...postForm, title: e.target.value })} className="w-full p-2 mb-2 border rounded" placeholder="Post title" />
-            <textarea value={postForm.description} onChange={e => setPostForm({ ...postForm, description: e.target.value })} className="w-full p-2 mb-2 border rounded" placeholder="Describe your post..." />
-            <div className="mb-2">
-              <label className="block mb-1">Status:</label>
-              {['open', 'in progress', 'closed'].map(status => (
-                <label key={status} className="mr-4">
-                  <input type="radio" value={status} checked={postForm.status === status} onChange={() => setPostForm({ ...postForm, status })} /> {status}
-                </label>
-              ))}
-            </div>
-            <div>
-              <label className="block mb-1">Categories:</label>
-              <ul className="grid grid-cols-2 gap-2">
-                {categories.map(cat => (
-                  <li key={cat}>
-                    <label>
-                      <input type="checkbox" checked={postForm.category.includes(cat)} onChange={() => toggleCategory(cat)} /> {cat}
-                    </label>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <button onClick={handlePostSubmit} className="mt-4 bg-purple-600 text-white px-4 py-2 rounded">Create Post</button>
-          </div>
-        </div>
-      )}
-
-      {/* Event Modal */}
-      {showEventModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white rounded-md w-1/2 p-6 relative">
-            <button onClick={() => setShowEventModal(false)} className="absolute top-2 right-2 text-gray-700 text-xl">&times;</button>
-            <h2 className="text-2xl font-bold mb-4">Create Event</h2>
-            <input value={eventForm.title} onChange={e => setEventForm({ ...eventForm, title: e.target.value })} className="w-full p-2 mb-2 border rounded" placeholder="Event title" />
-            <textarea value={eventForm.description} onChange={e => setEventForm({ ...eventForm, description: e.target.value })} className="w-full p-2 mb-2 border rounded" placeholder="Event description..." />
-            <div className="flex gap-4 mb-4">
-              <select value={eventForm.status} onChange={e => setEventForm({ ...eventForm, status: e.target.value })} className="p-2 border rounded">
-                <option value="open">Open</option>
-                <option value="in progress">In Progress</option>
-                <option value="closed">Closed</option>
-              </select>
-              <select value={eventForm.type} onChange={e => setEventForm({ ...eventForm, type: e.target.value })} className="p-2 border rounded">
-                <option value="Event">Event</option>
-                <option value="Meeting">Meeting</option>
-              </select>
-            </div>
-            <div className="flex justify-between">
-              <button onClick={() => setShowEventModal(false)} className="bg-gray-300 px-4 py-2 rounded">Cancel</button>
-              <button onClick={handleEventSubmit} className="bg-purple-600 text-white px-4 py-2 rounded">Create Event</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

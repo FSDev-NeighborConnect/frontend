@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+/*import React, { useState, useEffect } from 'react';
 
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -216,12 +216,13 @@ const Homepage = () => {
 };
 
 
-
+*/
+/*
 
 
   return (
     <div className="flex min-h-screen">
-      {/* Sidebar */}
+      // Sidebar 
       <aside className="w-72 bg-pink-100 p-6" style={{
         backgroundImage: `url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1950&q=80')`,
         backgroundSize: 'cover',
@@ -238,7 +239,7 @@ const Homepage = () => {
         </ul>
       </aside>
 
-      {/* Main Content */}
+      // Main Content
       <main className="flex-1 p-6">
         <header className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-blue-600">NeighbourConnect</h1>
@@ -309,7 +310,7 @@ const Homepage = () => {
         )}
       </main>
 
-      {/* Post Modal */}
+      // Post Modal 
       {showPostModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white rounded-md w-1/2 p-6 relative">
@@ -340,7 +341,7 @@ const Homepage = () => {
         </div>
       )}
 
-      {/* Event Modal */}
+      // Event Modal 
      <CreateEventModal
   isOpen={showEventModal}
   onClose={() => setShowEventModal(false)}
@@ -355,4 +356,4 @@ const Homepage = () => {
 
 
 export default Homepage;
-   
+  */ 

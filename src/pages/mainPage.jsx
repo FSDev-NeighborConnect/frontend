@@ -79,76 +79,7 @@ function MainPage() {
     }))
   }
 
-  // Fetch user data and posts
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true)
-      setError(null)
 
-      try {
-        if (!userId) {
-          throw new Error("User ID not found. Please log in again.")
-        }
-
-        // Fetch user data
-        const userResponse = await axios.get(apiUrl(`api/users/user/${userId}`), {
-          withCredentials: true,
-          headers: { "X-CSRF-Token": csrfToken },
-        })
-        setUserInfo(userResponse.data)
-
-        // Fetch posts by zip code
-        const postsResponse = await axios.get(apiUrl("api/posts/zip"), {
-          withCredentials: true,
-          headers: { "X-CSRF-Token": csrfToken },
-        })
-
-        const fetchedPosts = postsResponse.data || []
-        fetchedPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        setPosts(fetchedPosts)
-        setFilteredPosts(fetchedPosts)
-
-        // Fetch likes for each post
-        for (const post of fetchedPosts) {
-          await fetchPostLikes(post._id)
-        }
-
-        // Fetch events by zip code
-        const eventsResponse = await axios.get(apiUrl("api/events/zip"), {
-          withCredentials: true,
-          headers: { "X-CSRF-Token": csrfToken },
-        })
-
-        let fetchedEvents = []
-        if (eventsResponse.data && eventsResponse.data.events) {
-          fetchedEvents = eventsResponse.data.events || []
-        } else {
-          fetchedEvents = eventsResponse.data || []
-        }
-
-        fetchedEvents.sort((a, b) => new Date(b.date) - new Date(a.date))
-        setEvents(fetchedEvents)
-
-        // Fetch neighbors by zip code
-        if (userResponse.data.postalCode) {
-          const neighborsResponse = await axios.get(apiUrl(`api/users/zip/${userResponse.data.postalCode}`), {
-            withCredentials: true,
-            headers: { "X-CSRF-Token": csrfToken },
-          })
-
-          const allNeighbors = neighborsResponse.data || []
-          setNeighbors(allNeighbors.filter((neighbor) => neighbor._id !== userId))
-        }
-      } catch (err) {
-        console.error("Error fetching data:", err)
-        setError(err.response?.data?.message || "Failed to load data")
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchData()
-  }, [userId, csrfToken])
 
   // Filter posts when search query or active filter changes
   useEffect(() => {
@@ -323,6 +254,80 @@ function MainPage() {
       alert("Failed to delete item. Please try again.")
     }
   }
+
+  // Add this above your useEffect
+const fetchData = async () => {
+  setLoading(true);
+  setError(null);
+
+  try {
+    if (!userId) {
+      throw new Error("User ID not found. Please log in again.");
+    }
+
+    // Fetch user data
+    const userResponse = await axios.get(apiUrl(`api/users/user/${userId}`), {
+      withCredentials: true,
+      headers: { "X-CSRF-Token": csrfToken },
+    });
+    setUserInfo(userResponse.data);
+
+    // Fetch posts by zip code
+    const postsResponse = await axios.get(apiUrl("api/posts/zip"), {
+      withCredentials: true,
+      headers: { "X-CSRF-Token": csrfToken },
+    });
+
+    const fetchedPosts = postsResponse.data || [];
+    fetchedPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    setPosts(fetchedPosts);
+    setFilteredPosts(fetchedPosts);
+
+    // Fetch likes for each post
+    for (const post of fetchedPosts) {
+      await fetchPostLikes(post._id);
+    }
+
+    // Fetch events by zip code
+    const eventsResponse = await axios.get(apiUrl("api/events/zip"), {
+      withCredentials: true,
+      headers: { "X-CSRF-Token": csrfToken },
+    });
+
+    let fetchedEvents = [];
+    if (eventsResponse.data && eventsResponse.data.events) {
+      fetchedEvents = eventsResponse.data.events || [];
+    } else {
+      fetchedEvents = eventsResponse.data || [];
+    }
+
+    fetchedEvents.sort((a, b) => new Date(b.date) - new Date(a.date));
+    setEvents(fetchedEvents);
+
+    // Fetch neighbors by zip code
+    if (userResponse.data.postalCode) {
+      const neighborsResponse = await axios.get(
+        apiUrl(`api/users/zip/${userResponse.data.postalCode}`), {
+          withCredentials: true,
+          headers: { "X-CSRF-Token": csrfToken },
+        }
+      );
+
+      const allNeighbors = neighborsResponse.data || [];
+      setNeighbors(allNeighbors.filter((neighbor) => neighbor._id !== userId));
+    }
+  } catch (err) {
+    console.error("Error fetching data:", err);
+    setError(err.response?.data?.message || "Failed to load data");
+  } finally {
+    setLoading(false);
+  }
+};
+
+// Then update your useEffect to use this function:
+useEffect(() => {
+  fetchData();
+}, [userId, csrfToken]);
 
   // Logout handler
   const handleLogout = () => {
@@ -974,14 +979,18 @@ function MainPage() {
       {/* Create Post Modal */}
       <CreatePostModal
         isOpen={showCreatePostModal}
-        onClose={() => setShowCreatePostModal(false)}
+        onClose={() => {setShowCreatePostModal(false);
+        fetchData();
+        }}
         onPostCreated={handlePostCreated}
       />
 
       {/* Create Event Modal */}
       <CreateEventModal
         isOpen={showCreateEventModal}
-        onClose={() => setShowCreateEventModal(false)}
+        onClose={() => {setShowCreateEventModal(false);
+        fetchData();
+        }}
         onEventCreated={handlePostCreated}
       />
     </div>

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
-import { useCsrf } from "../../context/CsrfContext.jsx"
 import EventDetailModal from "./EventDetailModal.jsx"
 import { apiUrl, apiConfigCsrf } from "../../utils/apiUtil.jsx"
+import getCookie from "../../utils/csrfUtil"
 
 const AdminDashboardEvents = () => {
   const [events, setEvents] = useState([])
@@ -12,7 +12,7 @@ const AdminDashboardEvents = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [groupByPostalCode, setGroupByPostalCode] = useState(false)
   const [selectedEvent, setSelectedEvent] = useState(null)
-  const { csrfToken } = useCsrf()
+  const csrfToken = getCookie("csrfToken")
   const navigate = useNavigate()
 
   // Verify admin status

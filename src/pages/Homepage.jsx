@@ -3,15 +3,14 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
-import { useCsrf } from '../context/CsrfContext';
 import CreateEventModal from "./CreateEventModal"
 import { apiUrl } from '../utils/apiUtil';
+import getCookie from "../utils/csrfUtil"
 
 const Homepage = () => {
   const navigate = useNavigate();
   const { userId } = useUser(); // ✅ FIXED
-  const { csrfToken } = useCsrf();
-  const { userId: currentUserId } = useUser()
+  const csrfToken = getCookie("csrfToken")
   
 
   const [userProfile, setUserProfile] = useState(null);
@@ -42,6 +41,9 @@ const Homepage = () => {
   //   type: 'Event'
   // });
 
+  const userContext = useUser();
+  console.log("UserContext", userContext);
+
   const fetchEvents = async () => {
   try {
     const res = await axios.get(apiUrl('api/events/zip'), {
@@ -58,61 +60,49 @@ const Homepage = () => {
 
 
   useEffect(() => {
-  const fetchUserProfile = async () => {
-    try {
-      const res = await axios.get(apiUrl(`api/users/user/${userId}`), {
-        
-        withCredentials: true,
-        headers: {
-          'X-CSRF-Token': csrfToken
+    const fetchUserProfile = async () => {
+      if (!userId) return;
+      try {
+        const res = await axios.get(apiUrl(`api/users/user/${userId}`), {
+          withCredentials: true,
+          headers: { 'X-CSRF-Token': csrfToken }
+        });
+        setUserProfile(res.data);
+        setPostForm(prev => ({
+          ...prev,
+          street: res.data.streetAddress || '',
+          postalCode: res.data.postalCode || ''
+        }));
+      } catch (err) {
+        console.error('User profile fetch failed:', err.response?.data || err.message);
+      }
+    };
 
-        }
-        
-      });
-  
-       console.log("Fetched user profile:", res.data); // ✅ Safe here
+    const fetchData = async () => {
+      try {
+        const resPosts = await axios.get(apiUrl('api/posts/zip'), {
+          withCredentials: true,
+          headers: { 'X-CSRF-Token': csrfToken }
+        });
+        setPosts(resPosts.data);
+        countCategories(resPosts.data);
 
-      setUserProfile(res.data);
-      setPostForm(prev => ({
-        ...prev,
-        street: res.data.streetAddress || '',
-        postalCode: res.data.postalCode || ''
-      }));
-    } catch (err) {
-      console.error('User profile fetch failed:', err.response?.data || err.message);
-      setUserProfile({
+        const resEvents = await axios.get(apiUrl('api/events/zip'), {
+          withCredentials: true,
+          headers: { 'X-CSRF-Token': csrfToken }
+        });
+        setEvents(resEvents.data.events || []);
+      } catch (error) {
+        console.error('Homepage load error:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-});
+    fetchUserProfile();
+    fetchData();
+  }, [userId, csrfToken]);
 
-    }
-  };
-
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const resPosts = await axios.get(apiUrl('api/posts/zip'), {
-        withCredentials: true,
-        headers: { 'X-CSRF-Token': csrfToken }
-      });
-      setPosts(resPosts.data);
-      countCategories(resPosts.data);
-
-      const resEvents = await axios.get(apiUrl('api/events/zip'), {
-        withCredentials: true,
-        headers: { 'X-CSRF-Token': csrfToken }
-      });
-      setEvents(resEvents.data.events);
-    } catch (error) {
-      console.error('Homepage load error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // 👇 These calls should be inside the effect
-  fetchUserProfile();
-  fetchData();
-}, [userId, csrfToken]); // 👈 This must match the outer useEffect
 
 
 
@@ -274,7 +264,7 @@ const Homepage = () => {
 
         {userProfile && (
           <p className="text-gray-500 mb-4">
-            Logged in as <strong>{currentUserId.name}</strong> ({userProfile.postalCode})
+            Logged in as <strong>{userProfile.name}</strong> ({userProfile.postalCode})
 
 
           </p>

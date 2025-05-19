@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react"
 import axios from "axios"
 import { useNavigate, useParams, useLocation } from "react-router-dom"
-import { useCsrf } from "../../context/CsrfContext.jsx"
 import { apiUrl, apiConfigCsrf } from "../../utils/apiUtil.jsx"
 import CommentDetailModal from "./CommentDetailModal.jsx"
+import getCookie from "../../utils/csrfUtil"
 
 const AdminDashboardComments = () => {
   const [comments, setComments] = useState([])
@@ -13,7 +13,7 @@ const AdminDashboardComments = () => {
   const [selectedComment, setSelectedComment] = useState(null)
   const { postId } = useParams()
   const { state } = useLocation()
-  const { csrfToken } = useCsrf()
+  const csrfToken = getCookie("csrfToken")
   const navigate = useNavigate()
 
   // Verify admin status

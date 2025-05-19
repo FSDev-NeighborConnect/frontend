@@ -671,7 +671,7 @@ function UserProfile() {
             <h1 style={{ color: "#4a148c", fontSize: "24px" }}>NeighbourConnect</h1>
           </div>
             <button
-            onClick={() => navigate("/main")}
+            onClick={() => navigate("/home")}
             className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
           >
             <Home className="h-5 w-5 mr-1" />

@@ -22,7 +22,6 @@ import UpdateUser from './pages/Admin/UpdateUser.jsx'
 import AboutPage from './pages/About.jsx'
 import EditProfile from './pages/editprofile.jsx'
 import Home from './pages/Home.jsx'
-import Homepage from './pages/Homepage.jsx'
 import Login from './pages/Login.jsx'
 import NewUser from './pages/NewUser/newuser.jsx'
 import UserProfile from './pages/userprofile.jsx'
@@ -36,11 +35,10 @@ function App() {
         <Router>
           <Routes>
             <Route path="/" element={<Home />} /> {/* Signed out home page (Login, Register, About) */}
-            <Route path="/home" element={<Homepage />} /> {/* Signed in home page (Displaying posts and events) */}
             <Route path="/login" element={<Login />} />
+            <Route path="/main" element={<MainPage />} />
             <Route path="/register" element={<NewUser />} />
             <Route path="/about" element={<AboutPage />} />
-            <Route path="/main" element={<MainPage />} />
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/profile/:userId" element={<UserProfile />} />
             <Route path="/edit-profile" element={<EditProfile />} />

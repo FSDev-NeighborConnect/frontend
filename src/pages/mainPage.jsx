@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom" // Change from next/navigation to react-router-dom
+import { useNavigate } from "react-router-dom" 
 import axios from "axios"
 import { useUser } from "../context/UserContext"
 import { useCsrf } from "../context/CsrfContext"

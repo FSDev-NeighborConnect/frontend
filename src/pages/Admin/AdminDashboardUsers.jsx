@@ -194,37 +194,39 @@ const AdminDashboardUsers = () => {
               {adminUsers.length === 0 ? (
                 <p className="text-gray-500">No admin users found.</p>
               ) : (
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User ID</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider flex justify-center">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {adminUsers.map((user) => (
-                      <tr key={user._id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.name}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{user.email}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <div className= "flex justify-center">
-                            <button onClick={() => handleUpdate(user)} className="mr-4 text-blue-600 hover:text-blue-900">Update</button>
-                            {/* Disable the delete button for the currently logged in admin user to prevent own account delete. */}
-                            <button 
-                              onClick={() => handleDelete(user._id)} 
-                              className={`mr-4 ${user._id === currentAdminId ? 'text-gray-400 cursor-not-allowed' : 'text-red-600 hover:text-red-900'}`}
-                              disabled={user._id === currentAdminId}
-                            >
-                              Delete
-                            </button>
-                            <button onClick={() => setSelectedUser(user)}className="mr-4 text-green-600 hover:text-green-900">View</button>
-                          </div>
-                        </td>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User ID</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider flex justify-center">Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {adminUsers.map((user) => (
+                        <tr key={user._id}>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.name}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{user.email}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div className= "flex justify-center">
+                              <button onClick={() => handleUpdate(user)} className="mr-4 text-blue-600 hover:text-blue-900">Update</button>
+                              {/* Disable the delete button for the currently logged in admin user to prevent own account delete. */}
+                              <button 
+                                onClick={() => handleDelete(user._id)} 
+                                className={`mr-4 ${user._id === currentAdminId ? 'text-gray-400 cursor-not-allowed' : 'text-red-600 hover:text-red-900'}`}
+                                disabled={user._id === currentAdminId}
+                              >
+                                Delete
+                              </button>
+                              <button onClick={() => setSelectedUser(user)}className="mr-4 text-green-600 hover:text-green-900">View</button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               )}
             </div>
           ) : (
@@ -236,57 +238,61 @@ const AdminDashboardUsers = () => {
                 Object.entries(groupedByPostalCode).map(([postalCode, users]) => (
                   <div key={postalCode} className="mb-6">
                     <h3 className="ml-6 text-lg font-semibold text-gray-700">Postal Code: {postalCode}</h3>
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User ID</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider flex justify-center">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {users.map((user) => (
-                          <tr key={user._id}>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.name}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{user.email}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                              <div className="flex justify-center">
-                                <button onClick={() => handleUpdate(user)} className="mr-4 text-blue-600 hover:text-blue-900">Update</button>
-                                <button onClick={() => handleDelete(user._id)} className="mr-4 text-red-600 hover:text-red-900">Delete</button>
-                                <button onClick={() => setSelectedUser(user)} className="mr-4 text-green-600 hover:text-green-900">View</button>
-                              </div>
-                            </td>
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User ID</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider flex justify-center">Actions</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {users.map((user) => (
+                            <tr key={user._id}>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.name}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{user.email}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <div className="flex justify-center">
+                                  <button onClick={() => handleUpdate(user)} className="mr-4 text-blue-600 hover:text-blue-900">Update</button>
+                                  <button onClick={() => handleDelete(user._id)} className="mr-4 text-red-600 hover:text-red-900">Delete</button>
+                                  <button onClick={() => setSelectedUser(user)} className="mr-4 text-green-600 hover:text-green-900">View</button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 ))
               ) : (
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider flex justify-center">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {memberUsers.map((user) => (
-                      <tr key={user._id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.name}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{user.email}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <div className="flex justify-center">
-                            <button onClick={() => handleUpdate(user)} className="mr-4 text-blue-600 hover:text-blue-900">Update</button>
-                            <button onClick={() => handleDelete(user._id)} className="mr-4 text-red-600 hover:text-red-900">Delete</button>
-                            <button onClick={() => setSelectedUser(user)} className="mr-4 text-green-600 hover:text-green-900">View</button>
-                          </div>
-                        </td>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider flex justify-center">Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {memberUsers.map((user) => (
+                        <tr key={user._id}>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.name}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{user.email}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div className="flex justify-center">
+                              <button onClick={() => handleUpdate(user)} className="mr-4 text-blue-600 hover:text-blue-900">Update</button>
+                              <button onClick={() => handleDelete(user._id)} className="mr-4 text-red-600 hover:text-red-900">Delete</button>
+                              <button onClick={() => setSelectedUser(user)} className="mr-4 text-green-600 hover:text-green-900">View</button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               )}
             </div>
           )}

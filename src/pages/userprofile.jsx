@@ -9,7 +9,8 @@ import { useCsrf } from "../context/CsrfContext"
 import CreatePostModal from "./CreatePostModal"
 import CreateEventModal from "./CreateEventModal"
 import PostComments from "./PostComments"
-import { apiUrl } from "../utils/apiUtil"
+import { apiUrl, apiConfigCsrf } from "../utils/apiUtil"
+import ChatBox from "./Chat/ChatWindow"
 import {
   CalendarDays,
   MapPin,
@@ -57,6 +58,11 @@ function UserProfile() {
   const [showProfileDropdown, setShowProfileDropdown] = useState(null)
   const [showContentDropdown, setShowContentDropdown] = useState(null)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
+  // Chat related states
+  const [showChat, setShowChat] = useState(false)
+  const [chatTarget, setChatTarget] = useState(null)
+  const [targetName, setTargetName] = useState("")
+  const [targetAvatar, setTargetAvatar] = useState(null)
   const [postLikes, setPostLikes] = useState({})
 
   // Current user ID determination
@@ -64,10 +70,19 @@ function UserProfile() {
   const isOwnProfile = !urlUserId || urlUserId === loggedInUserId || urlUserId === localStorage.getItem("userId")
 
   // Logout handler
-  const handleLogout = () => {
-    localStorage.removeItem("userId")
+  const handleLogout = async () => {
+  try {
+    await axios.post(
+      apiUrl("api/logout"),
+      {}, // Needed since it is a post request and needs to include a body
+      apiConfigCsrf(csrfToken))
+
+    navigate("/login")
+  } catch (error) {
+    console.error("Logout failed", error)
     navigate("/login")
   }
+}
 
   // Handle avatar change
   const handleAvatarChange = async (e) => {
@@ -355,7 +370,7 @@ function UserProfile() {
 
   const { name, email, streetAddress, postalCode, phone, bio, hobbies, role, createdAt, avatar, cover } = user
   const avatarUrl = avatar?.url
-  const coverUrl = cover?.url || "/placeholder.svg"
+  const coverUrl = cover?.url
   const joinDate = new Date(createdAt).toLocaleDateString("en-US", { year: "numeric", month: "long" })
 
   const hasUserLikedPost = (postId) => {
@@ -590,7 +605,15 @@ function UserProfile() {
                   <Users className="h-3 w-3 mr-1" />
                   Profile
                 </button>
-                <button className="px-3 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 flex items-center">
+                <button 
+                  className="px-3 py-1 text-xs border border-gray-300 rounded-md hover:bg-gray-50 flex items-center"
+                  onClick={() => {
+                    setChatTarget(neighbor._id)
+                    setTargetName(neighbor.name)
+                    setTargetAvatar(neighbor.avatar?.url)
+                    setShowChat(true)
+                  }}
+                >
                   <MessageSquare className="h-3 w-3 mr-1" />
                   Message
                 </button>
@@ -651,7 +674,9 @@ function UserProfile() {
 
       {/* Cover Image */}
       <div className="relative h-[300px] bg-gradient-to-r from-purple-700 to-purple-900 overflow-hidden">
-        <img src={coverUrl || "/placeholder.svg"} className="w-full h-full object-cover" alt="Cover" />
+        {coverUrl && (
+          <img src={coverUrl} className="w-full h-full object-cover" alt="" />
+        )}
 
         {/* Action buttons in top right of cover */}
         <div className="absolute top-4 right-4 flex gap-2">
@@ -664,34 +689,25 @@ function UserProfile() {
                 <Edit className="h-4 w-4 mr-1" />
                 Edit Profile
               </button>
-              <div className="relative">
-                <button
-                  className="p-2 bg-white dark:bg-gray-800 rounded-md shadow-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-                >
-                  <MoreHorizontal className="h-5 w-5" />
-                </button>
-
-                {showProfileDropdown && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10">
-                    <div className="py-1">
-                      <button
-                        onClick={handleLogout}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                      >
-                        <div className="flex items-center">
-                          <LogOut className="h-4 w-4 mr-2" />
-                          Logout
-                        </div>
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
+              <button
+                className="px-4 py-2 bg-white dark:bg-gray-800 rounded-md shadow-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-1 font-medium text-sm"
+                onClick={handleLogout}
+              >
+                <LogOut className="h-4 w-4 mr-1" />
+                Logout
+              </button>
             </>
           ) : (
             <>
-              <button className={primaryBtn}>
+              <button 
+                className={primaryBtn}
+                onClick={() => {
+                  setChatTarget(currentUserId)
+                  setTargetName(name)
+                  setTargetAvatar(avatar?.url)
+                  setShowChat(true)
+                }}
+              >
                 <MessageSquare className="h-4 w-4 mr-1" />
                 Message
               </button>
@@ -832,6 +848,18 @@ function UserProfile() {
         }}
         onEventCreated={handlePostCreated}
       />
+
+      {/* Chat Modal */}
+      {showChat && (
+        <div className="fixed bottom-4 right-4 z-50">
+          <ChatBox 
+            targetUserId={chatTarget}
+            targetUserName={targetName}
+            targetUserAvatar={targetAvatar}
+            onClose={() => setShowChat(false)}
+          />
+        </div>
+      )}
     </div>
   )
 }

@@ -1,21 +1,25 @@
-import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
-import { useCsrf } from '../../context/CsrfContext.jsx'
-import { apiUrl, apiConfigCsrf } from '../../utils/apiUtil.jsx'
+import React, { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import axios from "axios"
+import { useCsrf } from "../../context/CsrfContext.jsx"
+import { apiUrl, apiConfigCsrf } from "../../utils/apiUtil.jsx"
 import { AuthPageHeader } from "../AuthPageHeader.jsx"
-import HobbiesModal from '../NewUser/HobbiesModal.jsx'
+import HobbiesModal from "../NewUser/HobbiesModal.jsx"
 
-function CreatePost() {
+function CreateEvent() {
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    status: 'open',
-    category: []
+    title: "",
+    description: "",
+    date: "",
+    startTime: "",
+    endTime: "",
+    streetAddress: "",
+    postalCode: "",
+    hobbies: []
   })
 
-  const [error, setError] = useState('')
-  const [showCategoriesModal, setShowCategoriesModal] = useState(false)
+  const [error, setError] = useState("")
+  const [showHobbiesModal, setShowHobbiesModal] = useState(false)
   const [currentUser, setCurrentUser] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const navigate = useNavigate()
@@ -25,19 +29,21 @@ function CreatePost() {
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
-        // Get basic user info (id and role)
         const currentUserResponse = await axios.get(
           apiUrl("api/users/currentUser"),
           apiConfigCsrf(csrfToken)
         )
-
-        // Get full user details including address
         const userDetailsResponse = await axios.get(
           apiUrl(`api/users/user/${currentUserResponse.data.id}`),
           apiConfigCsrf(csrfToken)
         )
-        
         setCurrentUser(userDetailsResponse.data)
+        // Set default address from user profile
+        setFormData(prev => ({
+          ...prev,
+          streetAddress: userDetailsResponse.data.streetAddress,
+          postalCode: userDetailsResponse.data.postalCode
+        }))
       } catch (err) {
         console.error("Failed to fetch current user:", err)
         showError("Failed to load user information")
@@ -58,51 +64,70 @@ function CreatePost() {
     setFormData({ ...formData, [name]: value })
   }
 
-  const toggleCategory = (category) => {
+  const toggleHobby = (hobby) => {
     setFormData((prev) => {
-      if (prev.category.includes(category)) {
+      if (prev.hobbies.includes(hobby)) {
         return {
           ...prev,
-          category: prev.category.filter((c) => c !== category),
+          hobbies: prev.hobbies.filter((h) => h !== hobby),
         }
       } else {
         return {
           ...prev,
-          category: [...prev.category, category],
+          hobbies: [...prev.hobbies, hobby],
         }
       }
     })
   }
-
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError("")
 
     if (!currentUser) {
-      showError("You must be logged in to create a post")
+      showError("You must be logged in to create an event")
+      return
+    }
+
+    // Validate required fields
+    if (!formData.date || !formData.startTime || !formData.endTime) {
+      showError("Please fill in all date and time fields")
+      return
+    }
+
+    // Create Date objects combining date and time
+    const startDateTime = new Date(`${formData.date}T${formData.startTime}`)
+    const endDateTime = new Date(`${formData.date}T${formData.endTime}`)
+
+    // Validate end time is after start time
+    if (endDateTime <= startDateTime) {
+      showError("End time must be after start time")
       return
     }
 
     try {
-      const postData = {
+      const eventData = {
         title: formData.title,
         description: formData.description,
-        status: formData.status,
-        category: formData.category
+        date: formData.date,
+        startTime: startDateTime,
+        endTime: endDateTime,
+        streetAddress: formData.streetAddress,
+        postalCode: formData.postalCode,
+        hobbies: formData.hobbies
       }
 
       const response = await axios.post(
-        apiUrl("api/posts/post"),
-        postData,
+        apiUrl("api/events/event"),
+        eventData,
         apiConfigCsrf(csrfToken)
       )
-      navigate("/admin/dashboard-posts")
+      navigate("/admin/dashboard-events")
     } catch (err) {
       console.error("Full error response:", err.response)
       showError(err.response?.data?.message || 
                err.response?.data?.error || 
-               "Failed to create post")
+               "Failed to create event")
     }
   }
 
@@ -120,13 +145,8 @@ function CreatePost() {
       <div className="flex flex-col justify-center sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-3xl">
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 font-roboto">
-            Create New Post
+            Create New Event
           </h2>
-          {currentUser && (
-            <p className="mt-2 text-center text-sm text-gray-600">
-              Post will be created under your account and use your address: {currentUser.streetAddress}, {currentUser.postalCode}
-            </p>
-          )}
         </div>
 
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-3xl">
@@ -153,10 +173,9 @@ function CreatePost() {
             )}
 
             <form onSubmit={handleSubmit} noValidate>
-              {/* Section 1: Post Information */}
               <div className="mb-8">
                 <h3 className="text-lg font-medium text-gray-900 font-roboto mb-4 pb-2 border-b border-gray-200">
-                  Post Information
+                  Event Information
                 </h3>
                 <div className="grid grid-cols-1 gap-6">
                   <div>
@@ -167,7 +186,7 @@ function CreatePost() {
                       id="title" 
                       name="title" 
                       type="text" 
-                      placeholder="Post title"
+                      placeholder="Event title"
                       value={formData.title} 
                       onChange={handleChange} 
                       required
@@ -183,7 +202,7 @@ function CreatePost() {
                       id="description" 
                       name="description" 
                       rows="4"
-                      placeholder="Describe your post in detail..."
+                      placeholder="Describe your event in detail..."
                       value={formData.description} 
                       onChange={handleChange} 
                       required
@@ -191,44 +210,96 @@ function CreatePost() {
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 font-roboto">
-                      Status
-                    </label>
-                    <div className="mt-1 space-y-2">
-                      {['open', 'in progress', 'closed'].map((status) => (
-                        <label key={status} className="inline-flex items-center mr-4">
-                          <input
-                            type="radio"
-                            name="status"
-                            value={status}
-                            checked={formData.status === status}
-                            onChange={handleChange}
-                            className="form-radio text-purple-600"
-                            required
-                          />
-                          <span className="ml-2 text-gray-700 font-roboto capitalize">
-                            {status}
-                          </span>
-                        </label>
-                      ))}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label htmlFor="date" className="block text-sm font-medium text-gray-700 font-roboto">
+                        Date
+                      </label>
+                      <input
+                        id="date"
+                        name="date"
+                        type="date"
+                        value={formData.date}
+                        onChange={handleChange}
+                        required
+                        className={`mt-1 ${inputStyle}`}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="startTime" className="block text-sm font-medium text-gray-700 font-roboto">
+                        Start Time
+                      </label>
+                      <input
+                        id="startTime"
+                        name="startTime"
+                        type="time"
+                        value={formData.startTime}
+                        onChange={handleChange}
+                        required
+                        className={`mt-1 ${inputStyle}`}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="endTime" className="block text-sm font-medium text-gray-700 font-roboto">
+                        End Time
+                      </label>
+                      <input
+                        id="endTime"
+                        name="endTime"
+                        type="time"
+                        value={formData.endTime}
+                        onChange={handleChange}
+                        required
+                        className={`mt-1 ${inputStyle}`}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="streetAddress" className="block text-sm font-medium text-gray-700 font-roboto">
+                        Street Address
+                      </label>
+                      <input
+                        id="streetAddress"
+                        name="streetAddress"
+                        type="text"
+                        value={formData.streetAddress}
+                        onChange={handleChange}
+                        required
+                        className={`mt-1 ${inputStyle}`}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 font-roboto">
+                        Postal Code
+                      </label>
+                      <input
+                        id="postalCode"
+                        name="postalCode"
+                        type="text"
+                        value={formData.postalCode}
+                        onChange={handleChange}
+                        required
+                        className={`mt-1 ${inputStyle}`}
+                      />
                     </div>
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 font-roboto">
-                      Categories (optional)
+                      Hobbies/Interests
                     </label>
                     <button
                       type="button"
-                      onClick={() => setShowCategoriesModal(true)}
+                      onClick={() => setShowHobbiesModal(true)}
                       className="mt-1 w-full flex justify-between items-center px-3 py-2 bg-purple-50 border border-gray-300 
                       text-gray-800 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
                     >
                       <span>
-                        {formData.category.length > 0
-                          ? formData.category.join(", ")
-                          : "Select categories"}
+                        {formData.hobbies.length > 0
+                          ? formData.hobbies.join(", ")
+                          : "Select hobbies/interests"}
                       </span>
                       <svg 
                         xmlns="http://www.w3.org/2000/svg" 
@@ -250,7 +321,7 @@ function CreatePost() {
                   font-medium text-white bg-purple-700 hover:bg-purple-800 focus:outline-none 
                   focus:ring-2 focus:ring-offset-2 focus:ring-purple-600 font-roboto"
                 >
-                  Create Post
+                  Create Event
                 </button>
               </div>
             </form>
@@ -258,18 +329,17 @@ function CreatePost() {
         </div>
       </div>
 
-      {showCategoriesModal && (
+      {showHobbiesModal && (
         <HobbiesModal
-          selectedHobbies={formData.category}
-          toggleHobby={toggleCategory}
-          onClose={() => setShowCategoriesModal(false)}
+          selectedHobbies={formData.hobbies}
+          toggleHobby={toggleHobby}
+          onClose={() => setShowHobbiesModal(false)}
         />
       )}
     </div>
   )
 }
 
-// Styling for all of the input fields.
 const inputStyle = `
   appearance-none block w-full px-3 py-2
   bg-purple-50 border border-gray-300 text-gray-800
@@ -278,4 +348,4 @@ const inputStyle = `
   sm:text-sm
 `
 
-export default CreatePost
+export default CreateEvent

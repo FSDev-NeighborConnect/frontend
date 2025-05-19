@@ -31,6 +31,7 @@ import {
   Share2,
   Camera,
   ArrowLeft,
+  Home,
 } from "lucide-react"
 import "./userprofile.css"
 
@@ -656,19 +657,26 @@ function UserProfile() {
     <div className="bg-gray-50 dark:bg-gray-900 min-h-screen pb-10">
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 shadow">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+        <div className="max-w-6xl mx-auto px-0 py-4 flex justify-between items-center">
           <div className="flex items-center">
-            {!isOwnProfile && (
+            
               <button
                 onClick={() => navigate(-1)}
-                className="mr-4 flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+                className="mr-8 flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
               >
                 <ArrowLeft className="h-5 w-5 mr-1" />
                 <span className="font-medium">Back</span>
               </button>
-            )}
+              
             <h1 style={{ color: "#4a148c", fontSize: "24px" }}>NeighbourConnect</h1>
           </div>
+            <button
+            onClick={() => navigate("/main")}
+            className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+          >
+            <Home className="h-5 w-5 mr-1" />
+            <span className="font-medium">Home</span>
+          </button>
         </div>
       </div>
 

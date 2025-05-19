@@ -4,12 +4,12 @@ import { useState, useEffect } from "react"
 import { Send, AlertCircle } from "lucide-react"
 import axios from "axios"
 import { useUser } from "../context/UserContext"
+import { useCsrf } from "../context/CsrfContext"
 import { apiUrl, apiConfigCsrf } from "../utils/apiUtil"
-import getCookie from "../utils/csrfUtil"
 
 function PostComments({ postId }) {
   const { userId } = useUser()
-  const csrfToken = getCookie("csrfToken")
+  const { csrfToken } = useCsrf()
   const [comments, setComments] = useState([])
   const [newComment, setNewComment] = useState("")
   const [loading, setLoading] = useState(false)

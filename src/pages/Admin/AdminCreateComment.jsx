@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
+import { useCsrf } from '../../context/CsrfContext.jsx'
 import { apiUrl, apiConfigCsrf } from '../../utils/apiUtil.jsx'
 import { AuthPageHeader } from "../AuthPageHeader.jsx"
-import getCookie from "../../utils/csrfUtil"
 
 const CreateComment = () => {
   const [formData, setFormData] = useState({
@@ -13,7 +13,7 @@ const CreateComment = () => {
   const [isLoading, setIsLoading] = useState(false)
   const { postId } = useParams()
   const navigate = useNavigate()
-  const csrfToken = getCookie("csrfToken")
+  const { csrfToken } = useCsrf()
 
   const handleSubmit = async (e) => {
     e.preventDefault()

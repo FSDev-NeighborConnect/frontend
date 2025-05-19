@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
+import { useCsrf } from "../../context/CsrfContext.jsx"
 import { apiUrl, apiConfigCsrf } from "../../utils/apiUtil.jsx"
-import getCookie from "../../utils/csrfUtil"
 
 const DashboardStatistics = () => {
   const [stats, setStats] = useState({
@@ -14,7 +14,7 @@ const DashboardStatistics = () => {
   })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const csrfToken = getCookie("csrfToken")
+  const { csrfToken } = useCsrf()
   const navigate = useNavigate()
 
   const fetchStatistics = async () => {

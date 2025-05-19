@@ -4,12 +4,12 @@ import { useState, useEffect } from "react"
 import { X, Calendar, Clock, MapPin } from "lucide-react"
 import axios from "axios"
 import { useUser } from "../context/UserContext"
+import { useCsrf } from "../context/CsrfContext"
 import { apiUrl } from "../utils/apiUtil"
-import getCookie from "../utils/csrfUtil"
 
 function CreateEventModal({ isOpen, onClose, onEventCreated }) {
   const { userId } = useUser()
-  const csrfToken = getCookie("csrfToken")
+  const { csrfToken } = useCsrf()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [formData, setFormData] = useState({
@@ -27,7 +27,7 @@ function CreateEventModal({ isOpen, onClose, onEventCreated }) {
 
   // Reset form when modal is opened/closed
   useEffect(() => {
-    if (isOpen && userId) {
+    if (isOpen) {
       setFormData({
         title: "",
         description: "",

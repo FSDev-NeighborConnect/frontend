@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
+import { useCsrf } from "../../context/CsrfContext"
 import { apiUrl, apiConfig } from "../../utils/apiUtil"
 
 const AdminLogin = () => {
@@ -9,6 +10,7 @@ const AdminLogin = () => {
     password: ""
   })
   const { email, password } = formData
+  const { setCsrfToken } = useCsrf()
 
   const [error, setError] = useState("")
   const navigate = useNavigate()
@@ -77,6 +79,7 @@ const AdminLogin = () => {
         { email: email.trim(), password },
         apiConfig()
       )
+      setCsrfToken(res.data.csrfToken) // Storing token in React state
 
       navigate("/admin/dashboard")
     } catch (err) {

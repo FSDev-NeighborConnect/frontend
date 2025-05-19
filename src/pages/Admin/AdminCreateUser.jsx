@@ -3,9 +3,9 @@ import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import HobbiesModal from '../NewUser/HobbiesModal.jsx'
 import validateForm from '../NewUser/ValidateRegisterInputs.jsx'
+import { useCsrf } from '../../context/CsrfContext.jsx'
 import { apiUrl, apiConfigCsrf } from '../../utils/apiUtil.jsx'
 import { AuthPageHeader } from "../AuthPageHeader.jsx"
-import getCookie from "../../utils/csrfUtil"
 
 function CreateUser() {
   const [formData, setFormData] = useState({
@@ -24,7 +24,7 @@ function CreateUser() {
   const [error, setError] = useState('')
   const [showHobbiesModal, setShowHobbiesModal] = useState(false)
   const navigate = useNavigate()
-  const csrfToken = getCookie("csrfToken")
+  const { csrfToken } = useCsrf()
 
   const showError = (message) => {
     setError(message)

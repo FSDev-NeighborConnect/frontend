@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
+import { useCsrf } from "../../context/CsrfContext.jsx"
 import { apiUrl, apiConfigCsrf } from "../../utils/apiUtil.jsx"
 import { AuthPageHeader } from "../AuthPageHeader.jsx"
 import HobbiesModal from "../NewUser/HobbiesModal.jsx"
-import getCookie from "../../utils/csrfUtil"
 
 function CreateEvent() {
   const [formData, setFormData] = useState({
@@ -23,7 +23,7 @@ function CreateEvent() {
   const [currentUser, setCurrentUser] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const navigate = useNavigate()
-  const csrfToken = getCookie("csrfToken")
+  const { csrfToken } = useCsrf()
 
   // Get current admin user info
   useEffect(() => {

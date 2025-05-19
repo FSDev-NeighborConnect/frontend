@@ -4,13 +4,14 @@ import { useState } from "react"
 import { X, Send, Calendar } from "lucide-react"
 import axios from "axios"
 import { useUser } from "../context/UserContext"
+import { useCsrf } from "../context/CsrfContext"
 import { apiUrl } from  "../utils/apiUtil"
-import getCookie from "../utils/csrfUtil"
 
 function CreatePostModal({ isOpen, onClose, postType = "general", onPostCreated }) {
   const { userId: contextUserId } = useUser()
-  const csrfToken = getCookie("csrfToken")
+  const { csrfToken } = useCsrf()
   const userId = contextUserId || localStorage.getItem("userId")
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",

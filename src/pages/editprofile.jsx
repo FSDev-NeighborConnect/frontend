@@ -4,17 +4,17 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import { useUser } from "../context/UserContext"
+import { useCsrf } from "../context/CsrfContext"
 import { User, Mail, Phone, MapPin, Home, ImageIcon, X, Save, ArrowLeft, Plus, AlertCircle } from "lucide-react"
 import "./userprofile.css"
 import HobbiesModal from './NewUser/HobbiesModal'
 import { apiUrl } from  "../utils/apiUtil"
-import getCookie from "../utils/csrfUtil"
 
 
 function EditProfile() {
   const navigate = useNavigate()
   const { userId: contextUserId } = useUser()
-  const csrfToken = getCookie("csrfToken")
+  const { csrfToken } = useCsrf()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [errors, setErrors] = useState({})

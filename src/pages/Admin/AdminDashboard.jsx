@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
+import { useCsrf } from "../../context/CsrfContext"
 import { apiUrl, apiConfigCsrf } from "../../utils/apiUtil"
-import getCookie from "../../utils/csrfUtil"
+import { useUser } from "../../context/UserContext"
 
 const AdminMainDashboard = () => {
   const navigate = useNavigate()
+  const { csrfToken, setCsrfToken } = useCsrf()
+  const { setUserId } = useUser()
   const [isAdmin, setIsAdmin] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-  const csrfToken = getCookie("csrfToken")
 
   const handleSignOut = async () => {
   try {
@@ -17,10 +19,16 @@ const AdminMainDashboard = () => {
       {}, // Needed since it is a post request and needs to include a body
       apiConfigCsrf(csrfToken))
 
+    // Clear client state only if logout is successful
+    setUserId(null)
+    setCsrfToken("")
     navigate("/admin/login")
   } catch (error) {
     console.error("Logout failed", error)
 
+    // Still attempt to clean up client state on error
+    setUserId(null)
+    setCsrfToken("")
     navigate("/admin/login")
   }
 }

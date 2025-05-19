@@ -42,42 +42,64 @@ const AboutPage = () => {
               Elias Daoud
             </h3>
             <div className="text-gray-700 space-y-4">
-              <p className="font-medium">Focus Area: Backend Architecture and System Integration</p>
-              
-              <p className="font-medium">Key Contributions:</p>
+              <p className="font-medium">Focus Area: Backend Architecture, Engineering, Integration & Delivery</p>
               
               <div className="ml-4">
-                <p className="font-medium mb-1">Backend Architecture</p>
+                <p className="font-medium mb-1">Backend Development</p>
                 <ul className="list-disc ml-6 space-y-1">
-                  <li>Helped design and implement the backend using Node.js, Express.js and MVC structure</li>
-                  <li>Built secure authentication and authorization with JWT and CSRF protection</li>
-                  <li>Developed complete CRUD routes for users, posts, comments and admin tools</li>
+                  <li>Led the architecture and implementation of the backend using Node.js, Express and a structured MVC design.</li>
+                  <li>Implemented secure login and access control through custom middleware, using role-based JWT authentication stored in HTTP-only cookies with embedded CSRF tokens, enabling protected, stateless session handling.</li>
+                  <li>Wrote and refactored majority of backend route and controller logic, built and stabilized full CRUD functionality across all core modules — including users, posts, comments, events and admin tools.</li>
+                  <li>Assumed ownership of the comments module after repeated delays required reallocation. Reviewed and repaired defective implementations to bring them up to functional, testable and integration-ready standards.</li>
+                  <li>Resolved backend instability by recovering deleted routes and refactoring key modules like authentication for clarity, modularity and long-term reliability.</li>
                 </ul>
               </div>
 
               <div className="ml-4">
-                <p className="font-medium mb-1">Security & Middleware</p>
+                <p className="font-medium mb-1">Security Features</p>
                 <ul className="list-disc ml-6 space-y-1">
-                  <li>Integrated HTTP-only cookies, custom middleware</li>
-                  <li>Patched CORS issues and hardened route protection logic</li>
+                  <li>Designed and implemented a layered security model using JWTs, HTTP-only cookies, and CSRF token verification, ensuring protected access across all routes.</li>
+                  <li>Integrated custom middleware for consistent enforcement of access rules and token validation.</li>
+                  <li>Refactored fragile or inconsistent validation logic to improve input handling across critical endpoints.</li>
+                  <li>Patched CORS and cookie configuration issues uncovered during integration testing, hardening the backend for production deployment.</li>
                 </ul>
               </div>
 
               <div className="ml-4">
-                <p className="font-medium mb-1">Infrastructure & Testing</p>
+                <p className="font-medium mb-1">Infrastructure & Deployment</p>
                 <ul className="list-disc ml-6 space-y-1">
-                  <li>Configured MongoDB Atlas, Render deployment and Cloudinary for image handling</li>
-                  <li>Wrote extensive unit and integration tests using Jest and Supertest</li>
-                  <li>Documented backend API with OpenAPI and maintained project setup resources</li>
+                  <li>Took full ownership of backend infrastructure and deployment, leading DevOps responsibilities for the server side. Managed the GitHub organization, structured the backend repository, reviewed pull requests and resolved merge conflicts throughout the project.</li>
+                  <li>Deployed the backend using MongoDB Atlas and Render, configuring production-ready environments and managing environment variables across team workflows.</li>
+                  <li>Provided backend documentation including .env.example, full README and the OpenAPI spec powering the Swagger UI.</li>
+                  <li>Integrated Cloudinary for user avatars, post covers, and event images including automated cleanup logic and mocked uploads for tests.</li>
                 </ul>
               </div>
 
               <div className="ml-4">
-                <p className="font-medium mb-1">Team Integration & Coordination</p>
+                <p className="font-medium mb-1">Testing</p>
                 <ul className="list-disc ml-6 space-y-1">
-                  <li>Assumed responsibility for backend coordination and integration during critical stages</li>
-                  <li>Managed backend repo, merged and stabilized PRs</li>
-                  <li>Resolved integration blockers and collaborated closely with frontend</li>
+                  <li>Designed and implemented a backend test suite with nearly 90% coverage using Jest and Supertest, including unit tests for utility logic and integration tests across all critical routes.</li>
+                  <li>Wrote unit tests for input validation and Cloudinary helpers and integration tests for users, posts, comments, events and administrative endpoints.</li>
+                  <li>Built test utilities for mocking MongoDB operations and Cloudinary uploads, supporting clean, repeatable test runs.</li>
+                  <li>Ensured integration stability by proactively coordinating with frontend developers and resolving backend issues during testing.</li>
+                </ul>
+              </div>
+
+              <div className="ml-4">
+                <p className="font-medium mb-1">Maintenance & Refactoring</p>
+                <ul className="list-disc ml-6 space-y-1">
+                  <li>Assumed responsibility for stabilizing backend logic, restoring functionality in broken or removed routes and completing work that had stalled mid-development.</li>
+                  <li>Refactored codebase structure to support service-based logic separation, improved controller clarity, and enabled reusable middleware flows.</li>
+                  <li>Resolved merge conflicts and backend inconsistencies during late-stage development and integration.</li>
+                </ul>
+              </div>
+
+              <div className="ml-4">
+                <p className="font-medium mb-1">Coordination & Reliability</p>
+                <ul className="list-disc ml-6 space-y-1">
+                  <li>Assumed end-to-end responsibility for backend delivery in the final stages — fixing unfinished work, aligning features with frontend needs and holding the system together through integration.</li>
+                  <li>Bridged backend–frontend mismatches, adapting endpoint logic as requirements shifted and ensuring reliable, well-supported handoffs between systems.</li>
+                  <li>Provided steady follow-through during the project's final phase by identifying gaps, completing overlooked tasks and adjusting backend behavior to support integration.</li>
                 </ul>
               </div>
             </div>

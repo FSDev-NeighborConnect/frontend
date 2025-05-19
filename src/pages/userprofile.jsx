@@ -5,7 +5,7 @@ import { useState, useEffect } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import axios from "axios"
 import { useUser } from "../context/UserContext"
-import { useCsrf } from "../context/CsrfContext"
+import getCookie from "../utils/csrfUtil"
 import CreatePostModal from "./CreatePostModal"
 import CreateEventModal from "./CreateEventModal"
 import PostComments from "./PostComments"
@@ -44,7 +44,7 @@ function UserProfile() {
   const navigate = useNavigate()
   const { userId: urlUserId } = useParams()
   const { userId: loggedInUserId } = useUser()
-  const { csrfToken } = useCsrf()
+  const csrfToken = getCookie("csrfToken")
   const [user, setUser] = useState(null)
   const [posts, setPosts] = useState([])
   const [neighbors, setNeighbors] = useState([])

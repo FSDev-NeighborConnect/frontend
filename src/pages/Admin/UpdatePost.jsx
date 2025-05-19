@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import axios from "axios"
-import { useCsrf } from "../../context/CsrfContext.jsx"
 import { apiUrl, apiConfigCsrf } from "../../utils/apiUtil.jsx"
 import { AuthPageHeader } from "../AuthPageHeader.jsx"
 import HobbiesModal from "../NewUser/HobbiesModal.jsx"
+import getCookie from "../../utils/csrfUtil"
 
 export default function UpdatePost() {
   const { state } = useLocation()
@@ -16,7 +16,7 @@ export default function UpdatePost() {
     category: post?.category || []
   })
 
-  const { csrfToken } = useCsrf()
+  const csrfToken = getCookie("csrfToken")
   const [error, setError] = useState("")
   const [showCategoriesModal, setShowCategoriesModal] = useState(false)
   const navigate = useNavigate()

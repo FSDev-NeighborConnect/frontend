@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
-import { useCsrf } from "../../context/CsrfContext.jsx"
 import UserDetailModal from "./UserDetailModal.jsx"
 import { apiUrl, apiConfigCsrf } from "../../utils/apiUtil.jsx"
+import getCookie from "../../utils/csrfUtil"
 
 const AdminDashboardUsers = () => {
   const [users, setUsers] = useState([])
@@ -13,7 +13,7 @@ const AdminDashboardUsers = () => {
   const [activeTab, setActiveTab] = useState("members")
   const [selectedUser, setSelectedUser] = useState(null)
   const [groupByPostalCode, setGroupByPostalCode] = useState(false)
-  const { csrfToken } = useCsrf()
+  const csrfToken = getCookie("csrfToken")
   const navigate = useNavigate()
   const [currentAdminId, setCurrentAdminId] = useState(null)
 

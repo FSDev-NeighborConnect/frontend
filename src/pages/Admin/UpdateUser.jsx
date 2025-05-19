@@ -3,9 +3,9 @@ import { useNavigate, useLocation } from "react-router-dom"
 import axios from "axios"
 import HobbiesModal from "../NewUser/HobbiesModal.jsx"
 import validateUpdateForm from "./validateUpdateUserInputs.jsx"
-import { useCsrf } from "../../context/CsrfContext.jsx"
 import { apiUrl, apiConfigCsrf } from "../../utils/apiUtil.jsx"
 import { AuthPageHeader } from "../AuthPageHeader.jsx"
+import getCookie from "../../utils/csrfUtil"
 
 export default function UpdateUser() {
   const { state } = useLocation()
@@ -24,7 +24,7 @@ export default function UpdateUser() {
     hobbies: user?.hobbies || []
   })
 
-  const { csrfToken } = useCsrf()
+  const csrfToken = getCookie("csrfToken")
 
   const [error, setError] = useState("")
   const [showHobbiesModal, setShowHobbiesModal] = useState(false)

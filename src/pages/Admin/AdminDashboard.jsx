@@ -8,7 +8,7 @@ const AdminMainDashboard = () => {
   const navigate = useNavigate()
   const [isAdmin, setIsAdmin] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-  const csrfToken = getCookie('csrfToken')
+  const csrfToken = getCookie("csrfToken")
 
   const handleSignOut = async () => {
   try {

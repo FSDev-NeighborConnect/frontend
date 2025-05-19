@@ -20,6 +20,7 @@ import Home from './pages/Home.jsx'
 import Login from './pages/Login.jsx'
 import NewUser from './pages/NewUser/newuser.jsx'
 import UserProfile from './pages/userprofile.jsx'
+import MainPage from './pages/mainPage.jsx'
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<NewUser />} />
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/main" element={<MainPage />} />
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/profile/:userId" element={<UserProfile />} />
             <Route path="/edit-profile" element={<EditProfile />} />

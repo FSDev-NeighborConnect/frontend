@@ -255,7 +255,6 @@ function MainPage() {
     }
   }
 
-  // Add this above your useEffect
 const fetchData = async () => {
   setLoading(true);
   setError(null);
@@ -324,7 +323,6 @@ const fetchData = async () => {
   }
 };
 
-// Then update your useEffect to use this function:
 useEffect(() => {
   fetchData();
 }, [userId, csrfToken]);
